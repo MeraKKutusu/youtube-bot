@@ -32,11 +32,14 @@ HEDEF_TP = -1.5
 MUZIK_UZANTILARI = (".mp3", ".wav", ".m4a", ".ogg")
 
 # Seviyeler (müzik önce -20 LUFS'a getirilir, sonra bu çarpanla karışır)
-SEVIYE = {"muzik": 0.55, "vurgu": 0.8, "ugultu": 0.5, "yukselen": 0.4}
+# Yatak içindeki göreli seviyeler; yatağın toplam seviyesi her videoda konuşmaya göre
+# otomatik ayarlanır (YATAK_FARKI).
+SEVIYE = {"muzik": 1.0, "vurgu": 1.6, "ugultu": 0.45, "yukselen": 0.8}
+YATAK_FARKI = 12.0   # müzik+efekt yatağı, anlatıcının kaç LU altında dursun
 
 # Belgesel anlatıcısı tonu: göğüs sesini öne çıkaran hafif bas, dengeli sıkıştırma,
 # çok kısa oda yankısı. Konuşmanın anlaşılırlığını bozmayacak kadar hafif.
-ANLATICI_FILTRESI = ("highpass=f=70,bass=g=4:f=140:w=0.8,equalizer=f=3200:t=q:w=1.2:g=1.5,"
+ANLATICI_FILTRESI = ("highpass=f=70,bass=g=2.5:f=130:w=0.8,equalizer=f=3200:t=q:w=1.2:g=1.5,"
                      "acompressor=threshold=0.08:ratio=3:attack=8:release=180:makeup=1.6,"
                      "aecho=0.9:0.5:35:0.12")
 
@@ -249,54 +252,69 @@ def ses_tasarimi(konusma, sure, mood, gecisler, kapanis, gerilimler, hedef, cali
     calisma = Path(calisma)
     calisma.mkdir(parents=True, exist_ok=True)
 
-    girdiler = [str(konusma)]
-    zincirler = [f"[0:a]aresample={ORNEKLEME},{ANLATICI_FILTRESI},"
-                 f"aformat=sample_fmts=fltp:channel_layouts=stereo,"
-                 f"apad=whole_dur={sure:.3f},asplit=2[ses][yan]"]
-    karisim = ["[ses]"]
+    def _stem(girdiler, zincirler, cikis, yol):
+        komut = ["ffmpeg", "-y", "-loglevel", "error"]
+        for g in girdiler:
+            komut += ["-i", str(g)]
+        komut += ["-filter_complex", ";".join(zincirler), "-map", f"[{cikis}]",
+                  "-t", f"{sure:.3f}", "-c:a", "pcm_s16le", str(yol)]
+        _calistir(komut)
+        return yol
 
-    def ekle(yol, seviye, gecikme=0.0, etiket=None):
+    # 1) Anlatıcı sesi (tek başına)
+    ses = _stem([konusma], [f"[0:a]aresample={ORNEKLEME},{ANLATICI_FILTRESI},"
+                            f"aformat=sample_fmts=fltp:channel_layouts=stereo,"
+                            f"apad=whole_dur={sure:.3f}[s]"], "s", calisma / "stem_ses.wav")
+
+    # 2) Yatak: müzik + uğultu (konuşmada kısılır) + vurgu + yükselen ses
+    girdiler = [ses]
+    zincirler = [f"[0:a]aformat=sample_fmts=fltp:channel_layouts=stereo[yan]"]
+    alt_yatak, efektler = [], []
+
+    def ekle(yol, seviye, gecikme=0.0):
         i = len(girdiler)
-        girdiler.append(str(yol))
-        etiket = etiket or f"e{i}"
+        girdiler.append(yol)
         ms = max(0, int(round(gecikme * 1000)))
         zincirler.append(f"[{i}:a]aresample={ORNEKLEME},aformat=sample_fmts=fltp:"
-                         f"channel_layouts=stereo,adelay=delays={ms}:all=1,volume={seviye}[{etiket}]")
-        return etiket
+                         f"channel_layouts=stereo,adelay=delays={ms}:all=1,"
+                         f"apad=whole_dur={sure:.3f},volume={seviye}[e{i}]")
+        return f"[e{i}]"
 
-    # Müzik + ducking
     muzik = muzik_uret(mood, sure, calisma / "muzik.wav", muzik_klasoru)
-    ekle(muzik, SEVIYE["muzik"], etiket="m0")
-    zincirler.append("[m0][yan]sidechaincompress=threshold=0.012:ratio=10:attack=15:"
-                     "release=450:makeup=1[muz]")
-    karisim.append("[muz]")
-
-    # Kancada vurgu
-    karisim.append(f"[{ekle(vurgu_uret(calisma / 'vurgu.wav'), SEVIYE['vurgu'])}]")
-
-    # Gerilimde alçak uğultu
+    alt_yatak.append(ekle(muzik, SEVIYE["muzik"]))
     if mood in ("tense", "mysterious"):
         gerilimler = list(gerilimler) + [(0.0, sure)]
     for j, (a, b) in enumerate(_aralik_birlestir([(max(0, a), min(sure, b)) for a, b in gerilimler])):
-        ugultu = ugultu_uret(b - a, calisma / f"ugultu_{j}.wav")
-        karisim.append(f"[{ekle(ugultu, SEVIYE['ugultu'], a)}]")
-
-    # Kapanışta yükselen ses
+        alt_yatak.append(ekle(ugultu_uret(b - a, calisma / f"ugultu_{j}.wav"), SEVIYE["ugultu"], a))
+    efektler.append(ekle(vurgu_uret(calisma / "vurgu.wav"), SEVIYE["vurgu"]))
     if kapanis is not None and kapanis < sure - 1.0:
         uzunluk = min(3.5, sure - kapanis - 0.2)
-        bas = sure - 0.2 - uzunluk
-        yukselen = yukselen_uret(uzunluk, calisma / "yukselen.wav")
-        karisim.append(f"[{ekle(yukselen, SEVIYE['yukselen'], bas)}]")
+        efektler.append(ekle(yukselen_uret(uzunluk, calisma / "yukselen.wav"),
+                             SEVIYE["yukselen"], sure - 0.2 - uzunluk))
+    # Müzik ve uğultu: konuşmaya yer açmak için alçak frekanslar hafifçe kısılır,
+    # konuşma sırasında sidechain ile bastırılır.
+    zincirler.append(f"{''.join(alt_yatak)}amix=inputs={len(alt_yatak)}:normalize=0:duration=first,"
+                     f"highpass=f=45,bass=g=-5:f=160:w=0.9[bus]")
+    zincirler.append("[bus][yan]sidechaincompress=threshold=0.015:ratio=8:attack=20:"
+                     "release=500:makeup=1[bastir]")
+    zincirler.append(f"[bastir]{''.join(efektler)}amix=inputs={1 + len(efektler)}:"
+                     f"normalize=0:duration=first[yatak]")
+    yatak = _stem(girdiler, zincirler, "yatak", calisma / "stem_yatak.wav")
 
-    zincirler.append(f"{''.join(karisim)}amix=inputs={len(karisim)}:normalize=0:"
-                     f"duration=first,alimiter=limit=0.9:level=disabled[cikis]")
-    ham = calisma / "karisim_ham.wav"
-    komut = ["ffmpeg", "-y", "-loglevel", "error"]
-    for g in girdiler:
-        komut += ["-i", g]
-    komut += ["-filter_complex", ";".join(zincirler), "-map", "[cikis]",
-              "-t", f"{sure:.3f}", "-c:a", "pcm_s16le", str(ham)]
-    _calistir(komut)
+    # 3) Denge: yatağın genel seviyesi konuşmanın YATAK_FARKI LU altında olsun
+    ses_i = float(loudnorm_olc(ses)["input_i"])
+    yatak_i = float(loudnorm_olc(yatak)["input_i"])
+    if ses_i > -60 and yatak_i > -60:
+        kazanc_db = (ses_i - YATAK_FARKI) - yatak_i
+    else:
+        kazanc_db = 0.0
+    print(f"Denge: anlatıcı {ses_i:.1f} LUFS, yatak {yatak_i:.1f} LUFS "
+          f"-> yatak {kazanc_db:+.1f} dB (hedef fark {YATAK_FARKI} LU)")
+
+    ham = _stem([ses, yatak], [f"[1:a]volume={kazanc_db:.2f}dB[y]",
+                               "[0:a][y]amix=inputs=2:normalize=0:duration=first,"
+                               "alimiter=limit=0.9:level=disabled[cikis]"],
+                "cikis", calisma / "karisim_ham.wav")
     return normalize_et(ham, hedef)
 
 

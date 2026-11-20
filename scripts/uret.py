@@ -613,6 +613,21 @@ def _sorgular(sorgu):
     return liste
 
 
+# Gerçek hayvan görüntüsü yerine yapay zekâ/fantastik içerik gelmesin
+YASAK_ETIKETLER = ("ai generated", "ai-generated", "generated", "fantasy", "monster", "creature",
+                   "alien", "dragon", "demon", "cartoon", "illustration", "3d", "render",
+                   "digital art", "animation", "cgi", "sci-fi", "horror", "kraken")
+
+
+def _uygun_mu(hit):
+    if str(hit.get("type", "")).lower() == "animation":
+        return False
+    if hit.get("isAiGenerated") or hit.get("is_ai_generated"):
+        return False
+    etiketler = str(hit.get("tags", "")).lower()
+    return not any(y in etiketler for y in YASAK_ETIKETLER)
+
+
 def pixabay_adaylar(anahtar, sorgu):
     """Sırayla denenecek (tür, url, kimlik) adayları üretir: önce video, sonra foto."""
     for s in _sorgular(sorgu):
@@ -620,6 +635,8 @@ def pixabay_adaylar(anahtar, sorgu):
                                         "safesearch": "true"}, None, anahtar)
         dikey, yatay = [], []
         for v in veri.get("hits", []):
+            if not _uygun_mu(v):
+                continue
             boyutlar = [b for b in (v.get("videos") or {}).values()
                         if b.get("url") and b.get("width") and b.get("height")
                         and (b.get("size") or 0) <= EN_BUYUK_VIDEO]
@@ -638,6 +655,8 @@ def pixabay_adaylar(anahtar, sorgu):
                                        "orientation": "vertical", "per_page": 20,
                                        "safesearch": "true"}, None, anahtar)
         for p in veri.get("hits", []):
+            if not _uygun_mu(p):
+                continue
             url = p.get("largeImageURL") or p.get("webformatURL")
             if url:
                 yield ("foto", url, ("pixabay-f", p.get("id")))
