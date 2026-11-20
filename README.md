@@ -1,114 +1,155 @@
-# youtube-bot
+# Merak Kutusu: Vahşi Gerçekler 🐙🦈
 
-**Türkçe seslendirmeli, İngilizce altyazılı** YouTube Shorts hazırlayan sistem. Sen bir konu verirsin; Claude Türkçe senaryoyu ve cümle cümle İngilizce çevirisini, ayrıca başlığı, açıklamayı ve etiketleri yazıp `senaryolar/` klasörüne kaydeder. Ardından GitHub Actions videoyu üretir:
+**MERAK KUTUSU 2026** kanalları (YouTube Shorts + TikTok) için tam otomatik video sistemi.
+Her gün 2 video: deniz ve vahşi doğa hayvanları hakkında az bilinen, şaşırtıcı bilgiler.
 
-- 🎙️ Türkçe seslendirme (edge-tts, ücretsiz) — Ahmet (erkek, varsayılan) ya da Emel (kadın)
-- 🎞️ Pixabay'den stok videolar (bulunamazsa dikey fotoğraflar). Pexels isteğe bağlı yedek kaynak.
-- 🌈 Görüntü bulunamazsa ya da anahtar yoksa renkli hareketli arka plan; video her durumda tamamlanır
-- 💬 Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın, siyah kenarlıklı beyaz İngilizce altyazı. Her Türkçe cümlenin çevirisi, o cümle seslendirilirken ekranda görünür; uzun çeviriler en fazla iki satırlık parçalara bölünür. Altyazı Shorts'un alttaki başlık/kanal alanına ve sağdaki butonlara değmez
-- 📱 1080x1920, 30 fps MP4
+## Nasıl çalışır?
 
-Çıktı (`video.mp4` + `youtube-bilgileri.txt`) hem bir **Release** olarak hem de **artifact** olarak indirilebilir.
+```
+09:00  Claude (zamanlanmış görev) konular.txt'den 2 konu alır, senaryoları yazar,
+       bilgileri iki kez kontrol eder ve main'e commit eder
+  ↓    senaryolar/ klasörüne yeni dosya gelir
+       GitHub Actions videoyu üretir: Türkçe ses (Ahmet), İngilizce altyazı,
+       kanca yazısı, Pixabay görüntüleri, mood'a göre müzik ve efektler, -14 LUFS
+  ↓    Kalite kontrolü: süre 30-45 sn, ses seviyesi, siyah kare, altyazı
+  ↓    Geçerse: Release + Buffer'da ertesi gün 12:30 ya da 20:30'a sıraya konur
+       Geçmezse: paylaşılmaz, sana GitHub Issue açılır
+Pazar  Haftalık özet Issue'su
+```
+
+**Senin işin:** Buffer'dan gelen paylaşımları kontrol etmek, videonun altına sabit yorumu
+eklemek ve pazar özetine göz atmak.
 
 ---
 
 ## 📱 Telefondan kurulum (bir kez)
 
-Bu adımlar için **tarayıcıdan github.com**'u kullan. GitHub mobil uygulamasında Ayarlar menüsü yok. Sayfa sıkışık görünürse tarayıcı menüsünden **"Masaüstü sitesi"**ni açabilirsin.
+Ayarlar GitHub mobil uygulamasında yok; **tarayıcıdan github.com**'u kullan
+(gerekirse tarayıcı menüsünden **Masaüstü sitesi**).
 
-### 1. Pixabay API anahtarını al
-1. [pixabay.com](https://pixabay.com) adresinde ücretsiz hesap aç (ya da giriş yap).
-2. [pixabay.com/api/docs](https://pixabay.com/api/docs/) sayfasını aç.
-3. Sayfadaki **Parameters** tablosunda, `key` satırında yeşil renkte yazan anahtarı kopyala.
+### 1. Secret'lar
+**Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-### 2. Anahtarı GitHub Secret olarak ekle
-1. github.com/MeraKKutusu/youtube-bot adresini aç.
-2. **Settings** → **Secrets and variables** → **Actions**.
-3. **New repository secret**'a dokun.
-4. **Name** kutusuna tam olarak `PIXABAY_API_KEY` yaz, **Secret** kutusuna anahtarı yapıştır.
-5. **Add secret**'a dokun.
+| Name | Nereden | Zorunlu mu |
+|---|---|---|
+| `PIXABAY_API_KEY` | pixabay.com/api/docs → `key` | Önerilir (yoksa renkli arka plan) |
+| `BUFFER_API_KEY` | publish.buffer.com/settings/api → **Create API key** | Paylaşım için evet |
+| `PEXELS_API_KEY` | pexels.com/api | Hayır |
 
-> 🔒 Anahtarı başka hiçbir yere yazma: ne bir dosyaya, ne commit mesajına, ne de sohbete. Yalnızca bu Secret'ta durmalı.
+> 🔒 Anahtarları başka hiçbir yere yazma: ne dosyaya, ne sohbete. Yalnızca Secret'ta dursun.
 
-> İsteğe bağlı: Bir Pexels anahtarın varsa aynı yolla `PEXELS_API_KEY` adıyla ekleyebilirsin. Pixabay'de bulunamayan görüntüler için yedek kaynak olarak kullanılır. Gerekli değildir.
->
-> Hiç anahtar eklemesen bile workflow çalışır; görüntülerin yerine renkli hareketli arka plan kullanılır.
+### 2. Buffer kanalları
+- Buffer'da **YouTube** ve **TikTok** kanallarını bağla. TikTok için Buffer **TikTok Business**
+  hesabı ister (TikTok uygulamasında: Profil → ☰ → Hesap → İşletme hesabına geç).
+- Ücretsiz plan yeter: 3 kanal, kanal başına aynı anda 10 planlı gönderi. Sistem en fazla
+  ~2 günlük (kanal başına 4) gönderi biriktirir.
 
----
+### 3. İsteğe bağlı ayarlar (Variables)
+**Settings** → **Secrets and variables** → **Actions** → **Variables** sekmesi → **New repository variable**
 
-## 🎬 Her yeni video için
+| Name | Değer | Ne işe yarar |
+|---|---|---|
+| `ALTYAZI_DILI` | `en` ya da `tr` | Otomatik videoların altyazı/başlık dili (varsayılan `en`) |
+| `AI_ETIKETI` | `true` ya da `false` | YouTube/TikTok "AI ile üretildi" işareti (varsayılan `true`) |
+| `BUFFER_YOUTUBE_KANAL` | Buffer'daki kanal adı | Birden çok YouTube kanalın varsa |
+| `BUFFER_TIKTOK_KANAL` | Buffer'daki kanal adı | Birden çok TikTok kanalın varsa |
 
-### 1. Konuyu ver
-Claude'a konuyu söyle (ör. *"Konu: Kara delikler"*). Claude `senaryolar/kara-delikler.json` gibi bir dosya yazıp repoya kaydeder ve sana dosyanın adını verir.
-
-### 2. Videoyu üret
-1. Repoda **Actions** sekmesine gir.
-2. Soldaki listeden **Shorts Üret**'i seç.
-3. **Run workflow**'a dokun.
-4. **Senaryo** kutusuna dosyanın adını yaz (ör. `kara-delikler`). Büyük harf (`Kara-Delikler`) ya da `.json` uzantısı (`kara-delikler.json`) da kabul edilir.
-5. **Seslendiren** listesinden **Ahmet** (erkek) ya da **Emel** (kadın) seç (varsayılan Ahmet).
-6. Yeşil **Run workflow** düğmesine dokun.
-
-İş 3–6 dakika sürer. Yeşil tik ✅ çıkınca video hazırdır.
-
-### 3. İndir
-**En kolay yol: Releases**
-1. Repo ana sayfasında **Releases** bölümüne (ya da `github.com/MeraKKutusu/youtube-bot/releases` adresine) gir.
-2. En üstteki sürümü aç; adı `video-<numara>-<senaryo>` biçimindedir.
-3. **video.mp4**'e dokun; video doğrudan iner.
-4. Başlık, açıklama ve etiketler sürüm sayfasında da yazılıdır, oradan kopyalayabilirsin.
-
-**Alternatif: Artifact**
-Actions'ta biten işe gir, sayfanın altındaki **Artifacts** bölümünden zip'i indir. Artifact'lar 7 gün saklanır.
-
-> ℹ️ Repo herkese açıksa Release'ler de herkese açıktır. Yüklediğin videoları sonradan sürüm sayfasından silebilirsin.
+### 4. Zamanlanmış görev
+Her sabah senaryoları yazan Claude görevi **claude.ai/code** → **Scheduled** bölümündedir.
+Kurulum adımları PR açıklamasında; kapatmak için aşağıdaki **Acil durdurma**'ya bak.
 
 ---
 
-## Senaryo dosyası biçimi
+## 📱 Günlük kullanım (kısa rehber)
 
-```json
-{
-  "konu": "Konu adı",
-  "baslik": "YouTube başlığı (100 karakterden kısa)",
-  "aciklama": "Açıklama metni\n\n#shorts #etiket",
-  "etiketler": ["etiket1", "etiket2"],
-  "bolumler": [
-    {
-      "arama": "english search keywords",
-      "cumleler": [
-        { "tr": "Seslendirilecek Türkçe cümle.", "en": "English subtitle for this sentence." },
-        { "tr": "İkinci Türkçe cümle.", "en": "Second sentence in English." }
-      ]
-    }
-  ]
-}
-```
+| Ne yapmak istiyorsun? | Nereye dokun |
+|---|---|
+| Bugünün videolarını izle | **Code** → **Releases** (ya da `github.com/MeraKKutusu/youtube-bot/releases`) |
+| Sabit yorumu al | Release sayfasında **PINNED COMMENT / SABİT YORUM** satırı → YouTube'da yoruma yapıştır, **⋮ → Sabitle** |
+| Sorunlu video var mı? | **Issues** sekmesi (`kalite`, `buffer` etiketleri) |
+| Ne zaman paylaşılacak? | Buffer uygulaması → **Queue** |
+| Bir videoyu elle üret | **Actions** → **Shorts Üret** → **Run workflow** → senaryo adı (ör. `ornek`), dil, ses → **Run workflow** |
+| Elle üretilen videoyu da paylaş | Aynı ekranda **buffer_paylas** kutusunu işaretle |
+| Yeni konu ekle | `konular.txt` → ✏️ → listeye `- [ ] (deniz) Konu` satırı ekle → **Commit changes** |
+| Haftalık özet | **Issues** → `haftalik-ozet` etiketi (her pazar 20:00) |
 
-- Her bölüm `cumleler` listesinden oluşur: `tr` seslendirilen Türkçe cümle, `en` ekranda görünen İngilizce çevirisi. Her `tr` için bir `en` zorunludur; çeviri, o Türkçe cümle başladığı anda ekrana gelir ve sonraki cümle başlayana kadar kalır.
-- Çeviriler kısa ve doğal olmalı; sesle uyum için Türkçe cümleden çok daha uzun olmamalı.
-- `baslik`, `aciklama` ve `etiketler` İngilizce yazılır (altyazılar İngilizce olduğu için). İstersen Türkçe de yazılabilir; sistem içeriği olduğu gibi kullanır.
-- Tüm Türkçe cümleler birlikte 45–55 saniye tutmalı (yaklaşık 110–125 Türkçe kelime).
-- Eski biçimdeki (`"metin": "..."`) senaryolar da çalışır; çeviri olmadığı için altyazı Türkçe gösterilir ve sarı bir uyarı çıkar.
-- Her bölüm kendi metni okunurken ekranda kendi görüntüsünü gösterir.
-- `arama` da İngilizce yazılır; stok görsel siteleri İngilizce aramalarda daha iyi sonuç verir.
-- Her bölüm için sıra: Pixabay video (önce dikey, yoksa yatay video ortadan kırpılır) → Pixabay dikey fotoğraf → Pexels (anahtar varsa) → renkli hareketli arka plan.
-- Pixabay ya da Pexels kullanıldıysa `youtube-bilgileri.txt`'deki açıklamanın sonuna `Footage: Pixabay` (ya da `Footage: Pixabay, Pexels`) satırı eklenir. Dosyadaki bölümler `TITLE`, `DESCRIPTION` ve `TAGS` başlıklarıyla ayrılır.
+Elle çalıştırmada senaryo adı büyük/küçük harften ve `.json` uzantısından etkilenmez
+(`ORNEK`, `ornek.json` da olur). `ornek.json` bir test senaryosudur, hiçbir zaman paylaşılmaz.
 
-Örnek: [`senaryolar/ornek.json`](senaryolar/ornek.json)
+---
+
+## ⛔ Acil durdurma
+
+**Her şeyi tek dokunuşla durdur** (senaryo yazımı, video üretimi ve Buffer'a gönderim):
+1. Repo ana sayfasında **Add file** → **Create new file**
+2. Dosya adı: `DURDUR` (içine bir şey yazman gerekmez)
+3. **Commit changes** → **Commit changes**
+
+Tekrar başlatmak için: `DURDUR` dosyasını aç → **⋮** → **Delete file** → **Commit changes**.
+
+**Zaten sıraya konmuş paylaşımlar** Buffer'da durur; onları iptal etmek için:
+Buffer uygulaması → **Queue** → gönderiye dokun → **Delete**
+(ya da Buffer'da kanalın **Pause Queue** düğmesi).
+
+**Daha kesin durdurma:**
+- Zamanlanmış görev: **claude.ai/code** → **Scheduled** → görevi aç → kapat (toggle).
+- Workflow: **Actions** → **Shorts Üret** → **⋯** → **Disable workflow**.
+- Buffer bağlantısını kes: Secret'lardan `BUFFER_API_KEY`'i sil (ya da Buffer'da anahtarı iptal et).
+
+---
 
 ## Sorun giderme
 
-| Hata | Çözüm |
+| Ne görüyorsun | Ne yap |
 |---|---|
-| Sarı uyarı: `PIXABAY_API_KEY yok` | Video arka planla üretildi. Görüntü istiyorsan kurulum adım 2'yi yap. |
-| Sarı uyarı: `Pixabay anahtarı reddedildi` | Secret'ı silip anahtarı yeniden ekle; başında ya da sonunda boşluk olmasın. |
-| Sarı uyarı: `... için görüntü bulunamadı` | O bölüm arka planla üretildi. İstersen Claude'dan o bölümün `arama` kelimelerini değiştirmesini iste. |
-| `edge-tts seslendirmesi ... başarısız` | Ücretsiz servis anlık hata vermiş olabilir. İşi aç, **Re-run jobs**'a dokun. |
-| Ses süresi uyarısı | Video yine üretilir. Süre 45–55 sn dışındaysa Claude'dan metni kısaltmasını ya da uzatmasını iste. |
+| Issue: **Kalite kontrolü geçmedi** | Tablodaki ❌ satırına bak. Süre sorunuysa Claude'a "şu senaryoyu kısalt/uzat" de; dosya değişince yeni ad vermesi gerekir (otomatik çalışma yalnızca **yeni** dosyalarda tetiklenir). Elle de üretebilirsin. |
+| Issue: **Buffer'a gönderilemedi** | Mesajı oku. "anahtar reddedildi" → `BUFFER_API_KEY`'i yenile. "kanal bulunamadı" → Buffer'da kanalın bağlı mı bak. Video Release'te duruyor, elle de paylaşabilirsin. |
+| Sarı uyarı: `BUFFER_API_KEY secret'ı yok` | Video üretildi ama paylaşıma gönderilmedi. Kurulum adım 1. |
+| Sarı uyarı: `PIXABAY_API_KEY yok` | Görüntüler yerine renkli arka plan kullanıldı. |
+| `edge-tts seslendirmesi ... başarısız` | Ücretsiz servis anlık hata vermiş olabilir. İşi aç → **Re-run jobs**. |
+| Sabah senaryo gelmedi | claude.ai/code → **Scheduled** → görevin son çalışmasına bak. |
+
+> ℹ️ Buffer videoyu paylaşım anında Release'ten indirir. **Paylaşılmamış videoların
+> Release'lerini silme.** Repo herkese açık olduğu için Release'ler de herkese açıktır.
+
+---
+
+## Teknik ayrıntılar
+
+| Dosya | Görevi |
+|---|---|
+| `scripts/uret.py` | Seslendirme, görüntü, altyazı, kanca yazısı, montaj |
+| `scripts/ses.py` | Mood müziği, efektler, ducking, -14 LUFS |
+| `scripts/kalite.py` | Kalite kontrolü |
+| `scripts/buffer.py` | Buffer GraphQL API ile sıraya koyma (`kanallar` komutu kurulumu kontrol eder) |
+| `scripts/ozet.py` | Haftalık özet |
+| `scripts/senaryo_kontrol.py` | Senaryo kurallarını denetler |
+| `CLAUDE.md` | Claude için senaryo kuralları, JSON biçimi ve günlük görev adımları |
+| `konular.txt` | Konu listesi (kullanılanlar `[x]`) |
+| `yayinlar/kayit.jsonl` | Buffer'a gönderilen videoların kaydı (slot seçimi ve özet için) |
+| `assets/muzik/` | İsteğe bağlı kendi müziğin |
+
+**Video:** 1080x1920, 30 fps. Altyazı alt üçte birde (büyük, kalın, beyaz, siyah kenarlık),
+her Türkçe cümle okunurken karşılığı ekranda. Kanca yazısı ilk cümle boyunca üstte (sarı).
+Sahne geçişleri cümle sonlarında, ilk sahnede hafif zoom. Görüntü sırası: Pixabay video →
+Pixabay foto → Pexels (anahtar varsa) → renkli hareketli arka plan.
+
+**Ses:** Türkçe seslendirme (edge-tts Ahmet, isteğe bağlı Emel). Mood (`tense`, `mysterious`,
+`fun`, `epic`) müziği ffmpeg ile sentezlenir, konuşmada sidechain ile kısılır. Kancada vurgu,
+geçişlerde whoosh, gerilimde alçak uğultu, kapanışta yükselen ses. Telifli ses yok.
+İki geçişli loudnorm ile -14 LUFS, en fazla -1.5 dBTP.
+
+**Yayın metinleri:** `youtube.txt` (başlık + "| Vahşi Gerçekler #N", açıklama, hashtag'ler,
+etiketler, sabit yorum, "Footage/Görüntüler: Pixabay") ve `tiktok.txt` (en fazla 5 hashtag).
+Altyazı diliyle aynı dilde. Release adı: `Vahşi Gerçekler #N - konu`.
+
+**Buffer:** GraphQL API (`https://api.buffer.com`), `createPost` + `customScheduled`.
+YouTube kategorisi 15 (Pets & Animals), herkese açık, çocuklara yönelik değil.
+Buffer API'si YouTube'da yorum sabitlemeyi desteklemediği için sabit yorumu sen eklersin.
 
 ## Güvenlik
 
-- API anahtarları yalnızca GitHub Secrets'ta durur; kodda yalnızca `${{ secrets.PIXABAY_API_KEY }}` ve `${{ secrets.PEXELS_API_KEY }}` adlarıyla geçer. Hata mesajlarında anahtar `***` ile gizlenir.
-- `.gitignore`, `.env`, token ve anahtar dosyalarının repoya girmesini engeller.
-- `.claude/hooks/gizli-koru.py` (PreToolUse hook'u), Claude Code'un gizli dosyalara yazmasını, onları commit'lemesini ya da herhangi bir dosyaya açık bir anahtar değeri yazmasını engeller.
+- API anahtarları yalnızca GitHub Secrets'ta durur; hata mesajlarında `***` ile gizlenir.
+- `.gitignore` gizli dosyaların repoya girmesini engeller.
+- `.claude/hooks/gizli-koru.py` Claude Code'un gizli dosyalara ya da dosyalara açık anahtar
+  yazmasını engeller.

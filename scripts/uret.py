@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
-"""Senaryo JSON dosyasından 1080x1920 YouTube Shorts videosu üretir:
-Türkçe seslendirme, İngilizce altyazı.
+"""Senaryo JSON dosyasından 1080x1920 Shorts/TikTok videosu üretir:
+Türkçe seslendirme, İngilizce (ya da Türkçe) altyazı, mood'a göre müzik ve efektler.
 
 Adımlar:
-  1. edge-tts ile Türkçe seslendirme (Ahmet/Emel) + kelime zamanlamaları
+  1. edge-tts ile Türkçe seslendirme (Ahmet varsayılan, Emel) + kelime zamanlamaları
   2. Her bölüm için görüntü, bu sırayla denenir:
        a. Pixabay video (dikey olanlar önce), yoksa Pixabay dikey fotoğraf
        b. Pexels video/fotoğraf (isteğe bağlı; yalnızca anahtar varsa)
        c. Hiçbiri olmazsa ffmpeg ile renkli, hareketli arka plan
-     Anahtar olmaması ya da sonuç bulunamaması videoyu durdurmaz.
-  3. Senaryodaki her Türkçe cümlenin İngilizce çevirisi, o cümle
-     seslendirilirken ekranda görünür (uzun çeviriler okunur parçalara
-     bölünür). Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın,
-     siyah kenarlıklı beyaz yazı; Shorts'un alt başlık alanına ve sağdaki
-     butonlara değmez
-  4. ffmpeg ile 1080x1920, 30 fps MP4
+     Sahne geçişleri cümle sonlarında; ilk sahnede hafif yakınlaşma (zoom).
+  3. Altyazı: her Türkçe cümle seslendirilirken seçilen dildeki karşılığı (en/tr)
+     alt üçte birde, büyük kalın beyaz yazı + siyah kenarlık. Kanca yazısı
+     (3-5 kelime) ilk cümle boyunca ekranın üstünde.
+  4. Ses: scripts/ses.py (müzik, ducking, efektler, -14 LUFS)
+  5. Çıktılar: video.mp4, youtube.txt, tiktok.txt, meta.json, altyazi.ass
 
 API anahtarları yalnızca ortam değişkenlerinden okunur (PIXABAY_API_KEY,
 PEXELS_API_KEY); GitHub Actions'ta Secret'lardan gelir. Kodda ya da repoda
 tutulmaz ve loglara yazılmaz.
 
 Kullanım:
-  python scripts/uret.py --senaryo senaryolar/ornek.json --ses Ahmet \
+  python scripts/uret.py --senaryo ornek --ses Ahmet --altyazi-dili en \
       --cikti cikti --calisma calisma
 """
 import argparse
@@ -34,7 +33,23 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from senaryo_kontrol import kontrol as senaryo_denetle  # noqa: E402
+from ses import ses_tasarimi, SesHatasi  # noqa: E402
+
 GENISLIK, YUKSEKLIK, FPS = 1080, 1920, 30
+SERI_ADI = "Merak Kutusu: Vahşi Gerçekler"
+SERI_KISA = "Vahşi Gerçekler"
+ALTYAZI_DILLERI = ("en", "tr")
+SURE_HEDEF = (30.0, 40.0)   # seslendirme hedefi (kalite kontrolü 30-45 sn video ister)
+TIKTOK_EN_FAZLA_HASHTAG = 5
+GORUNTU_SATIRI = {"en": "Footage", "tr": "Görüntüler"}
+
+# Kanca yazısı (ekranın üstü): Shorts/TikTok'un üstteki arama/kamera ikonlarının altında
+KANCA_FONT_BOYUTU = 104
+KANCA_UST_BOSLUK = 300
+KANCA_EN_AZ, KANCA_EN_COK = 2.2, 4.5   # ekranda kalma süresi (sn)
+GIRIS_ZOOM = 0.08                       # ilk sahnede %8 yakınlaşma
 # Türkçe seslendirenler: Ahmet (erkek, varsayılan) ve Emel (kadın)
 SESLER = {"Ahmet": "tr-TR-AhmetNeural", "Emel": "tr-TR-EmelNeural"}
 VARSAYILAN_SES = "Ahmet"
@@ -52,9 +67,6 @@ ALTYAZI_ALT_KENAR = 1410
 ALT_BOSLUK = YUKSEKLIK - ALTYAZI_ALT_KENAR  # ASS MarginV (alttan uzaklık)
 # Çeviri altyazısı: bir parça en fazla 2 satır (~15 harf/satır) olsun
 CEVIRI_EN_FAZLA_HARF = 30
-# Çevirisi olmayan eski senaryolarda Türkçe kelime grupları gösterilir
-EN_FAZLA_KELIME = 3        # ekranda aynı anda en fazla kaç kelime
-EN_FAZLA_HARF = 16         # bir altyazı parçasının en fazla uzunluğu
 
 PIXABAY_VIDEO = "https://pixabay.com/api/videos/"
 PIXABAY_FOTO = "https://pixabay.com/api/"
@@ -119,9 +131,22 @@ def senaryo_oku(yol):
         veri = json.loads(Path(yol).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
         hata(f"senaryo okunamadı ({yol}): {e}")
-    for alan in ("baslik", "aciklama", "etiketler", "bolumler"):
-        if alan not in veri:
-            hata(f"senaryoda '{alan}' alanı eksik")
+    veri["_dosya"] = str(yol)
+    veri["_ad"] = Path(yol).stem
+    yeni = "yayin" in veri or "mood" in veri
+    if not yeni:
+        for alan in ("baslik", "aciklama", "etiketler"):
+            if alan not in veri:
+                hata(f"senaryoda '{alan}' alanı eksik")
+    if "bolumler" not in veri:
+        hata("senaryoda 'bolumler' alanı eksik")
+    hatalar, uyarilar = senaryo_denetle(veri, str(yol))
+    for u in uyarilar:
+        uyari(f"Senaryo: {u}")
+    for h in hatalar:
+        # Kurallara uymayan ama üretilebilir senaryo videoyu durdurmaz;
+        # asıl ölçüt kalite kontrolündeki gerçek süredir.
+        uyari(f"Senaryo kuralı: {h}")
     if not veri["bolumler"]:
         hata("senaryoda hiç bölüm yok")
     for i, b in enumerate(veri["bolumler"], 1):
@@ -143,22 +168,66 @@ def senaryo_oku(yol):
     return veri
 
 
+def buyuk_harf(yazi, dil):
+    if dil == "tr":
+        yazi = yazi.replace("i", "İ").replace("ı", "I")
+    return yazi.upper()
+
+
+def yayin_bilgisi(veri, dil):
+    """Seçilen dildeki başlık/açıklama/hashtag/sabit yorum/kanca yazısını döndürür."""
+    def secim(alan):
+        deger = veri.get(alan)
+        if isinstance(deger, dict):
+            return str(deger.get(dil) or deger.get("en") or deger.get("tr") or "").strip()
+        return str(deger or "").strip()
+
+    yayin = (veri.get("yayin") or {}).get(dil) or {}
+    if yayin:
+        baslik = str(yayin.get("baslik", "")).strip()
+        aciklama = str(yayin.get("aciklama", "")).strip()
+        hashtagler = [str(h).strip() for h in yayin.get("hashtagler", []) if str(h).strip()]
+        etiketler = [str(e).strip() for e in yayin.get("etiketler", []) if str(e).strip()]
+    else:  # eski biçim
+        baslik = str(veri.get("baslik", "")).strip()
+        aciklama = str(veri.get("aciklama", "")).strip()
+        hashtagler = re.findall(r"#[^\s#]+", aciklama)
+        aciklama = re.sub(r"\s*#[^\s#]+", "", aciklama).strip()
+        etiketler = veri.get("etiketler", [])
+        if isinstance(etiketler, str):
+            etiketler = [e.strip() for e in etiketler.split(",")]
+    hashtagler = [h if h.startswith("#") else f"#{h}" for h in hashtagler]
+    if not etiketler:
+        etiketler = [h.lstrip("#") for h in hashtagler if h.lower() != "#shorts"]
+    return {
+        "baslik": baslik,
+        "aciklama": aciklama,
+        "hashtagler": list(dict.fromkeys(hashtagler)),
+        "etiketler": etiketler,
+        "sabit_yorum": secim("sabit_yorum"),
+        "kanca_yazisi": secim("kanca_yazisi"),
+    }
+
+
 def _tek_satir(yazi):
     return " ".join(str(yazi).split())
 
 
-def tam_metin_ve_konumlar(bolumler):
+def tam_metin_ve_konumlar(bolumler, dil="en"):
     """Türkçe cümleleri tek metinde birleştirir.
 
     Döndürür: (metin, bölüm_başlangıç_konumları, cümleler)
-    cümleler: her biri {"bas", "son", "en"}; bas/son, cümlenin metindeki konumu.
+    cümleler: her biri {"bas", "son", "bolum", "alt"}; bas/son cümlenin metindeki
+    konumu, alt ekranda gösterilecek altyazı (seçilen dilde; yoksa Türkçe).
     """
     parcalar, bolum_konumlari, cumleler, konum = [], [], [], 0
-    for b in bolumler:
+    for bi, b in enumerate(bolumler):
         bolum_konumlari.append(konum)
         for c in b["cumleler"]:
             tr = _tek_satir(c["tr"])
-            cumleler.append({"bas": konum, "son": konum + len(tr), "en": _tek_satir(c.get("en", ""))})
+            alt = _tek_satir(c.get(dil, "")) or tr
+            cumleler.append({"bas": konum, "son": konum + len(tr), "bolum": bi,
+                             "alt": alt, "ceviri_var": bool(_tek_satir(c.get(dil, "")))})
             parcalar.append(tr)
             konum += len(tr) + 1
     return " ".join(parcalar), bolum_konumlari, cumleler
@@ -251,14 +320,22 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{YAN_BOSLUK},{YAN_BOSLUK},{ALT_BOSLUK},1
+Style: Kanca,{FONT_ADI},{KANCA_FONT_BOYUTU},&H0000E5FF,&H0000E5FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK + 2},3,8,{YAN_BOSLUK - 40},{YAN_BOSLUK - 40},{KANCA_UST_BOSLUK},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
 
-def _dialog(bas, bit, yazi):
-    return f"Dialogue: 0,{_ass_zaman(bas)},{_ass_zaman(bit)},Ana,,0,0,0,,{_ass_kacis(yazi)}"
+def _dialog(bas, bit, yazi, stil="Ana", efekt=""):
+    return (f"Dialogue: 0,{_ass_zaman(bas)},{_ass_zaman(bit)},{stil},,0,0,0,,"
+            f"{efekt}{_ass_kacis(yazi)}")
+
+
+def kanca_satiri(yazi, bit):
+    """Ekranın üstündeki kanca yazısı: küçükten büyüyerek gelir, sonunda söner."""
+    efekt = r"{\fscx70\fscy70\t(0,180,\fscx108\fscy108)\t(180,300,\fscx100\fscy100)\fad(0,250)}"
+    return _dialog(0.0, bit, yazi, "Kanca", efekt)
 
 
 def ceviri_parcala(yazi, sinir=CEVIRI_EN_FAZLA_HARF):
@@ -299,8 +376,10 @@ def _zaman_bul(cumle_kelimeleri, oran):
     return cumle_kelimeleri[-1][0]
 
 
-def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu):
-    """Her Türkçe cümle seslendirilirken onun İngilizce çevirisini gösterir."""
+def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu, kanca=""):
+    """Her Türkçe cümle seslendirilirken onun altyazısını (en ya da tr) gösterir.
+    kanca verilirse ilk cümle boyunca ekranın üstünde durur.
+    Altyazı satır sayısını döndürür."""
     # Her cümlenin kelimelerini bul
     for c in cumleler:
         c["kelimeler"] = [k for k in kelimeler if c["bas"] <= k[2] < c["son"]]
@@ -310,7 +389,7 @@ def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu):
         if c["kelimeler"]:
             gecerli.append(c)
         elif gecerli:
-            gecerli[-1]["en"] += " " + c["en"]
+            gecerli[-1]["alt"] += " " + c["alt"]
     if not gecerli:
         hata("cümleler seslendirme zamanlarıyla eşleştirilemedi")
 
@@ -322,7 +401,7 @@ def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu):
         else:
             bit = min(ses_suresi, c["kelimeler"][-1][1] + 0.6)
         bit = max(bit, bas + 0.3)
-        parcalar = ceviri_parcala(c["en"])
+        parcalar = ceviri_parcala(c["alt"])
         toplam = sum(len(p) for p in parcalar) or 1
         birikmis = 0
         zamanlar = []
@@ -335,43 +414,12 @@ def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu):
             if pson - pb < 0.4:  # çok kısa kalan parçaya biraz süre ver
                 pson = min(bit, pb + 0.4)
             satirlar.append(_dialog(pb, pson, p))
+    altyazi_sayisi = len(satirlar)
+    if kanca:
+        ilk_bit = gecerli[0]["kelimeler"][-1][1] + 0.3
+        satirlar.insert(0, kanca_satiri(kanca, min(KANCA_EN_COK, max(KANCA_EN_AZ, ilk_bit))))
     Path(ass_yolu).write_text(_ass_basligi() + "\n".join(satirlar) + "\n", encoding="utf-8")
-
-
-def altyazi_yaz(metin, kelimeler, ses_suresi, ass_yolu):
-    """Çevirisi olmayan senaryolar için: Türkçe kelime grupları."""
-    # Kelimeleri kısa gruplara ayır; cümle sonunda grubu kapat
-    gruplar, grup = [], []
-    for i, k in enumerate(kelimeler):
-        grup.append(i)
-        bas = kelimeler[grup[0]][2]
-        son = kelimeler[i + 1][2] if i + 1 < len(kelimeler) else len(metin)
-        yazi = metin[bas:son].strip()
-        sonraki_uzun = False
-        if i + 1 < len(kelimeler):
-            son2 = kelimeler[i + 2][2] if i + 2 < len(kelimeler) else len(metin)
-            sonraki_uzun = len(metin[bas:son2].strip()) > EN_FAZLA_HARF
-        if (len(grup) >= EN_FAZLA_KELIME or yazi[-1:] in ".!?…:;"
-                or sonraki_uzun or i + 1 == len(kelimeler)):
-            gruplar.append(grup)
-            grup = []
-
-    satirlar = []
-    for j, g in enumerate(gruplar):
-        bas_konum = kelimeler[g[0]][2]
-        son_index = g[-1] + 1
-        son_konum = kelimeler[son_index][2] if son_index < len(kelimeler) else len(metin)
-        yazi = metin[bas_konum:son_konum].strip()
-        baslangic = kelimeler[g[0]][0]
-        if j + 1 < len(gruplar):
-            bitis = kelimeler[gruplar[j + 1][0]][0]
-        else:
-            bitis = min(ses_suresi, kelimeler[g[-1]][1] + 0.5)
-        if bitis <= baslangic:
-            bitis = baslangic + 0.3
-        satirlar.append(_dialog(baslangic, bitis, yazi))
-
-    Path(ass_yolu).write_text(_ass_basligi() + "\n".join(satirlar) + "\n", encoding="utf-8")
+    return altyazi_sayisi
 
 
 # ---------------------------------------------------------------- görüntü kaynakları
@@ -554,47 +602,113 @@ def arka_plan_olustur(sira, sure, hedef):
                "format=yuv420p,hue=h=t*25:s=1.4,setsar=1", sure, hedef)
 
 
-def parca_olustur(tur, kaynak, sure, hedef, sira):
+def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False):
     if tur == "arka_plan":
         arka_plan_olustur(sira, sure, hedef)
-        return
-    olcek = (f"scale={GENISLIK}:{YUKSEKLIK}:force_original_aspect_ratio=increase,"
-             f"crop={GENISLIK}:{YUKSEKLIK},setsar=1,fps={FPS}")
-    if tur == "video":
-        _kodla(["-stream_loop", "-1", "-i", str(kaynak)], olcek, sure, hedef)
     else:
-        # Fotoğrafta hafif yakınlaşma efekti
-        kare = max(1, round(sure * FPS))
-        filtre = (f"scale={GENISLIK * 2}:{YUKSEKLIK * 2}:force_original_aspect_ratio=increase,"
-                  f"crop={GENISLIK * 2}:{YUKSEKLIK * 2},"
-                  f"zoompan=z='1+0.10*on/{kare}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-                  f":d=1:s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
-        _kodla(["-loop", "1", "-i", str(kaynak)], filtre, sure, hedef)
+        olcek = (f"scale={GENISLIK}:{YUKSEKLIK}:force_original_aspect_ratio=increase,"
+                 f"crop={GENISLIK}:{YUKSEKLIK},setsar=1,fps={FPS}")
+        if tur == "video":
+            _kodla(["-stream_loop", "-1", "-i", str(kaynak)], olcek, sure, hedef)
+        else:
+            # Fotoğrafta hafif yakınlaşma efekti (ilk sahnede zaten zoom var)
+            kare = max(1, round(sure * FPS))
+            filtre = (f"scale={GENISLIK * 2}:{YUKSEKLIK * 2}:force_original_aspect_ratio=increase,"
+                      f"crop={GENISLIK * 2}:{YUKSEKLIK * 2},"
+                      f"zoompan=z='1+0.10*on/{kare}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                      f":d=1:s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
+            _kodla(["-loop", "1", "-i", str(kaynak)], filtre, sure, hedef)
+            return
+    if giris_zoom:
+        zoom_uygula(hedef, sure)
 
 
-def youtube_bilgileri_yaz(veri, kaynak_adlari, yol):
-    etiketler = veri["etiketler"]
-    if isinstance(etiketler, list):
-        etiketler = ", ".join(str(e).strip() for e in etiketler)
-    aciklama = veri["aciklama"].strip()
+def zoom_uygula(yol, sure):
+    """Sahneye yavaşlayarak biten hafif bir yakınlaşma ekler (girişte)."""
+    kare = max(1, round(sure * FPS))
+    gecici = Path(yol).with_name(Path(yol).stem + "_zoom.mp4")
+    filtre = (f"zoompan=z='1+{GIRIS_ZOOM}*(1-pow(1-min(on/{kare},1),2))'"
+              f":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1"
+              f":s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
+    _kodla(["-i", str(yol)], filtre, sure, gecici)
+    Path(gecici).replace(yol)
+
+
+def _hashtag_satiri(hashtagler):
+    return " ".join(hashtagler)
+
+
+def yayin_dosyalari_yaz(veri, dil, kaynak_adlari, cikti):
+    """youtube.txt, tiktok.txt yazar; meta için yayın bilgilerini döndürür."""
+    y = yayin_bilgisi(veri, dil)
+    no = veri.get("seri_no")
+    seri = f"{SERI_ADI} #{no}" if isinstance(no, int) and no > 0 else SERI_ADI
+
+    baslik = y["baslik"]
+    if isinstance(no, int) and no > 0:
+        ekli = f"{baslik} | {SERI_KISA} #{no}"
+        if len(ekli) <= 100:
+            baslik = ekli
+    baslik = baslik[:100]
+
+    yt_hashtag = list(y["hashtagler"])
+    if "#shorts" not in [h.lower() for h in yt_hashtag]:
+        yt_hashtag.insert(0, "#shorts")
+    aciklama = f"{seri}\n\n{y['aciklama']}\n\n{_hashtag_satiri(yt_hashtag[:5])}"
     if kaynak_adlari:
-        aciklama += f"\n\nFootage: {', '.join(kaynak_adlari)}"
-    Path(yol).write_text(
-        f"TITLE\n{veri['baslik'].strip()}\n\n"
-        f"DESCRIPTION\n{aciklama}\n\n"
-        f"TAGS\n{etiketler}\n",
+        aciklama += f"\n\n{GORUNTU_SATIRI[dil]}: {', '.join(kaynak_adlari)}"
+
+    tt_hashtag = [h for h in y["hashtagler"] if h.lower() != "#shorts"]
+    tt_hashtag = (tt_hashtag + ["#fyp"])[:TIKTOK_EN_FAZLA_HASHTAG]
+    tiktok = f"{y['baslik']}\n{seri}\n\n{_hashtag_satiri(tt_hashtag)}"
+
+    etiket_basligi = {"en": ("TITLE", "DESCRIPTION", "TAGS", "PINNED COMMENT"),
+                      "tr": ("BAŞLIK", "AÇIKLAMA", "ETİKETLER", "SABİT YORUM")}[dil]
+    Path(cikti, "youtube.txt").write_text(
+        f"{etiket_basligi[0]}\n{baslik}\n\n"
+        f"{etiket_basligi[1]}\n{aciklama}\n\n"
+        f"{etiket_basligi[2]}\n{', '.join(y['etiketler'])}\n\n"
+        f"{etiket_basligi[3]}\n{y['sabit_yorum']}\n",
         encoding="utf-8")
+    Path(cikti, "tiktok.txt").write_text(
+        f"{tiktok}\n\n{etiket_basligi[3]}\n{y['sabit_yorum']}\n", encoding="utf-8")
+    return {"youtube_baslik": baslik, "youtube_aciklama": aciklama, "tiktok_metin": tiktok,
+            "sabit_yorum": y["sabit_yorum"], "hashtagler": y["hashtagler"],
+            "etiketler": y["etiketler"]}
+
+
+def sahne_sinirlari(bolum_sayisi, cumleler, toplam_sure):
+    """Her bölümün [başlangıç, bitiş) zamanları. Geçişler cümle sonlarında olur:
+    önceki bölümün son kelimesi biter bitmez (sessizliğin ortasında) sahne değişir."""
+    sinirlar = [0.0]
+    for bi in range(1, bolum_sayisi):
+        onceki = [k for c in cumleler if c["bolum"] == bi - 1 for k in c.get("kelimeler", [])]
+        bu = [k for c in cumleler if c["bolum"] == bi for k in c.get("kelimeler", [])]
+        if onceki and bu:
+            an = (onceki[-1][1] + bu[0][0]) / 2
+        elif bu:
+            an = bu[0][0]
+        else:
+            an = sinirlar[-1] + 0.5
+        sinirlar.append(min(max(an, sinirlar[-1] + 0.5), toplam_sure - 0.3))
+    sinirlar.append(toplam_sure)
+    return sinirlar
 
 
 def uret(args):
+    dil = args.altyazi_dili
     veri = senaryo_oku(args.senaryo)
     cikti, calisma = Path(args.cikti), Path(args.calisma)
     cikti.mkdir(parents=True, exist_ok=True)
     calisma.mkdir(parents=True, exist_ok=True)
     kaynaklar = kaynaklari_hazirla()
+    mood = veri.get("mood") or "mysterious"
 
-    metin, bolum_konumlari, cumleler = tam_metin_ve_konumlar(veri["bolumler"])
-    print(f"Senaryo: {len(veri['bolumler'])} bölüm, {len(metin.split())} kelime")
+    metin, bolum_konumlari, cumleler = tam_metin_ve_konumlar(veri["bolumler"], dil)
+    print(f"Senaryo: {veri['_dosya']} — {len(veri['bolumler'])} bölüm, "
+          f"{len(metin.split())} kelime, mood={mood}, altyazı={dil}")
+    if not all(c["ceviri_var"] for c in cumleler):
+        uyari(f"Bazı cümlelerde '{dil}' altyazısı yok; o cümlelerde Türkçe metin gösteriliyor")
 
     # 1. Seslendirme
     mp3 = calisma / "ses.mp3"
@@ -602,59 +716,78 @@ def uret(args):
     sinirlar = seslendir(metin, SESLER[args.ses], mp3)
     ses_suresi = sure_olc(mp3)
     print(f"Ses süresi: {ses_suresi:.1f} sn")
-    if not 45 <= ses_suresi <= 55:
-        uyari(f"Ses süresi {ses_suresi:.1f} sn; hedef 45-55 sn aralığı")
-    toplam_sure = ses_suresi + 0.3
+    if not SURE_HEDEF[0] <= ses_suresi <= SURE_HEDEF[1]:
+        uyari(f"Ses süresi {ses_suresi:.1f} sn; hedef {SURE_HEDEF[0]:.0f}-{SURE_HEDEF[1]:.0f} sn")
+    toplam_sure = ses_suresi + 0.8   # kapanış efekti ve son kare için kısa kuyruk
 
-    # 2. Altyazı
+    # 2. Altyazı + kanca yazısı
     kelimeler = kelimeleri_cikar(metin, sinirlar)
     ass = calisma / "altyazi.ass"
-    if all(c["en"] for c in cumleler):
-        print(f"Altyazı: {len(cumleler)} cümlenin İngilizce çevirisi")
-        ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass)
-    else:
-        uyari("Senaryoda İngilizce çeviri yok (eski 'metin' biçimi); altyazı Türkçe gösteriliyor")
-        altyazi_yaz(metin, kelimeler, ses_suresi, ass)
+    kanca = buyuk_harf(yayin_bilgisi(veri, dil)["kanca_yazisi"], dil)
+    altyazi_sayisi = ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass, kanca)
+    print(f"Altyazı: {altyazi_sayisi} satır ({dil}), kanca yazısı: {kanca or '-'}")
 
-    # 3. Bölüm süreleri (her bölüm, kendi ilk kelimesi okunduğunda başlar)
-    baslangiclar = [0.0]
-    for konum in bolum_konumlari[1:]:
-        ilk = next((k[0] for k in kelimeler if k[2] >= konum), toplam_sure)
-        baslangiclar.append(max(ilk, baslangiclar[-1] + 0.5))
-    baslangiclar.append(toplam_sure)
+    # 3. Sahne sınırları (cümle sonlarında)
+    sinir = sahne_sinirlari(len(veri["bolumler"]), cumleler, toplam_sure)
 
     # 4. Görseller ve parçalar
     kullanilan, liste, kullanilan_kaynaklar = set(), [], []
     for i, b in enumerate(veri["bolumler"]):
-        sure = max(0.5, baslangiclar[i + 1] - baslangiclar[i])
+        sure = max(0.5, sinir[i + 1] - sinir[i])
         tur, kaynak, kaynak_adi = medya_bul_indir(kaynaklar, b["arama"], calisma, i, kullanilan)
         parca = calisma / f"parca_{i:02d}.mp4"
         try:
-            parca_olustur(tur, kaynak, sure, parca, i)
+            parca_olustur(tur, kaynak, sure, parca, i, giris_zoom=(i == 0))
         except KomutHatasi:
             uyari(f"{i + 1}. bölümün görüntüsü işlenemedi; hareketli arka plan kullanılıyor")
             tur, kaynak_adi = "arka_plan", None
             arka_plan_olustur(i, sure, parca)
         if kaynak_adi and kaynak_adi not in kullanilan_kaynaklar:
             kullanilan_kaynaklar.append(kaynak_adi)
-        print(f"Bölüm {i + 1}: '{b['arama']}' -> {kaynak_adi or 'arka plan'} {tur} ({sure:.1f} sn)")
+        print(f"Bölüm {i + 1}: '{b['arama']}' -> {kaynak_adi or 'arka plan'} {tur} "
+              f"({sinir[i]:.1f}-{sinir[i + 1]:.1f} sn)")
         liste.append(f"file '{parca.resolve()}'")
     (calisma / "liste.txt").write_text("\n".join(liste) + "\n", encoding="utf-8")
 
-    # 5. Birleştir, sesi ekle, altyazıyı yak
+    # 5. Ses tasarımı: müzik, efektler, ducking, -14 LUFS
+    gerilimler = [(sinir[i], sinir[i + 1]) for i, b in enumerate(veri["bolumler"]) if b.get("gerilim")]
+    kapanis = sinir[-2] if len(veri["bolumler"]) > 1 else max(0.0, toplam_sure - 3.5)
+    karisim = calisma / "karisim.wav"
+    print(f"Ses tasarımı ({mood})...")
+    try:
+        ses_tasarimi(mp3, toplam_sure, mood, sinir[1:-1], kapanis, gerilimler,
+                     karisim, calisma / "ses", args.muzik_klasoru)
+    except SesHatasi as e:
+        raise KomutHatasi(str(e))
+
+    # 6. Birleştir, sesi ekle, altyazıyı yak
     video = cikti / "video.mp4"
     print("Video birleştiriliyor...")
     calistir(["ffmpeg", "-y", "-loglevel", "error",
               "-f", "concat", "-safe", "0", "-i", str(calisma / "liste.txt"),
-              "-i", str(mp3),
+              "-i", str(karisim),
               "-vf", f"ass={ass}:fontsdir={FONT_DIZINI}",
               "-map", "0:v", "-map", "1:a",
               "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
-              "-r", str(FPS), "-c:a", "aac", "-b:a", "160k",
+              "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
               "-t", f"{toplam_sure:.3f}", "-movflags", "+faststart", str(video)])
 
-    youtube_bilgileri_yaz(veri, kullanilan_kaynaklar, cikti / "youtube-bilgileri.txt")
-    print(f"Hazır: {video} ({sure_olc(video):.1f} sn)")
+    # 7. Yayın dosyaları ve meta
+    yayin = yayin_dosyalari_yaz(veri, dil, kullanilan_kaynaklar, cikti)
+    Path(ass).replace(cikti / "altyazi.ass")
+    no = veri.get("seri_no")
+    konu = str(veri.get("konu") or veri["_ad"]).strip()
+    release_adi = f"{SERI_KISA} #{no} - {konu}" if isinstance(no, int) and no > 0 else f"{konu} (test)"
+    meta = {
+        "senaryo": veri["_dosya"], "ad": veri["_ad"], "seri_no": no, "konu": konu,
+        "test": bool(veri.get("test")), "mood": mood, "altyazi_dili": dil, "ses": args.ses,
+        "ses_suresi": round(ses_suresi, 2), "video_suresi": round(sure_olc(video), 2),
+        "cumle_sayisi": len(cumleler), "altyazi_sayisi": altyazi_sayisi,
+        "kanca_yazisi": kanca, "goruntu_kaynaklari": kullanilan_kaynaklar,
+        "release_adi": release_adi, **yayin,
+    }
+    Path(cikti, "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Hazır: {video} ({meta['video_suresi']:.1f} sn) — {release_adi}")
 
 
 def ses_adi(deger):
@@ -665,11 +798,20 @@ def ses_adi(deger):
     raise argparse.ArgumentTypeError(f"geçersiz ses: {deger} (seçenekler: {', '.join(SESLER)})")
 
 
+def dil_adi(deger):
+    d = str(deger).strip().lower()
+    if d not in ALTYAZI_DILLERI:
+        raise argparse.ArgumentTypeError(f"geçersiz altyazı dili: {deger} (en ya da tr)")
+    return d
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--senaryo", required=True)
     ap.add_argument("--ses", type=ses_adi, default=VARSAYILAN_SES,
                     help="Ahmet (erkek, varsayılan) ya da Emel (kadın)")
+    ap.add_argument("--altyazi-dili", type=dil_adi, default="en", help="en (varsayılan) ya da tr")
+    ap.add_argument("--muzik-klasoru", default="assets/muzik")
     ap.add_argument("--cikti", default="cikti")
     ap.add_argument("--calisma", default="calisma")
     args = ap.parse_args()

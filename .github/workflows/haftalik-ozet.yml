@@ -1,0 +1,40 @@
+name: Haftalık Özet
+
+on:
+  schedule:
+    - cron: "0 17 * * 0"   # her pazar 20:00 (Europe/Istanbul = UTC+3)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  ozet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python paketlerini kur
+        run: pip install -r requirements.txt
+
+      - name: Özeti hazırla
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+        run: python scripts/ozet.py --kayit yayinlar/kayit.jsonl --cikti ozet.md
+
+      - name: Özet Issue'su aç
+        run: |
+          gh label create haftalik-ozet --color 0e8a16 --description "Pazar özeti" --force
+          gh issue create --title "Haftalık özet — $(TZ=Europe/Istanbul date +%d.%m.%Y)" \
+            --label haftalik-ozet --body-file ozet.md
+          cat ozet.md >> "$GITHUB_STEP_SUMMARY"
