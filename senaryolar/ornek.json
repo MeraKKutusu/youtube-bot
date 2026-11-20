@@ -3,7 +3,10 @@
   "test": true,
   "konu": "Octopus has three hearts and blue blood",
   "mood": "mysterious",
-  "kanca_yazisi": { "en": "3 hearts, blue blood", "tr": "3 kalp, mavi kan" },
+  "kanca_yazisi": {
+    "en": "3 hearts, blue blood",
+    "tr": "3 kalp, mavi kan"
+  },
   "sabit_yorum": {
     "en": "Which is weirder: three hearts or blue blood? 👇",
     "tr": "Sence hangisi daha tuhaf: üç kalp mi, mavi kan mı? 👇"
@@ -12,12 +15,24 @@
     "en": {
       "baslik": "This Animal Has 3 Hearts and Blue Blood 🐙",
       "aciklama": "Octopuses have three hearts, copper-based blue blood and arms that can taste what they touch.",
-      "hashtagler": ["#shorts", "#octopus", "#animalfacts", "#ocean", "#didyouknow"]
+      "hashtagler": [
+        "#shorts",
+        "#octopus",
+        "#animalfacts",
+        "#ocean",
+        "#didyouknow"
+      ]
     },
     "tr": {
       "baslik": "Bu Hayvanın 3 Kalbi ve Mavi Kanı Var 🐙",
       "aciklama": "Ahtapotların üç kalbi, bakır taşıyan mavi kanı ve dokunduğunu tadabilen kolları var.",
-      "hashtagler": ["#shorts", "#ahtapot", "#hayvanlar", "#okyanus", "#bunlarıbiliyormuydun"]
+      "hashtagler": [
+        "#shorts",
+        "#ahtapot",
+        "#hayvanlar",
+        "#okyanus",
+        "#bunlarıbiliyormuydun"
+      ]
     }
   },
   "kaynaklar": [
@@ -28,37 +43,83 @@
     {
       "arama": "octopus underwater",
       "cumleler": [
-        { "tr": "Bu hayvanın tam üç kalbi var ve kanı mavi.", "en": "This animal has three hearts and blue blood." }
+        {
+          "tr": "Bu hayvanın üç kalbi var.",
+          "en": "This animal has three hearts."
+        },
+        {
+          "tr": "Ve kanı mavi.",
+          "en": "And its blood is blue."
+        }
       ]
     },
     {
       "arama": "octopus swimming ocean",
       "cumleler": [
-        { "tr": "İki kalp, kanı solungaçlara pompalar.", "en": "Two hearts pump blood to the gills." },
-        { "tr": "Üçüncüsü ise vücudun geri kalanına.", "en": "The third pumps it to the rest of the body." },
-        { "tr": "Ama ahtapot yüzerken bu kalp durur.", "en": "But that heart stops when the octopus swims." }
+        {
+          "tr": "İki kalp, kanı solungaçlara pompalar.",
+          "en": "Two hearts pump blood to the gills."
+        },
+        {
+          "tr": "Üçüncüsü ise tüm vücuda.",
+          "en": "The third, to the whole body."
+        },
+        {
+          "tr": "Ama bir sorun var.",
+          "en": "But there's a catch."
+        },
+        {
+          "tr": "Ahtapot yüzerken bu kalp durur.",
+          "en": "When it swims, that heart stops."
+        }
       ]
     },
     {
       "arama": "octopus deep blue ocean",
       "cumleler": [
-        { "tr": "Kanı mavidir, çünkü demir yerine bakır taşır.", "en": "Its blood is blue because it carries copper, not iron." },
-        { "tr": "Bu da soğuk ve oksijeni az sularda işe yarar.", "en": "That helps in cold, low-oxygen water." }
+        {
+          "tr": "Kanı mavidir, çünkü demir yerine bakır taşır.",
+          "en": "Its blood is blue because it carries copper, not iron."
+        },
+        {
+          "tr": "Soğuk ve oksijeni az sularda bu bir avantaj.",
+          "en": "In cold, low-oxygen water, that's an advantage."
+        }
       ]
     },
     {
       "arama": "octopus tentacles closeup",
       "gerilim": true,
       "cumleler": [
-        { "tr": "Sinir hücrelerinin yaklaşık üçte ikisi kollarındadır.", "en": "About two thirds of its neurons are in its arms." },
-        { "tr": "Kolları, dokunduğu şeyin tadını bile alabilir.", "en": "Its arms can even taste what they touch." }
+        {
+          "tr": "Asıl şaşırtıcı olan ise kolları.",
+          "en": "But the real shock is its arms."
+        },
+        {
+          "tr": "Sinir hücrelerinin yaklaşık üçte ikisi oradadır.",
+          "en": "About two thirds of its neurons are there."
+        },
+        {
+          "tr": "Dokundukları şeyin tadını bile alırlar.",
+          "en": "They can even taste what they touch."
+        }
       ]
     },
     {
       "arama": "octopus coral reef",
       "cumleler": [
-        { "tr": "Sence hangisi daha tuhaf: üç kalp mi, mavi kan mı?", "en": "Which is weirder: three hearts or blue blood?" },
-        { "tr": "Takip et, yarın daha şaşırtıcısı var.", "en": "Follow, tomorrow's is even crazier." }
+        {
+          "tr": "Sence hangisi daha tuhaf?",
+          "en": "Which is weirder?"
+        },
+        {
+          "tr": "Üç kalp mi, mavi kan mı?",
+          "en": "Three hearts, or blue blood?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
       ]
     }
   ]

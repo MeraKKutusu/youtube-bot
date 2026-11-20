@@ -30,8 +30,8 @@ EN_YUKSEK_TP = -1.0
 EN_UZUN_SESSIZLIK = 2.0
 EN_UZUN_SIYAH = 0.5
 GENISLIK, YUKSEKLIK = 1080, 1920
-# Altyazı bandı (uret.py: alt kenar y=1410, en fazla iki satır)
-ALTYAZI_BANDI = (150, 1150, 780, 270)   # x, y, genişlik, yükseklik
+# Altyazı bandı (uret.py: alt kenar y=1440 (%75), soldan 86 px, en fazla iki satır)
+ALTYAZI_BANDI = (86, 1195, 854, 250)   # x, y, genişlik, yükseklik
 
 
 def _ffprobe(yol, *arg):

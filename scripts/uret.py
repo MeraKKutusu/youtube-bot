@@ -53,20 +53,32 @@ GIRIS_ZOOM = 0.08                       # ilk sahnede %8 yakınlaşma
 # Türkçe seslendirenler: Ahmet (erkek, varsayılan) ve Emel (kadın)
 SESLER = {"Ahmet": "tr-TR-AhmetNeural", "Emel": "tr-TR-EmelNeural"}
 VARSAYILAN_SES = "Ahmet"
+# Belgesel anlatıcısı: biraz yavaş ve daha pes; cümle aralarında duraklama
+ANLATICI_HIZ = "-8%"
+ANLATICI_TON = "-6Hz"
+DURAKLAMA = {"kanca": 0.7, "soru": 0.6, "sahne": 0.45, "cumle": 0.3}   # saniye
+TTS_ORNEKLEME = 24000
 
 # Altyazı ayarları
 FONT_DIZINI = "/usr/share/fonts/truetype/dejavu"
 FONT_ADI = "DejaVu Sans"
-FONT_BOYUTU = 96
+FONT_DOSYASI = f"{FONT_DIZINI}/DejaVuSans-Bold.ttf"
+FONT_BOYUTU = 84
 KENARLIK = 7               # siyah kenarlık kalınlığı (piksel)
-YAN_BOSLUK = 150           # sağdaki Shorts butonlarından uzak dursun
-# Altyazının alt kenarı bu y değerinde sabit durur; tek satır yazının ortası
-# yüksekliğin ~%70'ine (y≈1350) denk gelir. Yazı iki satıra taşarsa yukarı
-# doğru büyür, böylece alttaki başlık/kanal alanına hiç inmez.
-ALTYAZI_ALT_KENAR = 1410
+YAN_BOSLUK = 150           # kanca yazısının yan boşluğu
+# Altyazı kutusu: soldan %8; sağda Shorts/TikTok'un beğen/yorum butonları
+# bulunduğu için biraz daha fazla boşluk.
+ALTYAZI_SOL = round(GENISLIK * 0.08)    # 86 px
+ALTYAZI_SAG = 140
+ALTYAZI_GENISLIK = GENISLIK - ALTYAZI_SOL - ALTYAZI_SAG
+ALTYAZI_EN_FAZLA_SATIR = 2
+# Altyazının alt kenarı yüksekliğin %75'inde (y=1440) sabit durur: TikTok alttan
+# 480 px'i açıklama/kullanıcı adı için kullanır. İki satıra taşarsa yukarı doğru
+# büyür; böylece Shorts/TikTok'un alttaki başlık alanına inmez.
+ALTYAZI_ALT_KENAR = round(YUKSEKLIK * 0.75)  # 1440
 ALT_BOSLUK = YUKSEKLIK - ALTYAZI_ALT_KENAR  # ASS MarginV (alttan uzaklık)
-# Çeviri altyazısı: bir parça en fazla 2 satır (~15 harf/satır) olsun
-CEVIRI_EN_FAZLA_HARF = 30
+# libass yazı boyutunu satır yüksekliğine göre ölçekler (DejaVu: 2384/2048 em)
+ASS_OLCEK = 2048 / 2384
 
 PIXABAY_VIDEO = "https://pixabay.com/api/videos/"
 PIXABAY_FOTO = "https://pixabay.com/api/"
@@ -235,13 +247,13 @@ def tam_metin_ve_konumlar(bolumler, dil="en"):
 
 # ---------------------------------------------------------------- seslendirme
 
-async def _seslendir(metin, ses, mp3_yolu):
+async def _seslendir(metin, ses, mp3_yolu, hiz, ton):
     import edge_tts
 
     try:
-        iletisim = edge_tts.Communicate(metin, ses, boundary="WordBoundary")
+        iletisim = edge_tts.Communicate(metin, ses, rate=hiz, pitch=ton, boundary="WordBoundary")
     except TypeError:  # eski sürümler kelime sınırlarını zaten varsayılan verir
-        iletisim = edge_tts.Communicate(metin, ses)
+        iletisim = edge_tts.Communicate(metin, ses, rate=hiz, pitch=ton)
     sinirlar = []
     with open(mp3_yolu, "wb") as f:
         async for parca in iletisim.stream():
@@ -253,11 +265,10 @@ async def _seslendir(metin, ses, mp3_yolu):
     return sinirlar
 
 
-def seslendir(metin, ses, mp3_yolu):
-    """Sesi mp3 olarak yazar; (tür, başlangıç_sn, süre_sn, yazı) listesi döndürür."""
+def _cumle_seslendir(metin, ses, mp3_yolu, hiz, ton):
     for deneme in range(1, 4):
         try:
-            sinirlar = asyncio.run(_seslendir(metin, ses, mp3_yolu))
+            sinirlar = asyncio.run(_seslendir(metin, ses, mp3_yolu, hiz, ton))
             if sinirlar and Path(mp3_yolu).stat().st_size > 0:
                 return sinirlar
             print(f"Seslendirme boş döndü (deneme {deneme})", file=sys.stderr)
@@ -265,6 +276,58 @@ def seslendir(metin, ses, mp3_yolu):
             print(f"Seslendirme hatası (deneme {deneme}): {e}", file=sys.stderr)
         time.sleep(5 * deneme)
     hata("edge-tts seslendirmesi 3 denemede de başarısız oldu; workflow'u yeniden çalıştırın")
+
+
+def duraklama_suresi(bolumler, bi, ci):
+    """Bölüm bi'deki ci. cümleden sonra eklenecek sessizlik (sn)."""
+    son_bolum = bi == len(bolumler) - 1
+    son_cumle = ci == len(bolumler[bi]["cumleler"]) - 1
+    if son_bolum and son_cumle:
+        return 0.0
+    metin = str(bolumler[bi]["cumleler"][ci]["tr"]).strip()
+    if bi == 0 and ci == 0:
+        return DURAKLAMA["kanca"]
+    if metin.endswith("?"):
+        return DURAKLAMA["soru"]
+    if son_cumle:
+        return DURAKLAMA["sahne"]
+    return DURAKLAMA["cumle"]
+
+
+def seslendir(bolumler, ses, wav_yolu, calisma, hiz=ANLATICI_HIZ, ton=ANLATICI_TON):
+    """Cümleleri ayrı ayrı belgesel tonunda seslendirir, aralarına duraklama koyup
+    tek wav'da birleştirir. (tür, başlangıç_sn, süre_sn, yazı) listesi döndürür."""
+    import wave
+
+    klasor = Path(calisma) / "tts"
+    klasor.mkdir(parents=True, exist_ok=True)
+    tum_sinirlar, kareler, t = [], [], 0.0
+    sira = 0
+    for bi, b in enumerate(bolumler):
+        for ci, c in enumerate(b["cumleler"]):
+            metin = _tek_satir(c["tr"])
+            mp3 = klasor / f"c{sira:02d}.mp3"
+            wav = klasor / f"c{sira:02d}.wav"
+            sira += 1
+            sinirlar = _cumle_seslendir(metin, ses, mp3, hiz, ton)
+            calistir(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3),
+                      "-ac", "1", "-ar", str(TTS_ORNEKLEME), "-c:a", "pcm_s16le", str(wav)])
+            with wave.open(str(wav), "rb") as w:
+                veri = w.readframes(w.getnframes())
+            # Sondaki boşluğu kırp: son kelime biter bitmez (küçük bir payla) kes
+            son = max(bas + sure for _, bas, sure, _ in sinirlar) + 0.08
+            veri = veri[:min(len(veri), int(son * TTS_ORNEKLEME) * 2)]
+            for tur, bas, sure, yazi in sinirlar:
+                tum_sinirlar.append((tur, t + bas, sure, yazi))
+            dur = duraklama_suresi(bolumler, bi, ci)
+            kareler.append(veri + b"\x00\x00" * int(dur * TTS_ORNEKLEME))
+            t += len(veri) / 2 / TTS_ORNEKLEME + dur
+    with wave.open(str(wav_yolu), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(TTS_ORNEKLEME)
+        w.writeframes(b"".join(kareler))
+    return tum_sinirlar
 
 
 def kelimeleri_cikar(metin, sinirlar):
@@ -319,7 +382,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{YAN_BOSLUK},{YAN_BOSLUK},{ALT_BOSLUK},1
+Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{ALTYAZI_SOL},{ALTYAZI_SAG},{ALT_BOSLUK},1
 Style: Kanca,{FONT_ADI},{KANCA_FONT_BOYUTU},&H0000E5FF,&H0000E5FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK + 2},3,8,{YAN_BOSLUK - 40},{YAN_BOSLUK - 40},{KANCA_UST_BOSLUK},1
 
 [Events]
@@ -328,8 +391,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 
 def _dialog(bas, bit, yazi, stil="Ana", efekt=""):
-    return (f"Dialogue: 0,{_ass_zaman(bas)},{_ass_zaman(bit)},{stil},,0,0,0,,"
-            f"{efekt}{_ass_kacis(yazi)}")
+    """yazi bir metin ya da satır listesi olabilir (satırlar \\N ile ayrılır)."""
+    if isinstance(yazi, (list, tuple)):
+        metin = "\\N".join(_ass_kacis(s) for s in yazi)
+    else:
+        metin = _ass_kacis(yazi)
+    return f"Dialogue: 0,{_ass_zaman(bas)},{_ass_zaman(bit)},{stil},,0,0,0,,{efekt}{metin}"
 
 
 def kanca_satiri(yazi, bit):
@@ -338,30 +405,93 @@ def kanca_satiri(yazi, bit):
     return _dialog(0.0, bit, yazi, "Kanca", efekt)
 
 
-def ceviri_parcala(yazi, sinir=CEVIRI_EN_FAZLA_HARF):
-    """İngilizce cümleyi en fazla `sinir` harflik okunur parçalara böler.
-    Mümkünse virgül gibi noktalama işaretlerinden sonra keser."""
-    kelimeler = yazi.split()
+_FONT = None
+
+
+def yazi_genisligi(yazi):
+    """Altyazı satırının videodaki yaklaşık genişliği (piksel, kenarlık dahil)."""
+    global _FONT
+    if _FONT is None:
+        try:
+            from PIL import ImageFont
+            _FONT = ImageFont.truetype(FONT_DOSYASI, max(1, round(FONT_BOYUTU * ASS_OLCEK)))
+        except Exception:  # Pillow ya da yazı tipi yoksa kaba tahmin
+            _FONT = False
+    if _FONT:
+        return _FONT.getlength(yazi) + 2 * KENARLIK
+    return len(yazi) * FONT_BOYUTU * 0.53 + 2 * KENARLIK
+
+
+def _sigar(kelimeler):
+    return yazi_genisligi(" ".join(kelimeler)) <= ALTYAZI_GENISLIK
+
+
+def _dengeli_bol(kelimeler):
+    """Kelimeleri en fazla 2 satıra, satırlar olabildiğince eşit olacak şekilde böler.
+    Sığmazsa None döndürür."""
+    if _sigar(kelimeler):
+        return [" ".join(kelimeler)]
+    en_iyi = None
+    for i in range(1, len(kelimeler)):
+        ust, alt = kelimeler[:i], kelimeler[i:]
+        if _sigar(ust) and _sigar(alt):
+            fark = max(yazi_genisligi(" ".join(ust)), yazi_genisligi(" ".join(alt)))
+            if en_iyi is None or fark < en_iyi[0]:
+                en_iyi = (fark, [" ".join(ust), " ".join(alt)])
+    return en_iyi[1] if en_iyi else None
+
+
+def _acgozlu_parcala(kelimeler):
+    parcalar = []
+    while kelimeler:
+        n = 1
+        while n < len(kelimeler) and _dengeli_bol(kelimeler[:n + 1]):
+            n += 1
+        parcalar.append(kelimeler[:n])
+        kelimeler = kelimeler[n:]
+    return parcalar
+
+
+def _dengeli_parcala(kelimeler, k):
+    """Kelimeleri k parçaya, parça uzunlukları birbirine yakın olacak şekilde böler.
+    Noktalamadan (virgül vb.) sonra kesmeyi tercih eder."""
+    toplam = len(" ".join(kelimeler))
+    hedef = toplam / k
     parcalar, mevcut = [], []
-    for k in kelimeler:
-        aday = " ".join(mevcut + [k])
-        if mevcut and len(aday) > sinir:
-            parcalar.append(mevcut)
-            mevcut = [k]
-        else:
-            mevcut.append(k)
-        # Noktalamada ve parça yeterince doluysa erken kes
-        if mevcut and mevcut[-1][-1:] in ",;:" and len(" ".join(mevcut)) >= sinir * 0.5:
+    for i, kel in enumerate(kelimeler):
+        mevcut.append(kel)
+        kalan_parca = k - len(parcalar) - 1
+        uzunluk = len(" ".join(mevcut))
+        kalan_kelime = len(kelimeler) - i - 1
+        if kalan_parca <= 0 or kalan_kelime < kalan_parca:
+            continue
+        noktalama = kel[-1:] in ",;:" and uzunluk >= hedef * 0.6
+        sonraki = len(" ".join(mevcut + [kelimeler[i + 1]]))
+        if noktalama or (uzunluk >= hedef * 0.85 and sonraki > hedef * 1.1) or uzunluk >= hedef * 1.15:
             parcalar.append(mevcut)
             mevcut = []
     if mevcut:
         parcalar.append(mevcut)
-    # Tek kelimelik kuyruk kalmasın: öncekine eklemek sığıyorsa ekle
+    if len(parcalar) == k and all(_dengeli_bol(p) for p in parcalar):
+        return parcalar
+    return None
+
+
+def ceviri_parcala(yazi):
+    """Altyazı cümlesini ekrana sığan parçalara böler. Her parça en fazla 2 satırdır
+    (satır listesi). Cümle tek ekrana sığıyorsa bölünmez; sığmıyorsa parçalar eşit
+    uzunlukta tutulmaz; ekran olabildiğince dolu kullanılır, yalnızca tek kelimelik
+    kuyruk önlenir."""
+    kelimeler = yazi.split()
+    if not kelimeler:
+        return []
+    parcalar = _acgozlu_parcala(kelimeler)
+    # Ekranda tek başına bir kelime kalmasın: son iki parçayı dengele
     if len(parcalar) > 1 and len(parcalar[-1]) == 1:
-        birlesik = parcalar[-2] + parcalar[-1]
-        if len(" ".join(birlesik)) <= sinir + 6:
-            parcalar[-2:] = [birlesik]
-    return [" ".join(p) for p in parcalar]
+        son_iki = _dengeli_parcala(parcalar[-2] + parcalar[-1], 2)
+        if son_iki:
+            parcalar[-2:] = son_iki
+    return [_dengeli_bol(p) or [" ".join(p)] for p in parcalar]
 
 
 def _zaman_bul(cumle_kelimeleri, oran):
@@ -402,12 +532,12 @@ def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu, kanca=""):
             bit = min(ses_suresi, c["kelimeler"][-1][1] + 0.6)
         bit = max(bit, bas + 0.3)
         parcalar = ceviri_parcala(c["alt"])
-        toplam = sum(len(p) for p in parcalar) or 1
+        toplam = sum(len(" ".join(p)) for p in parcalar) or 1
         birikmis = 0
         zamanlar = []
         for p in parcalar:
             zamanlar.append(max(bas, _zaman_bul(c["kelimeler"], birikmis / toplam)))
-            birikmis += len(p)
+            birikmis += len(" ".join(p))
         zamanlar.append(bit)
         for j, p in enumerate(parcalar):
             pb, pson = zamanlar[j], zamanlar[j + 1]
@@ -711,9 +841,9 @@ def uret(args):
         uyari(f"Bazı cümlelerde '{dil}' altyazısı yok; o cümlelerde Türkçe metin gösteriliyor")
 
     # 1. Seslendirme
-    mp3 = calisma / "ses.mp3"
-    print(f"Seslendiriliyor ({args.ses})...")
-    sinirlar = seslendir(metin, SESLER[args.ses], mp3)
+    mp3 = calisma / "ses.wav"
+    print(f"Seslendiriliyor ({args.ses}, hız {args.hiz}, ton {args.ton})...")
+    sinirlar = seslendir(veri["bolumler"], SESLER[args.ses], mp3, calisma, args.hiz, args.ton)
     ses_suresi = sure_olc(mp3)
     print(f"Ses süresi: {ses_suresi:.1f} sn")
     if not SURE_HEDEF[0] <= ses_suresi <= SURE_HEDEF[1]:
@@ -810,6 +940,8 @@ def main():
     ap.add_argument("--senaryo", required=True)
     ap.add_argument("--ses", type=ses_adi, default=VARSAYILAN_SES,
                     help="Ahmet (erkek, varsayılan) ya da Emel (kadın)")
+    ap.add_argument("--hiz", default=ANLATICI_HIZ, help="edge-tts hızı (varsayılan -8%%)")
+    ap.add_argument("--ton", default=ANLATICI_TON, help="edge-tts tonu (varsayılan -6Hz)")
     ap.add_argument("--altyazi-dili", type=dil_adi, default="en", help="en (varsayılan) ya da tr")
     ap.add_argument("--muzik-klasoru", default="assets/muzik")
     ap.add_argument("--cikti", default="cikti")

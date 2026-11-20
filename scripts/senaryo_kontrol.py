@@ -15,8 +15,8 @@ MOODLAR = ("tense", "mysterious", "fun", "epic")
 DILLER = ("en", "tr")
 KAPANIS_TR = "Takip et, yarın daha şaşırtıcısı var."
 EN_FAZLA_BASLIK = 70
-KELIME_ARALIGI = (55, 95)      # dışı hata
-HEDEF_KELIME = (62, 88)        # dışı uyarı (≈30-40 sn Ahmet hızında)
+KELIME_ARALIGI = (48, 88)      # dışı hata
+HEDEF_KELIME = (55, 78)        # dışı uyarı (≈30-40 sn; anlatıcı hızı -8% + duraklamalar)
 
 
 def _sade(yazi):

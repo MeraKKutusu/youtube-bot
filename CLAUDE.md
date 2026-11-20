@@ -38,11 +38,17 @@ yazma, commit atma**; kullanıcıya sistemin durdurulduğunu söyle ve bitir.
 
 ## Senaryo kuralları (30-40 sn)
 
-- Seslendirme Türkçe (edge-tts, Ahmet). Toplam **62-88 Türkçe kelime**.
+- Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: biraz yavaş (-8%),
+  pes (-6Hz); cümle aralarında, kancadan ve sorulardan sonra kısa duraklamalar sistem
+  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **55-78 Türkçe kelime**.
+- **Anlatıcı üslubu:** kısa, vurucu cümleler (çoğunlukla 3-8 kelime); her cümle tek bir bilgi.
+  Merak uyandıran duraklama için bilgiyi ikiye böl: önce merak ettiren yarım cümle, sonra
+  cevap ("Ama bir sorun var." → "Yüzerken kalbi durur."). Gerilimi artıran kelimeler
+  ("ama", "üstelik", "asıl şaşırtıcı olan") cümle başında. Uzun yan cümle, parantez,
+  sayı yığını yok. Sesli okunduğunda ağır ve dramatik bir belgesel gibi akmalı.
 - **0-2 sn kanca:** ilk cümle tek başına şok edici bir iddia ya da soru olsun, kısa olsun.
   `kanca_yazisi`: ekranın üstünde görünen **3-5 kelimelik** yazı (en ve tr).
-- **Gövde:** 2-3 şaşırtıcı detay. Kısa cümleler (çoğunlukla 4-9 kelime). Her bölüm bir sahne;
-  sahne cümle sonunda değişir.
+- **Gövde:** 2-3 şaşırtıcı detay. Her bölüm bir sahne; sahne cümle sonunda değişir.
 - **Kapanış:** sondan bir önceki cümle izleyiciye soru, son cümle tam olarak:
   `Takip et, yarın daha şaşırtıcısı var.`
 - Her cümlenin `tr` (seslendirilen) ve `en` (altyazı) hali olsun. İngilizce çeviri kısa ve

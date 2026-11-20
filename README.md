@@ -9,7 +9,7 @@ Her gün 2 video: deniz ve vahşi doğa hayvanları hakkında az bilinen, şaş�
 09:00  Claude (zamanlanmış görev) konular.txt'den 2 konu alır, senaryoları yazar,
        bilgileri iki kez kontrol eder ve main'e commit eder
   ↓    senaryolar/ klasörüne yeni dosya gelir
-       GitHub Actions videoyu üretir: Türkçe ses (Ahmet), İngilizce altyazı,
+       GitHub Actions videoyu üretir: Türkçe belgesel anlatıcısı sesi (Ahmet), İngilizce altyazı,
        kanca yazısı, Pixabay görüntüleri, mood'a göre müzik ve efektler, -14 LUFS
   ↓    Kalite kontrolü: süre 30-45 sn, ses seviyesi, siyah kare, altyazı
   ↓    Geçerse: Release + Buffer'da ertesi gün 12:30 ya da 20:30'a sıraya konur
@@ -129,14 +129,18 @@ Buffer uygulaması → **Queue** → gönderiye dokun → **Delete**
 | `yayinlar/kayit.jsonl` | Buffer'a gönderilen videoların kaydı (slot seçimi ve özet için) |
 | `assets/muzik/` | İsteğe bağlı kendi müziğin |
 
-**Video:** 1080x1920, 30 fps. Altyazı alt üçte birde (büyük, kalın, beyaz, siyah kenarlık),
-her Türkçe cümle okunurken karşılığı ekranda. Kanca yazısı ilk cümle boyunca üstte (sarı).
+**Video:** 1080x1920, 30 fps. Altyazı alt kenarı yüksekliğin %75'inde (TikTok'un alttaki
+480 px'lik açıklama alanının hemen üstü), soldan %8 boşluk, sağda butonlar için 140 px;
+büyük, kalın, beyaz, siyah kenarlık; en fazla 2 satır. Her Türkçe cümle okunurken karşılığı ekranda. Kanca yazısı ilk cümle boyunca üstte (sarı).
 Sahne geçişleri cümle sonlarında, ilk sahnede hafif zoom. Görüntü sırası: Pixabay video →
 Pixabay foto → Pexels (anahtar varsa) → renkli hareketli arka plan.
 
-**Ses:** Türkçe seslendirme (edge-tts Ahmet, isteğe bağlı Emel). Mood (`tense`, `mysterious`,
-`fun`, `epic`) müziği ffmpeg ile sentezlenir, konuşmada sidechain ile kısılır. Kancada vurgu,
-geçişlerde whoosh, gerilimde alçak uğultu, kapanışta yükselen ses. Telifli ses yok.
+**Ses:** Türkçe seslendirme (edge-tts Ahmet, isteğe bağlı Emel) belgesel anlatıcısı tonunda:
+hız -8%, ton -6Hz, hafif bas ve sıkıştırma. Cümleler ayrı seslendirilip aralarına duraklama
+konur: kancadan sonra 0.7 sn, sorudan sonra 0.6 sn, sahne sonunda 0.45 sn, diğer cümlelerde
+0.3 sn. Mood (`tense`, `mysterious`, `fun`, `epic`) müziği ffmpeg ile sentezlenir, konuşmada
+sidechain ile kısılır. Kancada vurgu, gerilimde alçak uğultu, kapanışta yükselen ses
+(sahne geçişlerinde efekt yok). Telifli ses yok.
 İki geçişli loudnorm ile -14 LUFS, en fazla -1.5 dBTP.
 
 **Yayın metinleri:** `youtube.txt` (başlık + "| Vahşi Gerçekler #N", açıklama, hashtag'ler,
