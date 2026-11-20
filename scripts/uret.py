@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Senaryo JSON dosyasından 1080x1920 İngilizce YouTube Shorts videosu üretir.
+"""Senaryo JSON dosyasından 1080x1920 YouTube Shorts videosu üretir:
+Türkçe seslendirme, İngilizce altyazı.
 
 Adımlar:
-  1. edge-tts ile İngilizce (en-US) seslendirme + kelime zamanlamaları
+  1. edge-tts ile Türkçe seslendirme (Ahmet/Emel) + kelime zamanlamaları
   2. Her bölüm için görüntü, bu sırayla denenir:
        a. Pixabay video (dikey olanlar önce), yoksa Pixabay dikey fotoğraf
        b. Pexels video/fotoğraf (isteğe bağlı; yalnızca anahtar varsa)
        c. Hiçbiri olmazsa ffmpeg ile renkli, hareketli arka plan
      Anahtar olmaması ya da sonuç bulunamaması videoyu durdurmaz.
-  3. Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın, siyah
-     kenarlıklı beyaz altyazı; Shorts'un alt başlık alanına ve sağdaki
+  3. Senaryodaki her Türkçe cümlenin İngilizce çevirisi, o cümle
+     seslendirilirken ekranda görünür (uzun çeviriler okunur parçalara
+     bölünür). Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın,
+     siyah kenarlıklı beyaz yazı; Shorts'un alt başlık alanına ve sağdaki
      butonlara değmez
   4. ffmpeg ile 1080x1920, 30 fps MP4
 
@@ -18,7 +21,7 @@ PEXELS_API_KEY); GitHub Actions'ta Secret'lardan gelir. Kodda ya da repoda
 tutulmaz ve loglara yazılmaz.
 
 Kullanım:
-  python scripts/uret.py --senaryo senaryolar/ornek.json --ses Guy \
+  python scripts/uret.py --senaryo senaryolar/ornek.json --ses Ahmet \
       --cikti cikti --calisma calisma
 """
 import argparse
@@ -32,9 +35,9 @@ import time
 from pathlib import Path
 
 GENISLIK, YUKSEKLIK, FPS = 1080, 1920, 30
-# Seslendirenler: Guy (erkek, varsayılan) ve Jenny (kadın), ikisi de en-US
-SESLER = {"Guy": "en-US-GuyNeural", "Jenny": "en-US-JennyNeural"}
-VARSAYILAN_SES = "Guy"
+# Türkçe seslendirenler: Ahmet (erkek, varsayılan) ve Emel (kadın)
+SESLER = {"Ahmet": "tr-TR-AhmetNeural", "Emel": "tr-TR-EmelNeural"}
+VARSAYILAN_SES = "Ahmet"
 
 # Altyazı ayarları
 FONT_DIZINI = "/usr/share/fonts/truetype/dejavu"
@@ -47,6 +50,9 @@ YAN_BOSLUK = 150           # sağdaki Shorts butonlarından uzak dursun
 # doğru büyür, böylece alttaki başlık/kanal alanına hiç inmez.
 ALTYAZI_ALT_KENAR = 1410
 ALT_BOSLUK = YUKSEKLIK - ALTYAZI_ALT_KENAR  # ASS MarginV (alttan uzaklık)
+# Çeviri altyazısı: bir parça en fazla 2 satır (~15 harf/satır) olsun
+CEVIRI_EN_FAZLA_HARF = 30
+# Çevirisi olmayan eski senaryolarda Türkçe kelime grupları gösterilir
 EN_FAZLA_KELIME = 3        # ekranda aynı anda en fazla kaç kelime
 EN_FAZLA_HARF = 16         # bir altyazı parçasının en fazla uzunluğu
 
@@ -119,20 +125,43 @@ def senaryo_oku(yol):
     if not veri["bolumler"]:
         hata("senaryoda hiç bölüm yok")
     for i, b in enumerate(veri["bolumler"], 1):
-        if not str(b.get("metin", "")).strip() or not str(b.get("arama", "")).strip():
-            hata(f"{i}. bölümde 'metin' ya da 'arama' boş")
+        if not str(b.get("arama", "")).strip():
+            hata(f"{i}. bölümde 'arama' boş")
+        if "cumleler" in b:
+            if not isinstance(b["cumleler"], list) or not b["cumleler"]:
+                hata(f"{i}. bölümde 'cumleler' boş bir liste olamaz")
+            for j, c in enumerate(b["cumleler"], 1):
+                if not isinstance(c, dict) or not str(c.get("tr", "")).strip():
+                    hata(f"{i}. bölümün {j}. cümlesinde 'tr' (Türkçe metin) boş")
+                if not str(c.get("en", "")).strip():
+                    hata(f"{i}. bölümün {j}. cümlesinde 'en' (İngilizce çeviri) boş")
+        elif str(b.get("metin", "")).strip():
+            # Eski biçim: çevirisiz tek metin
+            b["cumleler"] = [{"tr": b["metin"], "en": ""}]
+        else:
+            hata(f"{i}. bölümde 'cumleler' (ya da eski biçimde 'metin') yok")
     return veri
 
 
-def tam_metin_ve_bolum_konumlari(bolumler):
-    """Bölüm metinlerini birleştirir; her bölümün metindeki başlangıç konumunu döndürür."""
-    parcalar, konumlar, konum = [], [], 0
+def _tek_satir(yazi):
+    return " ".join(str(yazi).split())
+
+
+def tam_metin_ve_konumlar(bolumler):
+    """Türkçe cümleleri tek metinde birleştirir.
+
+    Döndürür: (metin, bölüm_başlangıç_konumları, cümleler)
+    cümleler: her biri {"bas", "son", "en"}; bas/son, cümlenin metindeki konumu.
+    """
+    parcalar, bolum_konumlari, cumleler, konum = [], [], [], 0
     for b in bolumler:
-        metin = " ".join(str(b["metin"]).split())
-        konumlar.append(konum)
-        parcalar.append(metin)
-        konum += len(metin) + 1
-    return " ".join(parcalar), konumlar
+        bolum_konumlari.append(konum)
+        for c in b["cumleler"]:
+            tr = _tek_satir(c["tr"])
+            cumleler.append({"bas": konum, "son": konum + len(tr), "en": _tek_satir(c.get("en", ""))})
+            parcalar.append(tr)
+            konum += len(tr) + 1
+    return " ".join(parcalar), bolum_konumlari, cumleler
 
 
 # ---------------------------------------------------------------- seslendirme
@@ -209,7 +238,108 @@ def _ass_kacis(yazi):
     return yazi.replace("\\", "").replace("{", "(").replace("}", ")")
 
 
+def _ass_basligi():
+    # Alignment 2 = alt orta (MarginV alttan uzaklık). Bold -1 = kalın.
+    # BorderStyle 1 + Outline = kenarlık.
+    return f"""[Script Info]
+ScriptType: v4.00+
+PlayResX: {GENISLIK}
+PlayResY: {YUKSEKLIK}
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{YAN_BOSLUK},{YAN_BOSLUK},{ALT_BOSLUK},1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+
+
+def _dialog(bas, bit, yazi):
+    return f"Dialogue: 0,{_ass_zaman(bas)},{_ass_zaman(bit)},Ana,,0,0,0,,{_ass_kacis(yazi)}"
+
+
+def ceviri_parcala(yazi, sinir=CEVIRI_EN_FAZLA_HARF):
+    """İngilizce cümleyi en fazla `sinir` harflik okunur parçalara böler.
+    Mümkünse virgül gibi noktalama işaretlerinden sonra keser."""
+    kelimeler = yazi.split()
+    parcalar, mevcut = [], []
+    for k in kelimeler:
+        aday = " ".join(mevcut + [k])
+        if mevcut and len(aday) > sinir:
+            parcalar.append(mevcut)
+            mevcut = [k]
+        else:
+            mevcut.append(k)
+        # Noktalamada ve parça yeterince doluysa erken kes
+        if mevcut and mevcut[-1][-1:] in ",;:" and len(" ".join(mevcut)) >= sinir * 0.5:
+            parcalar.append(mevcut)
+            mevcut = []
+    if mevcut:
+        parcalar.append(mevcut)
+    # Tek kelimelik kuyruk kalmasın: öncekine eklemek sığıyorsa ekle
+    if len(parcalar) > 1 and len(parcalar[-1]) == 1:
+        birlesik = parcalar[-2] + parcalar[-1]
+        if len(" ".join(birlesik)) <= sinir + 6:
+            parcalar[-2:] = [birlesik]
+    return [" ".join(p) for p in parcalar]
+
+
+def _zaman_bul(cumle_kelimeleri, oran):
+    """Türkçe cümlenin harf oranına (0-1) denk gelen seslendirme zamanı.
+    Kelime zamanları kullanıldığı için duraklamalar da hesaba katılır."""
+    bas_konum = cumle_kelimeleri[0][2]
+    son_konum = cumle_kelimeleri[-1][2] + 1
+    hedef = bas_konum + oran * (son_konum - bas_konum)
+    for k in cumle_kelimeleri:
+        if k[2] >= hedef:
+            return k[0]
+    return cumle_kelimeleri[-1][0]
+
+
+def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu):
+    """Her Türkçe cümle seslendirilirken onun İngilizce çevirisini gösterir."""
+    # Her cümlenin kelimelerini bul
+    for c in cumleler:
+        c["kelimeler"] = [k for k in kelimeler if c["bas"] <= k[2] < c["son"]]
+    # Kelimesi bulunamayan (çok nadir) cümleyi bir öncekiyle birleştir
+    gecerli = []
+    for c in cumleler:
+        if c["kelimeler"]:
+            gecerli.append(c)
+        elif gecerli:
+            gecerli[-1]["en"] += " " + c["en"]
+    if not gecerli:
+        hata("cümleler seslendirme zamanlarıyla eşleştirilemedi")
+
+    satirlar = []
+    for i, c in enumerate(gecerli):
+        bas = c["kelimeler"][0][0]
+        if i + 1 < len(gecerli):
+            bit = gecerli[i + 1]["kelimeler"][0][0]
+        else:
+            bit = min(ses_suresi, c["kelimeler"][-1][1] + 0.6)
+        bit = max(bit, bas + 0.3)
+        parcalar = ceviri_parcala(c["en"])
+        toplam = sum(len(p) for p in parcalar) or 1
+        birikmis = 0
+        zamanlar = []
+        for p in parcalar:
+            zamanlar.append(max(bas, _zaman_bul(c["kelimeler"], birikmis / toplam)))
+            birikmis += len(p)
+        zamanlar.append(bit)
+        for j, p in enumerate(parcalar):
+            pb, pson = zamanlar[j], zamanlar[j + 1]
+            if pson - pb < 0.4:  # çok kısa kalan parçaya biraz süre ver
+                pson = min(bit, pb + 0.4)
+            satirlar.append(_dialog(pb, pson, p))
+    Path(ass_yolu).write_text(_ass_basligi() + "\n".join(satirlar) + "\n", encoding="utf-8")
+
+
 def altyazi_yaz(metin, kelimeler, ses_suresi, ass_yolu):
+    """Çevirisi olmayan senaryolar için: Türkçe kelime grupları."""
     # Kelimeleri kısa gruplara ayır; cümle sonunda grubu kapat
     gruplar, grup = [], []
     for i, k in enumerate(kelimeler):
@@ -231,7 +361,7 @@ def altyazi_yaz(metin, kelimeler, ses_suresi, ass_yolu):
         bas_konum = kelimeler[g[0]][2]
         son_index = g[-1] + 1
         son_konum = kelimeler[son_index][2] if son_index < len(kelimeler) else len(metin)
-        yazi = _ass_kacis(metin[bas_konum:son_konum].strip())
+        yazi = metin[bas_konum:son_konum].strip()
         baslangic = kelimeler[g[0]][0]
         if j + 1 < len(gruplar):
             bitis = kelimeler[gruplar[j + 1][0]][0]
@@ -239,25 +369,9 @@ def altyazi_yaz(metin, kelimeler, ses_suresi, ass_yolu):
             bitis = min(ses_suresi, kelimeler[g[-1]][1] + 0.5)
         if bitis <= baslangic:
             bitis = baslangic + 0.3
-        satirlar.append(f"Dialogue: 0,{_ass_zaman(baslangic)},{_ass_zaman(bitis)},Ana,,0,0,0,,{yazi}")
+        satirlar.append(_dialog(baslangic, bitis, yazi))
 
-    # Alignment 2 = alt orta (MarginV alttan uzaklık). Bold -1 = kalın.
-    # BorderStyle 1 + Outline = kenarlık.
-    baslik = f"""[Script Info]
-ScriptType: v4.00+
-PlayResX: {GENISLIK}
-PlayResY: {YUKSEKLIK}
-WrapStyle: 0
-ScaledBorderAndShadow: yes
-
-[V4+ Styles]
-Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{YAN_BOSLUK},{YAN_BOSLUK},{ALT_BOSLUK},1
-
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-"""
-    Path(ass_yolu).write_text(baslik + "\n".join(satirlar) + "\n", encoding="utf-8")
+    Path(ass_yolu).write_text(_ass_basligi() + "\n".join(satirlar) + "\n", encoding="utf-8")
 
 
 # ---------------------------------------------------------------- görüntü kaynakları
@@ -479,7 +593,7 @@ def uret(args):
     calisma.mkdir(parents=True, exist_ok=True)
     kaynaklar = kaynaklari_hazirla()
 
-    metin, bolum_konumlari = tam_metin_ve_bolum_konumlari(veri["bolumler"])
+    metin, bolum_konumlari, cumleler = tam_metin_ve_konumlar(veri["bolumler"])
     print(f"Senaryo: {len(veri['bolumler'])} bölüm, {len(metin.split())} kelime")
 
     # 1. Seslendirme
@@ -495,7 +609,12 @@ def uret(args):
     # 2. Altyazı
     kelimeler = kelimeleri_cikar(metin, sinirlar)
     ass = calisma / "altyazi.ass"
-    altyazi_yaz(metin, kelimeler, ses_suresi, ass)
+    if all(c["en"] for c in cumleler):
+        print(f"Altyazı: {len(cumleler)} cümlenin İngilizce çevirisi")
+        ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass)
+    else:
+        uyari("Senaryoda İngilizce çeviri yok (eski 'metin' biçimi); altyazı Türkçe gösteriliyor")
+        altyazi_yaz(metin, kelimeler, ses_suresi, ass)
 
     # 3. Bölüm süreleri (her bölüm, kendi ilk kelimesi okunduğunda başlar)
     baslangiclar = [0.0]
@@ -539,7 +658,7 @@ def uret(args):
 
 
 def ses_adi(deger):
-    """Ses adını büyük/küçük harf duyarsız kabul eder (guy, GUY, Guy)."""
+    """Ses adını büyük/küçük harf duyarsız kabul eder (ahmet, AHMET, Ahmet)."""
     for ad in SESLER:
         if ad.lower() == str(deger).strip().lower():
             return ad
@@ -550,7 +669,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--senaryo", required=True)
     ap.add_argument("--ses", type=ses_adi, default=VARSAYILAN_SES,
-                    help="Guy (erkek, varsayılan) ya da Jenny (kadın)")
+                    help="Ahmet (erkek, varsayılan) ya da Emel (kadın)")
     ap.add_argument("--cikti", default="cikti")
     ap.add_argument("--calisma", default="calisma")
     args = ap.parse_args()

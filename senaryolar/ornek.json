@@ -1,32 +1,54 @@
 {
-  "konu": "The octopus's amazing body",
+  "konu": "Ahtapotların şaşırtıcı vücudu",
   "baslik": "Octopuses Have 3 Hearts! 🐙 Blue Blood & Thinking Arms",
   "aciklama": "Did you know octopuses have three hearts, blue blood, and arms that can make their own decisions? Meet one of the smartest creatures in the ocean in under a minute.\n\n#shorts #octopus #facts #nature #science",
   "etiketler": ["octopus", "octopus facts", "three hearts", "blue blood", "sea creatures", "ocean animals", "animal facts", "science", "nature", "shorts"],
   "bolumler": [
     {
-      "metin": "Did you know an octopus has three hearts?",
-      "arama": "octopus underwater"
+      "arama": "octopus underwater",
+      "cumleler": [
+        { "tr": "Ahtapotun tam üç kalbi olduğunu biliyor muydunuz?", "en": "Did you know an octopus has three hearts?" }
+      ]
     },
     {
-      "metin": "Two of them pump blood to the gills, and the third pumps it to the rest of the body. But here's the twist: that main heart stops beating when the octopus swims. That's why octopuses prefer crawling over swimming.",
-      "arama": "octopus swimming ocean"
+      "arama": "octopus swimming ocean",
+      "cumleler": [
+        { "tr": "İki kalp kanı solungaçlara pompalar, üçüncüsü ise vücudun geri kalanına.", "en": "Two pump blood to the gills, and the third pumps it to the rest of the body." },
+        { "tr": "Üstelik ahtapot yüzerken bu ana kalp durur.", "en": "And that main heart stops when the octopus swims." },
+        { "tr": "Bu yüzden ahtapotlar yüzmek yerine sürünmeyi tercih eder.", "en": "That's why octopuses prefer crawling to swimming." }
+      ]
     },
     {
-      "metin": "Their blood isn't red, either. It's blue, because it uses copper instead of iron to carry oxygen. That works better in cold, low-oxygen water.",
-      "arama": "deep blue ocean water"
+      "arama": "deep blue ocean water",
+      "cumleler": [
+        { "tr": "Kanları da kırmızı değil, mavidir.", "en": "Their blood isn't red, either. It's blue." },
+        { "tr": "Çünkü kanlarında demir yerine bakır taşıyan bir protein bulunur.", "en": "Their blood uses a protein with copper instead of iron." },
+        { "tr": "Bu protein soğuk ve oksijeni az sularda daha iyi çalışır.", "en": "It works better in cold, low-oxygen water." }
+      ]
     },
     {
-      "metin": "The brain is even stranger. About two thirds of an octopus's neurons live in its arms. So each arm can touch, taste, and make decisions on its own.",
-      "arama": "octopus tentacles closeup"
+      "arama": "octopus tentacles closeup",
+      "cumleler": [
+        { "tr": "Asıl şaşırtıcı olan ise beyinleri.", "en": "But the real surprise is their brain." },
+        { "tr": "Ahtapotun sinir hücrelerinin yaklaşık üçte ikisi kollarındadır.", "en": "About two thirds of an octopus's neurons are in its arms." },
+        { "tr": "Yani her kol, beyne sormadan dokunabilir, tadabilir ve karar verebilir.", "en": "So each arm can touch, taste, and decide without asking the brain." }
+      ]
     },
     {
-      "metin": "And they're masters of disguise. In seconds, they can turn into rock, sand, or coral, even changing the texture of their skin.",
-      "arama": "coral reef camouflage"
+      "arama": "coral reef camouflage",
+      "cumleler": [
+        { "tr": "Bir de renk değiştirme ustası olduklarını düşünün.", "en": "They're also masters of changing color." },
+        { "tr": "Saniyeler içinde kayaya, kuma ya da mercana dönüşebilirler.", "en": "In seconds, they can turn into rock, sand, or coral." },
+        { "tr": "Hatta derilerinin dokusunu bile değiştirip çevreye tamamen uyum sağlarlar.", "en": "They even change their skin texture to blend in completely." }
+      ]
     },
     {
-      "metin": "Three hearts, blue blood, and thinking arms. Are octopuses basically aliens? Tell me in the comments!",
-      "arama": "octopus coral reef"
+      "arama": "octopus coral reef",
+      "cumleler": [
+        { "tr": "Üç kalp, mavi kan ve düşünen kollar.", "en": "Three hearts, blue blood, and thinking arms." },
+        { "tr": "Sizce ahtapotlar uzaylı kadar ilginç mi?", "en": "Are octopuses as strange as aliens?" },
+        { "tr": "Yorumlarda buluşalım!", "en": "Tell me in the comments!" }
+      ]
     }
   ]
 }
