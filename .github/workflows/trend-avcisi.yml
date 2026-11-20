@@ -1,0 +1,58 @@
+name: Trend Avcısı
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"   # her pazartesi 07:00 (Europe/Istanbul = UTC+3)
+  workflow_dispatch:
+
+permissions:
+  contents: write   # konular.txt ve trend kaydı
+
+concurrency:
+  group: trend-avcisi
+  cancel-in-progress: false
+
+jobs:
+  tara:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python paketlerini kur
+        run: pip install requests
+
+      - name: Acil durdurma kontrolü
+        id: durdur
+        run: |
+          shopt -s nocaseglob nullglob; d=(DURDUR*)
+          if [ ${#d[@]} -gt 0 ]; then
+            echo "::warning::DURDUR dosyası var; trend taraması atlandı."
+            echo "dur=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: YouTube'da trendleri tara
+        if: steps.durdur.outputs.dur != 'true'
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: python scripts/trend.py --konular konular.txt --klasor yayinlar/trendler
+
+      - name: Değişiklikleri kaydet
+        if: steps.durdur.outputs.dur != 'true'
+        run: |
+          if [ -z "$(git status --porcelain konular.txt yayinlar/)" ]; then
+            echo "Değişiklik yok."; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add konular.txt yayinlar/trendler/
+          git commit -q -m "Trend avcısı: $(date +%Y-%m-%d) konuları"
+          for i in 1 2 3 4 5; do
+            git push -q origin HEAD:main && exit 0
+            sleep $((i * 3)); git pull --rebase --quiet origin main
+          done
+          echo "::error::Değişiklikler main'e gönderilemedi"; exit 1

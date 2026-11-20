@@ -17,7 +17,7 @@ yazma, commit atma**; kullanıcıya sistemin durdurulduğunu söyle ve bitir.
 1. `git pull` ile main'i güncelle. `DURDUR` dosyası varsa dur.
 2. `konular.txt`'de yukarıdan aşağı ilk **2** işaretsiz (`- [ ]`) konuyu al.
 3. `seri_no`: `senaryolar/` içindeki en büyük `seri_no` + 1 (ikinci senaryo bir fazlası).
-4. Her konu için aşağıdaki kurallarla senaryoyu yaz:
+4. Her konu için aşağıdaki kurallarla ve **Trendler** bölümüne uyarak senaryoyu yaz:
    `senaryolar/<seri_no 3 hane>-<kisa-ingilizce-konu>.json` (ör. `001-octopus-three-hearts.json`,
    yalnızca küçük harf, rakam ve tire).
 5. **Doğruluk kontrolü (iki tur):** Senaryoyu yazdıktan sonra her bilgiyi web'de güvenilir
@@ -35,6 +35,21 @@ yazma, commit atma**; kullanıcıya sistemin durdurulduğunu söyle ve bitir.
    main'e push reddedilirse yeni bir dalda PR aç ve bunu kullanıcıya söyle.
 10. Push'tan sonra GitHub Actions videoları kendiliğinden üretir, kalite kontrolünden geçirir
     ve Buffer'da sıraya koyar. Senin başka bir şey yapman gerekmez.
+
+## Trendler (trend avcısı)
+
+Her pazartesi 07:00'de `Trend Avcısı` workflow'u YouTube'da son 30 günün en çok izlenen hayvan
+Shorts'larını tarar, en güçlü 5 konuyu `konular.txt`'nin en üstüne ekler ve sonucu
+`yayinlar/trendler/YYYY-MM-DD.json` dosyasına yazar.
+
+- Senaryo yazarken en son trend dosyasındaki `kaliplar` (tutan kanca kalıpları) alanına bak ve
+  kancayı bu kalıplardan birine **yapı olarak** uydur (soru, rekor, gizli bilgi, tehlike...).
+- Trend konusu satırı yalnızca hayvanı verir ("Great white shark (trend ...)"); o hayvan
+  hakkında doğrulanmış, az bilinen, **özgün** bir bilgi seç.
+- **Kopyalama yasak:** `en_cok` listesindeki viral videoların başlığını, cümlesini ya da
+  anlatım sırasını birebir ya da yakın biçimde kullanma; onları yalnızca hangi hayvanın ve
+  hangi kalıbın ilgi gördüğünü anlamak için oku. `senaryo_kontrol.py` başlık ve cümleleri
+  viral başlıklarla karşılaştırır, çok benzeyeni hata sayar.
 
 ## Senaryo kuralları (30-40 sn)
 

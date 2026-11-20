@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import buffer  # noqa: E402
+import trend  # noqa: E402
 
 GORUNTULENME = ("view", "play", "izlen")
 ERISIM = ("impression", "reach", "erişim")
@@ -77,6 +78,7 @@ def main():
     ap.add_argument("--kayit", default="yayinlar/kayit.jsonl")
     ap.add_argument("--cikti", default="ozet.md")
     ap.add_argument("--gun", type=int, default=7)
+    ap.add_argument("--trendler", default="yayinlar/trendler")
     a = ap.parse_args()
 
     simdi = datetime.now(timezone.utc)
@@ -154,6 +156,18 @@ def main():
     else:
         md.append(f"İstatistik alınamadı: {sebep}. YouTube Studio ve TikTok Studio'dan bakabilirsin.")
     md.append("")
+
+    # Trend avcısı (pazartesi taraması)
+    trend_dosyalari = sorted(Path(a.trendler).glob("*.json"))
+    if trend_dosyalari:
+        son = json.loads(trend_dosyalari[-1].read_text(encoding="utf-8"))
+        if (_tarih(son.get("tarih", "") + "T00:00:00Z") or bas) >= bas - timedelta(days=1):
+            md += trend.ozet_md(son) + [""]
+        else:
+            md += ["### 🔥 Bu hafta viral olanlar", "", "Bu hafta trend taraması yapılmadı "
+                   "(YOUTUBE_API_KEY eksik olabilir).", ""]
+    else:
+        md += ["### 🔥 Bu hafta viral olanlar", "", "Henüz trend taraması yok.", ""]
 
     Path(a.cikti).write_text("\n".join(md) + "\n", encoding="utf-8")
     print("\n".join(md))

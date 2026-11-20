@@ -5,6 +5,7 @@ Kullanım:
   python3 scripts/senaryo_kontrol.py senaryolar/001-octopus.json [...]
 Hata varsa 1 koduyla çıkar. Uyarılar videoyu durdurmaz.
 """
+import difflib
 import json
 import re
 import sys
@@ -22,6 +23,46 @@ HEDEF_KELIME = (52, 70)        # dışı uyarı (gerçek ölçüm: 73 kelime ≈
 def _sade(yazi):
     yazi = unicodedata.normalize("NFC", str(yazi)).strip().lower()
     return re.sub(r"[^\w]+", " ", yazi).strip()
+
+
+TREND_KLASORU = Path(__file__).resolve().parent.parent / "yayinlar" / "trendler"
+BENZERLIK_SINIRI = 0.72       # başlık/cümle bir trend başlığına bu orandan fazla benzemesin
+ORTAK_KELIME_SINIRI = 5       # art arda bu kadar ortak kelime = kopya sayılır
+
+
+def trend_basliklari(klasor=TREND_KLASORU, son=6):
+    basliklar = []
+    for yol in sorted(Path(klasor).glob("*.json"))[-son:]:
+        try:
+            veri = json.loads(yol.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        basliklar += [v.get("baslik", "") for v in veri.get("en_cok", []) if v.get("baslik")]
+    return basliklar
+
+
+def _ortak_dizi(a, b):
+    x, y = _sade(a).split(), _sade(b).split()
+    m = difflib.SequenceMatcher(None, x, y).find_longest_match(0, len(x), 0, len(y))
+    return m.size
+
+
+def kopya_kontrol(veri, basliklar):
+    """Senaryo başlıklarının ve cümlelerinin viral başlıkları kopyalamadığını denetler."""
+    hatalar = []
+    metinler = [(f"yayin.{d}.baslik", ((veri.get("yayin") or {}).get(d) or {}).get("baslik", ""))
+                for d in DILLER]
+    metinler += [(f"cümle ({dil})", c.get(dil, "")) for b in veri.get("bolumler", [])
+                 for c in b.get("cumleler", []) for dil in DILLER]
+    for ad, metin in metinler:
+        if not str(metin).strip():
+            continue
+        for t in basliklar:
+            oran = difflib.SequenceMatcher(None, _sade(metin), _sade(t)).ratio()
+            if oran >= BENZERLIK_SINIRI or _ortak_dizi(metin, t) >= ORTAK_KELIME_SINIRI:
+                hatalar.append(f"{ad} viral bir başlığa çok benziyor ({oran:.0%}): {t!r}; özgün yaz")
+                break
+    return hatalar
 
 
 def kelime_sayisi(veri):
@@ -129,6 +170,7 @@ def main(yollar):
         print(__doc__)
         return 1
     kotu = False
+    trendler = trend_basliklari()
     for yol in yollar:
         try:
             veri = json.loads(Path(yol).read_text(encoding="utf-8"))
@@ -137,6 +179,7 @@ def main(yollar):
             kotu = True
             continue
         hatalar, uyarilar = kontrol(veri, yol)
+        hatalar += kopya_kontrol(veri, trendler)
         durum = "✗" if hatalar else "✓"
         print(f"{durum} {yol} ({kelime_sayisi(veri)} Türkçe kelime)")
         for h in hatalar:

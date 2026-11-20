@@ -14,7 +14,9 @@ Her gün 2 video: deniz ve vahşi doğa hayvanları hakkında az bilinen, şaş�
   ↓    Kalite kontrolü: süre 30-45 sn, ses seviyesi, siyah kare, altyazı
   ↓    Geçerse: Release + Buffer'da ertesi gün 12:30 ya da 20:30'a sıraya konur
        Geçmezse: paylaşılmaz, sana GitHub Issue açılır
-Pazar  Haftalık özet Issue'su
+Pazar  Haftalık özet Issue'su ("Bu hafta viral olanlar" bölümüyle)
+Pzt    Trend avcısı: YouTube'da son 30 günün en çok izlenen hayvan Shorts'larını tarar,
+       en güçlü 5 konuyu konular.txt'nin en üstüne ekler
 ```
 
 **Senin işin:** Buffer'dan gelen paylaşımları kontrol etmek, videonun altına sabit yorumu
@@ -35,8 +37,20 @@ Ayarlar GitHub mobil uygulamasında yok; **tarayıcıdan github.com**'u kullan
 | `PIXABAY_API_KEY` | pixabay.com/api/docs → `key` | Önerilir (yoksa renkli arka plan) |
 | `BUFFER_API_KEY` | publish.buffer.com/settings/api → **Create API key** | Paylaşım için evet |
 | `PEXELS_API_KEY` | pexels.com/api | Hayır |
+| `YOUTUBE_API_KEY` | Aşağıdaki **YouTube API anahtarı** adımları | Trend avcısı için evet |
 
 > 🔒 Anahtarları başka hiçbir yere yazma: ne dosyaya, ne sohbete. Yalnızca Secret'ta dursun.
+
+### YouTube API anahtarı (trend avcısı için)
+1. Tarayıcıda **console.cloud.google.com**'u aç, Google hesabınla gir.
+2. Üstteki proje seçiciden **New project** → ad: `merak-kutusu` → **Create**.
+3. Arama kutusuna **YouTube Data API v3** yaz → aç → **Enable**.
+4. **Credentials** (Kimlik bilgileri) → **Create credentials** → **API key**. Çıkan anahtarı kopyala.
+5. Önerilir: anahtara tıkla → **API restrictions** → **Restrict key** → yalnızca
+   **YouTube Data API v3**'ü seç → **Save**.
+6. GitHub'da `YOUTUBE_API_KEY` adıyla secret olarak ekle.
+
+Ücretsizdir; günlük 10.000 birimlik kotanın haftada bir ~810 birimi kullanılır.
 
 ### 2. Buffer kanalları
 - Buffer'da **YouTube** ve **TikTok** kanallarını bağla. TikTok için Buffer **TikTok Business**
@@ -72,6 +86,7 @@ Kurulum adımları PR açıklamasında; kapatmak için aşağıdaki **Acil durdu
 | Elle üretilen videoyu da paylaş | Aynı ekranda **buffer_paylas** kutusunu işaretle |
 | Yeni konu ekle | `konular.txt` → ✏️ → listeye `- [ ] (deniz) Konu` satırı ekle → **Commit changes** |
 | Haftalık özet | **Issues** → `haftalik-ozet` etiketi (her pazar 20:00) |
+| Trendleri şimdi tara | **Actions** → **Trend Avcısı** → **Run workflow** |
 
 Elle çalıştırmada senaryo adı büyük/küçük harften ve `.json` uzantısından etkilenmez
 (`ORNEK`, `ornek.json` da olur). `ornek.json` bir test senaryosudur, hiçbir zaman paylaşılmaz.
@@ -93,7 +108,7 @@ Buffer uygulaması → **Queue** → gönderiye dokun → **Delete**
 
 **Daha kesin durdurma:**
 - Zamanlanmış görev: **claude.ai/code** → **Scheduled** → görevi aç → kapat (toggle).
-- Workflow: **Actions** → **Shorts Üret** → **⋯** → **Disable workflow**.
+- Workflow: **Actions** → **Shorts Üret** (ve **Trend Avcısı**) → **⋯** → **Disable workflow**.
 - Buffer bağlantısını kes: Secret'lardan `BUFFER_API_KEY`'i sil (ya da Buffer'da anahtarı iptal et).
 
 ---
@@ -123,6 +138,8 @@ Buffer uygulaması → **Queue** → gönderiye dokun → **Delete**
 | `scripts/kalite.py` | Kalite kontrolü |
 | `scripts/buffer.py` | Buffer GraphQL API ile sıraya koyma (`kanallar` komutu kurulumu kontrol eder) |
 | `scripts/ozet.py` | Haftalık özet |
+| `scripts/trend.py` | Trend avcısı (YouTube Data API; yalnızca başlık, kanal, izlenme, tarih) |
+| `yayinlar/trendler/` | Haftalık trend taramaları (konular, kanca kalıpları) |
 | `scripts/senaryo_kontrol.py` | Senaryo kurallarını denetler |
 | `CLAUDE.md` | Claude için senaryo kuralları, JSON biçimi ve günlük görev adımları |
 | `konular.txt` | Konu listesi (kullanılanlar `[x]`) |
@@ -146,6 +163,12 @@ sidechain ile kısılır. Kancada vurgu, gerilimde alçak uğultu, kapanışta y
 **Yayın metinleri:** `youtube.txt` (başlık + "| Vahşi Gerçekler #N", açıklama, hashtag'ler,
 etiketler, sabit yorum, "Footage/Görüntüler: Pixabay") ve `tiktok.txt` (en fazla 5 hashtag).
 Altyazı diliyle aynı dilde. Release adı: `Vahşi Gerçekler #N - konu`.
+
+**Trend avcısı:** 8 arama (4 İngilizce, 4 Türkçe; `search.list` 100 birim) + izlenme/süre
+(`videos.list` 1 birim) ≈ 810 birim/hafta; betik 1.500 birimi asla aşmaz. 3 dakikadan uzun
+videolar ve evcil hayvanlar elenir. Video indirilmez; başlıklar yalnızca hangi hayvanın ve kanca
+kalıbının tuttuğunu görmek için kullanılır. Senaryo denetleyicisi viral başlıklara çok benzeyen
+başlık/cümleleri reddeder.
 
 **Buffer:** GraphQL API (`https://api.buffer.com`), `createPost` + `customScheduled`.
 YouTube kategorisi 15 (Pets & Animals), herkese açık, çocuklara yönelik değil.
