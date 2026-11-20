@@ -1,35 +1,123 @@
 name: Shorts Üret
 
 on:
+  # main'de senaryolar/ klasörüne yeni JSON gelince otomatik çalışır
+  push:
+    branches: [main]
+    paths: ["senaryolar/**"]
   workflow_dispatch:
     inputs:
       senaryo:
-        description: "Senaryo dosyasının adı (senaryolar/ klasöründe, ör. ornek; büyük harf ve .json da olur)"
+        description: "Senaryo adı (ör. 001-octopus-three-hearts; büyük harf ve .json da olur)"
         required: true
         type: string
       ses:
-        description: "Türkçe seslendiren (Ahmet = erkek, Emel = kadın)"
+        description: "Türkçe seslendiren"
         required: true
         default: Ahmet
         type: choice
-        options:
-          - Ahmet
-          - Emel
+        options: [Ahmet, Emel]
+      altyazi_dili:
+        description: "Altyazı, başlık ve açıklama dili"
+        required: true
+        default: en
+        type: choice
+        options: [en, tr]
+      buffer_paylas:
+        description: "Kalite kontrolünden geçerse Buffer'da sıraya koy"
+        required: false
+        default: false
+        type: boolean
 
-# Release oluşturabilmek için yazma izni gerekli
 permissions:
-  contents: write
+  contents: write   # Release ve yayın kaydı
+  issues: write     # kalite / Buffer sorunları için Issue
 
 jobs:
+  bul:
+    name: Senaryoları bul
+    runs-on: ubuntu-latest
+    outputs:
+      liste: ${{ steps.bul.outputs.liste }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Üretilecek senaryoları belirle
+        id: bul
+        env:
+          OLAY: ${{ github.event_name }}
+          ONCEKI: ${{ github.event.before }}
+          GIRDI: ${{ inputs.senaryo }}
+        run: |
+          shopt -s nocaseglob nullglob
+          durdur=(DURDUR*)
+          if [ ${#durdur[@]} -gt 0 ]; then
+            echo "::warning::DURDUR dosyası var; hiçbir video üretilmiyor."
+            echo "### ⛔ Sistem durduruldu (DURDUR dosyası var)" >> "$GITHUB_STEP_SUMMARY"
+            echo 'liste=[]' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          shopt -u nocaseglob nullglob
+
+          if [ "$OLAY" = "push" ]; then
+            if [ -z "$ONCEKI" ] || [ "$ONCEKI" = "0000000000000000000000000000000000000000" ] \
+               || ! git cat-file -e "$ONCEKI^{commit}" 2>/dev/null; then
+              ONCEKI="$(git rev-parse HEAD~1 2>/dev/null || git hash-object -t tree /dev/null)"
+            fi
+            # Yalnızca YENİ eklenen .json/.JSON dosyaları
+            dosyalar="$(git diff --name-only --diff-filter=A "$ONCEKI" HEAD -- senaryolar/ \
+                        | grep -iE '\.json$' | sort || true)"
+          else
+            # Elle çalıştırma: adı büyük/küçük harf ve .json uzantısından bağımsız bul
+            ad="$(echo "$GIRDI" | xargs)"
+            ad="${ad#senaryolar/}"
+            shopt -s nocasematch
+            if [[ "$ad" =~ ^(.*)\.json$ ]]; then ad="${BASH_REMATCH[1]}"; fi
+            shopt -u nocasematch
+            if ! [[ "$ad" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              echo "::error::Senaryo adı yalnızca harf, rakam, - ve _ içerebilir: $ad"
+              exit 1
+            fi
+            dosyalar=""
+            for f in senaryolar/*; do
+              [ -f "$f" ] || continue
+              taban="$(basename "$f")"
+              if [ "${taban,,}" = "${ad,,}.json" ]; then dosyalar="$f"; break; fi
+            done
+            if [ -z "$dosyalar" ]; then
+              echo "::error::senaryolar/$ad.json bulunamadı"
+              exit 1
+            fi
+          fi
+
+          liste="$(printf '%s\n' "$dosyalar" | sed '/^$/d' | jq -R . | jq -cs .)"
+          echo "Üretilecek: $liste"
+          echo "liste=$liste" >> "$GITHUB_OUTPUT"
+
   uret:
+    name: Üret ${{ matrix.senaryo }}
+    needs: bul
+    if: needs.bul.outputs.liste != '[]' && needs.bul.outputs.liste != ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1     # sırayla: Buffer slotları çakışmasın
+      matrix:
+        senaryo: ${{ fromJSON(needs.bul.outputs.liste) }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SES: ${{ inputs.ses || 'Ahmet' }}
+      DIL: ${{ inputs.altyazi_dili || vars.ALTYAZI_DILI || 'en' }}
+      PAYLAS: ${{ github.event_name == 'push' || inputs.buffer_paylas }}
     steps:
-      - name: Repoyu al
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Python kur
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -41,74 +129,128 @@ jobs:
       - name: Python paketlerini kur
         run: pip install -r requirements.txt
 
-      - name: Senaryo dosyasını kontrol et
-        env:
-          SENARYO: ${{ inputs.senaryo }}
-        run: |
-          # Baştaki/sondaki boşlukları, "senaryolar/" önekini ve .json
-          # uzantısını (.JSON, .Json da) at
-          ad="$SENARYO"
-          ad="${ad#"${ad%%[![:space:]]*}"}"
-          ad="${ad%"${ad##*[![:space:]]}"}"
-          ad="${ad#senaryolar/}"
-          shopt -s nocasematch
-          if [[ "$ad" =~ ^(.*)\.json$ ]]; then ad="${BASH_REMATCH[1]}"; fi
-          shopt -u nocasematch
-          if ! [[ "$ad" =~ ^[A-Za-z0-9_-]+$ ]]; then
-            echo "::error::Senaryo adı yalnızca harf, rakam, - ve _ içerebilir: $ad"
-            exit 1
-          fi
-          # Önce birebir, sonra büyük/küçük harf duyarsız eşleşme ara
-          dosya=""
-          if [ -f "senaryolar/$ad.json" ]; then
-            dosya="senaryolar/$ad.json"
-          else
-            for f in senaryolar/*; do
-              [ -f "$f" ] || continue
-              taban="$(basename "$f")"
-              if [ "${taban,,}" = "${ad,,}.json" ]; then dosya="$f"; break; fi
-            done
-          fi
-          if [ -z "$dosya" ]; then
-            echo "::error::senaryolar/$ad.json bulunamadı"
-            exit 1
-          fi
-          taban="$(basename "$dosya")"
-          echo "SENARYO_DOSYA=$dosya" >> "$GITHUB_ENV"
-          echo "SENARYO_AD=${taban%.*}" >> "$GITHUB_ENV"
-          echo "Senaryo: $dosya"
-
       - name: Videoyu üret
         env:
           # Pixabay asıl kaynak, Pexels isteğe bağlı. İkisi de yoksa video
           # renkli hareketli arka planla yine üretilir.
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-          SES: ${{ inputs.ses }}
+          SENARYO: ${{ matrix.senaryo }}
         run: |
-          python scripts/uret.py \
-            --senaryo "$SENARYO_DOSYA" \
-            --ses "$SES" \
-            --cikti cikti \
-            --calisma calisma
+          python scripts/uret.py --senaryo "$SENARYO" --ses "$SES" --altyazi-dili "$DIL" \
+            --cikti cikti --calisma calisma
 
-      - name: Artifact olarak yükle
-        uses: actions/upload-artifact@v4
-        with:
-          name: shorts-${{ env.SENARYO_AD }}-${{ github.run_number }}
-          path: cikti/
-          retention-days: 7
+      - name: Kalite kontrolü
+        id: kalite
+        run: python scripts/kalite.py --klasor cikti
 
       - name: Release olarak yayınla
+        id: release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GECTI: ${{ steps.kalite.outputs.gecti }}
         run: |
-          etiket="video-${GITHUB_RUN_NUMBER}-${SENARYO_AD}"
-          gh release create "$etiket" \
-            cikti/video.mp4 \
-            cikti/youtube-bilgileri.txt \
-            --target "$GITHUB_SHA" \
-            --title "${SENARYO_AD} (#${GITHUB_RUN_NUMBER})" \
-            --notes-file cikti/youtube-bilgileri.txt
-          echo "### Hazır 🎬" >> "$GITHUB_STEP_SUMMARY"
-          echo "İndir: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}" >> "$GITHUB_STEP_SUMMARY"
+          ad="$(jq -r .ad cikti/meta.json | tr '[:upper:]' '[:lower:]')"
+          baslik="$(jq -r .release_adi cikti/meta.json)"
+          etiket="video-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}-${ad}"
+          ek=()
+          if [ "$GECTI" != "true" ]; then
+            baslik="❌ KALİTE RED - $baslik"
+            ek=(--prerelease)
+          fi
+          {
+            echo "## YouTube"; echo '```'; cat cikti/youtube.txt; echo '```'
+            echo "## TikTok"; echo '```'; cat cikti/tiktok.txt; echo '```'
+            cat cikti/kalite.md
+          } > cikti/notlar.md
+          gh release create "$etiket" cikti/video.mp4 cikti/youtube.txt cikti/tiktok.txt \
+            --target "$GITHUB_SHA" --title "$baslik" --notes-file cikti/notlar.md "${ek[@]}"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "video=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video.mp4" >> "$GITHUB_OUTPUT"
+          echo "baslik=$baslik" >> "$GITHUB_OUTPUT"
+          echo "### 🎬 [$baslik]($url)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Kalite sorunu için Issue aç
+        if: steps.kalite.outputs.gecti != 'true'
+        env:
+          BASLIK: ${{ steps.release.outputs.baslik }}
+          URL: ${{ steps.release.outputs.url }}
+          SENARYO: ${{ matrix.senaryo }}
+        run: |
+          gh label create kalite --color d73a4a --description "Kalite kontrolünden geçmeyen video" --force
+          {
+            echo "Video kalite kontrolünden geçmedi, **paylaşılmadı**."
+            echo
+            echo "- Senaryo: \`$SENARYO\`"
+            echo "- Video: $URL"
+            echo "- Çalışma: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            cat cikti/kalite.md
+            echo
+            echo "Düzeltmek için Claude'a bu Issue'yu gösterip senaryoyu düzeltmesini iste."
+          } > issue.md
+          gh issue create --title "Kalite kontrolü geçmedi: $BASLIK" --label kalite --body-file issue.md
+
+      - name: Buffer'da sıraya koy
+        if: steps.kalite.outputs.gecti == 'true' && env.PAYLAS == 'true'
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+          BUFFER_YOUTUBE_KANAL: ${{ vars.BUFFER_YOUTUBE_KANAL }}
+          BUFFER_TIKTOK_KANAL: ${{ vars.BUFFER_TIKTOK_KANAL }}
+          AI_ETIKETI: ${{ vars.AI_ETIKETI }}
+          VIDEO_URL: ${{ steps.release.outputs.video }}
+          RELEASE_URL: ${{ steps.release.outputs.url }}
+          BASLIK: ${{ steps.release.outputs.baslik }}
+        run: |
+          if [ "$(jq -r .test cikti/meta.json)" = "true" ]; then
+            echo "Test senaryosu; Buffer'a gönderilmiyor."; exit 0
+          fi
+          shopt -s nocaseglob nullglob; durdur=(DURDUR*); shopt -u nocaseglob nullglob
+          if [ ${#durdur[@]} -gt 0 ]; then
+            echo "::warning::DURDUR dosyası var; Buffer'a gönderilmiyor."; exit 0
+          fi
+          if [ -z "$BUFFER_API_KEY" ]; then
+            echo "::warning::BUFFER_API_KEY secret'ı yok; video paylaşıma gönderilmedi."; exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase --quiet origin main   # önceki videoların slot kaydı
+
+          kod=0
+          python scripts/buffer.py sirala --meta cikti/meta.json --video-url "$VIDEO_URL" \
+            --release-url "$RELEASE_URL" --kayit yayinlar/kayit.jsonl --rapor cikti/buffer.md || kod=$?
+          cat cikti/buffer.md >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$(git status --porcelain yayinlar/)" ]; then
+            git add yayinlar/kayit.jsonl
+            git commit -q -m "Yayın kaydı: $BASLIK [skip ci]"
+            for i in 1 2 3 4 5; do
+              git push -q origin HEAD:main && break
+              sleep $((i * 3)); git pull --rebase --quiet origin main
+            done
+          fi
+
+          if [ "$kod" != "0" ]; then
+            gh label create buffer --color fbca04 --description "Buffer paylaşım sorunu" --force
+            {
+              echo "Video kalite kontrolünden geçti ama Buffer'da sıraya konurken sorun çıktı."
+              echo
+              echo "- Video: $RELEASE_URL"
+              echo "- Çalışma: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              echo
+              cat cikti/buffer.md
+              echo
+              echo "Videoyu Release sayfasından indirip elle de paylaşabilirsin."
+            } > issue.md
+            gh issue create --title "Buffer'a gönderilemedi: $BASLIK" --label buffer --body-file issue.md
+          fi
+
+      - name: Artifact olarak yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-${{ strategy.job-index }}-${{ github.run_number }}
+          path: cikti/
+          retention-days: 7
