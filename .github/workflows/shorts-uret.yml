@@ -1,0 +1,94 @@
+name: Shorts Üret
+
+on:
+  workflow_dispatch:
+    inputs:
+      senaryo:
+        description: "Senaryo dosyasının adı (senaryolar/ klasöründe, ör. ornek)"
+        required: true
+        type: string
+      ses:
+        description: "Seslendiren"
+        required: true
+        default: Emel
+        type: choice
+        options:
+          - Emel
+          - Ahmet
+
+# Release oluşturabilmek için yazma izni gerekli
+permissions:
+  contents: write
+
+jobs:
+  uret:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Repoyu al
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: ffmpeg ve yazı tipini kur
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+
+      - name: Python paketlerini kur
+        run: pip install -r requirements.txt
+
+      - name: Senaryo dosyasını kontrol et
+        env:
+          SENARYO: ${{ inputs.senaryo }}
+        run: |
+          ad="${SENARYO#senaryolar/}"
+          ad="${ad%.json}"
+          if ! [[ "$ad" =~ ^[A-Za-z0-9_-]+$ ]]; then
+            echo "::error::Senaryo adı yalnızca harf, rakam, - ve _ içerebilir: $ad"
+            exit 1
+          fi
+          if [ ! -f "senaryolar/$ad.json" ]; then
+            echo "::error::senaryolar/$ad.json bulunamadı"
+            exit 1
+          fi
+          echo "SENARYO_AD=$ad" >> "$GITHUB_ENV"
+
+      - name: Videoyu üret
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          SES: ${{ inputs.ses }}
+        run: |
+          if [ -z "$PEXELS_API_KEY" ]; then
+            echo "::error::PEXELS_API_KEY secret'ı eklenmemiş (Settings > Secrets and variables > Actions)"
+            exit 1
+          fi
+          python scripts/uret.py \
+            --senaryo "senaryolar/$SENARYO_AD.json" \
+            --ses "$SES" \
+            --cikti cikti \
+            --calisma calisma
+
+      - name: Artifact olarak yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-${{ env.SENARYO_AD }}-${{ github.run_number }}
+          path: cikti/
+          retention-days: 7
+
+      - name: Release olarak yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          etiket="video-${GITHUB_RUN_NUMBER}-${SENARYO_AD}"
+          gh release create "$etiket" \
+            cikti/video.mp4 \
+            cikti/youtube-bilgileri.txt \
+            --target "$GITHUB_SHA" \
+            --title "${SENARYO_AD} (#${GITHUB_RUN_NUMBER})" \
+            --notes-file cikti/youtube-bilgileri.txt
+          echo "### Hazır 🎬" >> "$GITHUB_STEP_SUMMARY"
+          echo "İndir: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}" >> "$GITHUB_STEP_SUMMARY"
