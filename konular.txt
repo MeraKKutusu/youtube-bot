@@ -5,22 +5,23 @@
 # Günlük görev yukarıdan aşağı sıradaki 2 işaretsiz konuyu alır.
 # İşaretsiz konu 5'in altına inince 10 yeni konu eklenir (~6 deniz, ~4 kara).
 
+- [ ] (kara) Elephants hear through their feet
+- [ ] (deniz) Orca (trend 2026-11-20; özgün bir şaşırtıcı bilgi seç)
+- [ ] (deniz) Immortal jellyfish
+- [ ] (deniz) Box jellyfish eyes
+- [ ] (deniz) Sperm whales sleep vertically
+- [ ] (deniz) Male seahorse pregnancy
 - [ ] (deniz) Octopus has three hearts and blue blood
 - [ ] (deniz) Mantis shrimp punch
 - [ ] (deniz) Greenland shark lifespan
-- [ ] (deniz) Immortal jellyfish
 - [ ] (deniz) Pistol shrimp snap
 - [ ] (deniz) Sea otters holding hands
-- [ ] (deniz) Male seahorse pregnancy
-- [ ] (deniz) Box jellyfish eyes
 - [ ] (kara) Axolotl regeneration
 - [ ] (kara) Tardigrades surviving space
 - [ ] (kara) Wood frog freezes solid
 - [ ] (kara) Hippo "blood sweat"
 - [ ] (kara) Crows remember human faces
-- [ ] (kara) Elephants hear through their feet
 - [ ] (kara) Platypus glows under UV
-- [ ] (deniz) Sperm whales sleep vertically
 - [ ] (kara) Owl neck rotation
 - [ ] (deniz) Colorblind cuttlefish camouflage
 - [ ] (deniz) Anglerfish male fuses to female
