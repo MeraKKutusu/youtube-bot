@@ -40,7 +40,7 @@ yazma, commit atma**; kullanıcıya sistemin durdurulduğunu söyle ve bitir.
 
 - Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: biraz yavaş (-8%),
   pes (-6Hz); cümle aralarında, kancadan ve sorulardan sonra kısa duraklamalar sistem
-  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **55-78 Türkçe kelime**.
+  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **52-70 Türkçe kelime** (73 kelime ≈ 40 sn).
 - **Anlatıcı üslubu:** kısa, vurucu cümleler (çoğunlukla 3-8 kelime); her cümle tek bir bilgi.
   Merak uyandıran duraklama için bilgiyi ikiye böl: önce merak ettiren yarım cümle, sonra
   cevap ("Ama bir sorun var." → "Yüzerken kalbi durur."). Gerilimi artıran kelimeler
