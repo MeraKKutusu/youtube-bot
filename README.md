@@ -1,11 +1,11 @@
 # youtube-bot
 
-Türkçe YouTube Shorts hazırlayan sistem. Sen bir konu verirsin; Claude senaryoyu, başlığı, açıklamayı ve etiketleri yazıp `senaryolar/` klasörüne kaydeder. Ardından GitHub Actions videoyu üretir:
+**İngilizce** YouTube Shorts hazırlayan sistem. Sen bir konu verirsin; Claude İngilizce senaryoyu, başlığı, açıklamayı ve etiketleri yazıp `senaryolar/` klasörüne kaydeder. Ardından GitHub Actions videoyu üretir:
 
-- 🎙️ Türkçe seslendirme (edge-tts, ücretsiz) — Emel ya da Ahmet
+- 🎙️ İngilizce (en-US) seslendirme (edge-tts, ücretsiz) — Guy (erkek, varsayılan) ya da Jenny (kadın)
 - 🎞️ Pixabay'den stok videolar (bulunamazsa dikey fotoğraflar). Pexels isteğe bağlı yedek kaynak.
 - 🌈 Görüntü bulunamazsa ya da anahtar yoksa renkli hareketli arka plan; video her durumda tamamlanır
-- 💬 Ekranın ortasında büyük, kalın, siyah kenarlıklı beyaz altyazı
+- 💬 Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın, siyah kenarlıklı beyaz İngilizce altyazı; Shorts'un alttaki başlık/kanal alanına ve sağdaki butonlara değmez
 - 📱 1080x1920, 30 fps MP4
 
 Çıktı (`video.mp4` + `youtube-bilgileri.txt`) hem bir **Release** olarak hem de **artifact** olarak indirilebilir.
@@ -45,8 +45,8 @@ Claude'a konuyu söyle (ör. *"Konu: Kara delikler"*). Claude `senaryolar/kara-d
 1. Repoda **Actions** sekmesine gir.
 2. Soldaki listeden **Shorts Üret**'i seç.
 3. **Run workflow**'a dokun.
-4. **Senaryo** kutusuna dosyanın adını yaz (ör. `kara-delikler`; `.json` yazmana gerek yok).
-5. **Seslendiren** listesinden **Emel** ya da **Ahmet**'i seç (varsayılan Emel).
+4. **Senaryo** kutusuna dosyanın adını yaz (ör. `kara-delikler`). Büyük harf (`Kara-Delikler`) ya da `.json` uzantısı (`kara-delikler.json`) da kabul edilir.
+5. **Seslendiren** listesinden **Guy** (erkek) ya da **Jenny** (kadın) seç (varsayılan Guy).
 6. Yeşil **Run workflow** düğmesine dokun.
 
 İş 3–6 dakika sürer. Yeşil tik ✅ çıkınca video hazırdır.
@@ -74,16 +74,17 @@ Actions'ta biten işe gir, sayfanın altındaki **Artifacts** bölümünden zip'
   "aciklama": "Açıklama metni\n\n#shorts #etiket",
   "etiketler": ["etiket1", "etiket2"],
   "bolumler": [
-    { "metin": "Seslendirilecek Türkçe metin.", "arama": "english search keywords" }
+    { "metin": "English narration text.", "arama": "english search keywords" }
   ]
 }
 ```
 
-- Tüm bölümlerin metni birlikte 45–55 saniye tutmalı (yaklaşık 110–125 kelime).
+- `baslik`, `aciklama`, `etiketler` ve `metin` İngilizce yazılır (alan adları aynı kalır).
+- Tüm bölümlerin metni birlikte 45–55 saniye tutmalı (yaklaşık 125–140 İngilizce kelime).
 - Her bölüm kendi metni okunurken ekranda kendi görüntüsünü gösterir.
-- `arama` İngilizce yazılır; stok görsel siteleri İngilizce aramalarda daha iyi sonuç verir.
+- `arama` da İngilizce yazılır; stok görsel siteleri İngilizce aramalarda daha iyi sonuç verir.
 - Her bölüm için sıra: Pixabay video (önce dikey, yoksa yatay video ortadan kırpılır) → Pixabay dikey fotoğraf → Pexels (anahtar varsa) → renkli hareketli arka plan.
-- Pixabay ya da Pexels kullanıldıysa `youtube-bilgileri.txt`'deki açıklamanın sonuna `Görüntüler: Pixabay` (ya da `Görüntüler: Pixabay, Pexels`) satırı eklenir.
+- Pixabay ya da Pexels kullanıldıysa `youtube-bilgileri.txt`'deki açıklamanın sonuna `Footage: Pixabay` (ya da `Footage: Pixabay, Pexels`) satırı eklenir. Dosyadaki bölümler `TITLE`, `DESCRIPTION` ve `TAGS` başlıklarıyla ayrılır.
 
 Örnek: [`senaryolar/ornek.json`](senaryolar/ornek.json)
 

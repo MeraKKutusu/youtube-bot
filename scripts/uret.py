@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Senaryo JSON dosyasından 1080x1920 Türkçe YouTube Shorts videosu üretir.
+"""Senaryo JSON dosyasından 1080x1920 İngilizce YouTube Shorts videosu üretir.
 
 Adımlar:
-  1. edge-tts ile Türkçe seslendirme + kelime zamanlamaları
+  1. edge-tts ile İngilizce (en-US) seslendirme + kelime zamanlamaları
   2. Her bölüm için görüntü, bu sırayla denenir:
        a. Pixabay video (dikey olanlar önce), yoksa Pixabay dikey fotoğraf
        b. Pexels video/fotoğraf (isteğe bağlı; yalnızca anahtar varsa)
        c. Hiçbiri olmazsa ffmpeg ile renkli, hareketli arka plan
      Anahtar olmaması ya da sonuç bulunamaması videoyu durdurmaz.
-  3. Ekranın ortasında büyük, kalın, siyah kenarlıklı beyaz altyazı
+  3. Alt üçte birlik bölümde (yüksekliğin ~%70'i) büyük, kalın, siyah
+     kenarlıklı beyaz altyazı; Shorts'un alt başlık alanına ve sağdaki
+     butonlara değmez
   4. ffmpeg ile 1080x1920, 30 fps MP4
 
 API anahtarları yalnızca ortam değişkenlerinden okunur (PIXABAY_API_KEY,
@@ -16,7 +18,7 @@ PEXELS_API_KEY); GitHub Actions'ta Secret'lardan gelir. Kodda ya da repoda
 tutulmaz ve loglara yazılmaz.
 
 Kullanım:
-  python scripts/uret.py --senaryo senaryolar/ornek.json --ses Emel \
+  python scripts/uret.py --senaryo senaryolar/ornek.json --ses Guy \
       --cikti cikti --calisma calisma
 """
 import argparse
@@ -30,16 +32,23 @@ import time
 from pathlib import Path
 
 GENISLIK, YUKSEKLIK, FPS = 1080, 1920, 30
-SESLER = {"Emel": "tr-TR-EmelNeural", "Ahmet": "tr-TR-AhmetNeural"}
+# Seslendirenler: Guy (erkek, varsayılan) ve Jenny (kadın), ikisi de en-US
+SESLER = {"Guy": "en-US-GuyNeural", "Jenny": "en-US-JennyNeural"}
+VARSAYILAN_SES = "Guy"
 
 # Altyazı ayarları
 FONT_DIZINI = "/usr/share/fonts/truetype/dejavu"
-FONT_ADI = "DejaVu Sans"   # Türkçe karakterlerin hepsini içerir
+FONT_ADI = "DejaVu Sans"
 FONT_BOYUTU = 96
 KENARLIK = 7               # siyah kenarlık kalınlığı (piksel)
-YAN_BOSLUK = 130           # sağdaki Shorts butonlarından uzak dursun
+YAN_BOSLUK = 150           # sağdaki Shorts butonlarından uzak dursun
+# Altyazının alt kenarı bu y değerinde sabit durur; tek satır yazının ortası
+# yüksekliğin ~%70'ine (y≈1350) denk gelir. Yazı iki satıra taşarsa yukarı
+# doğru büyür, böylece alttaki başlık/kanal alanına hiç inmez.
+ALTYAZI_ALT_KENAR = 1410
+ALT_BOSLUK = YUKSEKLIK - ALTYAZI_ALT_KENAR  # ASS MarginV (alttan uzaklık)
 EN_FAZLA_KELIME = 3        # ekranda aynı anda en fazla kaç kelime
-EN_FAZLA_HARF = 18         # bir altyazı parçasının en fazla uzunluğu
+EN_FAZLA_HARF = 16         # bir altyazı parçasının en fazla uzunluğu
 
 PIXABAY_VIDEO = "https://pixabay.com/api/videos/"
 PIXABAY_FOTO = "https://pixabay.com/api/"
@@ -82,7 +91,24 @@ def calistir(komut):
 
 # ---------------------------------------------------------------- senaryo
 
+def senaryo_yolu_bul(girdi, klasor="senaryolar"):
+    """'ornek', 'Ornek', 'ORNEK.JSON', 'senaryolar/ornek.json' gibi girdileri
+    gerçek dosya yoluna çevirir. Önce birebir eşleşme, sonra harf duyarsız arar."""
+    girdi = str(girdi).strip()
+    if Path(girdi).is_file():
+        return Path(girdi)
+    ad = re.sub(r"\.json$", "", Path(girdi).name, flags=re.IGNORECASE)
+    tam = Path(klasor) / f"{ad}.json"
+    if tam.is_file():
+        return tam
+    for dosya in sorted(Path(klasor).glob("*")):
+        if dosya.is_file() and dosya.suffix.lower() == ".json" and dosya.stem.lower() == ad.lower():
+            return dosya
+    hata(f"senaryo bulunamadı: {girdi} ({klasor}/ klasöründe {ad}.json yok)")
+
+
 def senaryo_oku(yol):
+    yol = senaryo_yolu_bul(yol)
     try:
         veri = json.loads(Path(yol).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
@@ -215,7 +241,8 @@ def altyazi_yaz(metin, kelimeler, ses_suresi, ass_yolu):
             bitis = baslangic + 0.3
         satirlar.append(f"Dialogue: 0,{_ass_zaman(baslangic)},{_ass_zaman(bitis)},Ana,,0,0,0,,{yazi}")
 
-    # Alignment 5 = tam orta. Bold -1 = kalın. BorderStyle 1 + Outline = kenarlık.
+    # Alignment 2 = alt orta (MarginV alttan uzaklık). Bold -1 = kalın.
+    # BorderStyle 1 + Outline = kenarlık.
     baslik = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {GENISLIK}
@@ -225,7 +252,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,5,{YAN_BOSLUK},{YAN_BOSLUK},0,1
+Style: Ana,{FONT_ADI},{FONT_BOYUTU},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,{KENARLIK},2,2,{YAN_BOSLUK},{YAN_BOSLUK},{ALT_BOSLUK},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -437,11 +464,11 @@ def youtube_bilgileri_yaz(veri, kaynak_adlari, yol):
         etiketler = ", ".join(str(e).strip() for e in etiketler)
     aciklama = veri["aciklama"].strip()
     if kaynak_adlari:
-        aciklama += f"\n\nGörüntüler: {', '.join(kaynak_adlari)}"
+        aciklama += f"\n\nFootage: {', '.join(kaynak_adlari)}"
     Path(yol).write_text(
-        f"BAŞLIK\n{veri['baslik'].strip()}\n\n"
-        f"AÇIKLAMA\n{aciklama}\n\n"
-        f"ETİKETLER\n{etiketler}\n",
+        f"TITLE\n{veri['baslik'].strip()}\n\n"
+        f"DESCRIPTION\n{aciklama}\n\n"
+        f"TAGS\n{etiketler}\n",
         encoding="utf-8")
 
 
@@ -511,10 +538,19 @@ def uret(args):
     print(f"Hazır: {video} ({sure_olc(video):.1f} sn)")
 
 
+def ses_adi(deger):
+    """Ses adını büyük/küçük harf duyarsız kabul eder (guy, GUY, Guy)."""
+    for ad in SESLER:
+        if ad.lower() == str(deger).strip().lower():
+            return ad
+    raise argparse.ArgumentTypeError(f"geçersiz ses: {deger} (seçenekler: {', '.join(SESLER)})")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--senaryo", required=True)
-    ap.add_argument("--ses", choices=sorted(SESLER), default="Emel")
+    ap.add_argument("--ses", type=ses_adi, default=VARSAYILAN_SES,
+                    help="Guy (erkek, varsayılan) ya da Jenny (kadın)")
     ap.add_argument("--cikti", default="cikti")
     ap.add_argument("--calisma", default="calisma")
     args = ap.parse_args()
