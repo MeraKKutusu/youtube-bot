@@ -140,7 +140,7 @@ hız -8%, ton -6Hz, hafif bas ve sıkıştırma. Cümleler ayrı seslendirilip a
 konur: kancadan sonra 0.7 sn, sorudan sonra 0.6 sn, sahne sonunda 0.45 sn, diğer cümlelerde
 0.3 sn. Mood (`tense`, `mysterious`, `fun`, `epic`) müziği ffmpeg ile sentezlenir, konuşmada
 sidechain ile kısılır. Kancada vurgu, gerilimde alçak uğultu, kapanışta yükselen ses
-(sahne geçişlerinde efekt yok). Telifli ses yok.
+(sahne geçişlerinde efekt yok). Müzik ve efektler her videoda anlatıcının 12 LU altına otomatik dengelenir. Telifli ses yok.
 İki geçişli loudnorm ile -14 LUFS, en fazla -1.5 dBTP.
 
 **Yayın metinleri:** `youtube.txt` (başlık + "| Vahşi Gerçekler #N", açıklama, hashtag'ler,
