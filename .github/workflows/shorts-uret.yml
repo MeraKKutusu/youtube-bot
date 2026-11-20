@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       senaryo:
-        description: "Senaryo dosyasının adı (senaryolar/ klasöründe, ör. ornek)"
+        description: "Senaryo dosyasının adı (senaryolar/ klasöründe, ör. ornek; büyük harf ve .json da olur)"
         required: true
         type: string
       ses:
-        description: "Seslendiren"
+        description: "Seslendiren (Guy = erkek, Jenny = kadın; ikisi de en-US)"
         required: true
-        default: Emel
+        default: Guy
         type: choice
         options:
-          - Emel
-          - Ahmet
+          - Guy
+          - Jenny
 
 # Release oluşturabilmek için yazma izni gerekli
 permissions:
@@ -45,17 +45,38 @@ jobs:
         env:
           SENARYO: ${{ inputs.senaryo }}
         run: |
-          ad="${SENARYO#senaryolar/}"
-          ad="${ad%.json}"
+          # Baştaki/sondaki boşlukları, "senaryolar/" önekini ve .json
+          # uzantısını (.JSON, .Json da) at
+          ad="$SENARYO"
+          ad="${ad#"${ad%%[![:space:]]*}"}"
+          ad="${ad%"${ad##*[![:space:]]}"}"
+          ad="${ad#senaryolar/}"
+          shopt -s nocasematch
+          if [[ "$ad" =~ ^(.*)\.json$ ]]; then ad="${BASH_REMATCH[1]}"; fi
+          shopt -u nocasematch
           if ! [[ "$ad" =~ ^[A-Za-z0-9_-]+$ ]]; then
             echo "::error::Senaryo adı yalnızca harf, rakam, - ve _ içerebilir: $ad"
             exit 1
           fi
-          if [ ! -f "senaryolar/$ad.json" ]; then
+          # Önce birebir, sonra büyük/küçük harf duyarsız eşleşme ara
+          dosya=""
+          if [ -f "senaryolar/$ad.json" ]; then
+            dosya="senaryolar/$ad.json"
+          else
+            for f in senaryolar/*; do
+              [ -f "$f" ] || continue
+              taban="$(basename "$f")"
+              if [ "${taban,,}" = "${ad,,}.json" ]; then dosya="$f"; break; fi
+            done
+          fi
+          if [ -z "$dosya" ]; then
             echo "::error::senaryolar/$ad.json bulunamadı"
             exit 1
           fi
-          echo "SENARYO_AD=$ad" >> "$GITHUB_ENV"
+          taban="$(basename "$dosya")"
+          echo "SENARYO_DOSYA=$dosya" >> "$GITHUB_ENV"
+          echo "SENARYO_AD=${taban%.*}" >> "$GITHUB_ENV"
+          echo "Senaryo: $dosya"
 
       - name: Videoyu üret
         env:
@@ -66,7 +87,7 @@ jobs:
           SES: ${{ inputs.ses }}
         run: |
           python scripts/uret.py \
-            --senaryo "senaryolar/$SENARYO_AD.json" \
+            --senaryo "$SENARYO_DOSYA" \
             --ses "$SES" \
             --cikti cikti \
             --calisma calisma
