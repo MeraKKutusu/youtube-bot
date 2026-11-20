@@ -8,13 +8,13 @@ on:
         required: true
         type: string
       ses:
-        description: "Seslendiren (Guy = erkek, Jenny = kadın; ikisi de en-US)"
+        description: "Türkçe seslendiren (Ahmet = erkek, Emel = kadın)"
         required: true
-        default: Guy
+        default: Ahmet
         type: choice
         options:
-          - Guy
-          - Jenny
+          - Ahmet
+          - Emel
 
 # Release oluşturabilmek için yazma izni gerekli
 permissions:
