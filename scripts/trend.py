@@ -275,10 +275,22 @@ def hayvan_bul(baslik):
     return None
 
 
+# Yalnızca İngilizce/Türkçe başlıklar: Latin dışı harf (Devanagari, Bengalce, Tamilce,
+# Arapça, Kiril...) içeren başlıklar elenir. Emoji ve noktalama serbest.
+LATIN_DISI = re.compile(r"[\u0370-\u03ff\u0400-\u052f\u0590-\u08ff\u0900-\u0dff"
+                        r"\u0e00-\u0fff\u1000-\u109f\u1100-\u11ff\u3040-\u30ff"
+                        r"\u3400-\u9fff\uac00-\ud7af]")
+TAMIL_VB = re.compile(r"#(tamil|hindi|telugu|bangla|bengali|urdu|malayalam|kannada)\b", re.I)
+
+
+def uygun_baslik(baslik):
+    return not (LATIN_DISI.search(baslik) or TAMIL_VB.search(baslik) or DISLA.search(baslik))
+
+
 def analiz(videolar):
     shorts = [v for v in videolar
               if v["sure"] <= EN_UZUN_SHORT and v["izlenme"] >= EN_AZ_IZLENME
-              and not DISLA.search(v["baslik"])]
+              and uygun_baslik(v["baslik"])]
     for v in shorts:
         v["hayvan"] = hayvan_bul(v["baslik"])
     hayvanli = [v for v in shorts if v["hayvan"]]
@@ -290,9 +302,13 @@ def analiz(videolar):
         p["izlenme"] += v["izlenme"]
         p["video"] += 1
         p["kanallar"].add(v["kanal"])
-    # Tek bir dev videonun tüm sıralamayı belirlememesi için: toplam izlenme ×
-    # (farklı kanal sayısının karekökü)
-    sirali = sorted(puan.items(), key=lambda x: -x[1]["izlenme"] * math.sqrt(len(x[1]["kanallar"])))
+    # Tek bir dev viral videonun tüm sıralamayı belirlememesi için puan, izlenmelerin
+    # karekökleri toplamıdır (çok video + çok kanal = daha güçlü konu). En az 2 videosu
+    # olan konular önce gelir; 5'e tamamlanamazsa tek videoluklar eklenir.
+    for v in hayvanli:
+        puan[v["hayvan"]].setdefault("puan", 0.0)
+        puan[v["hayvan"]]["puan"] += math.sqrt(v["izlenme"])
+    sirali = sorted(puan.items(), key=lambda x: (x[1]["video"] < 2, -x[1]["puan"]))
     # Aynı aileden (Shark / Great white shark gibi) yalnızca en güçlüsü alınır
     konular, aileler = [], set()
     for ad, p in sirali:
