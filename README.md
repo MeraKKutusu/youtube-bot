@@ -3,7 +3,8 @@
 Türkçe YouTube Shorts hazırlayan sistem. Sen bir konu verirsin; Claude senaryoyu, başlığı, açıklamayı ve etiketleri yazıp `senaryolar/` klasörüne kaydeder. Ardından GitHub Actions videoyu üretir:
 
 - 🎙️ Türkçe seslendirme (edge-tts, ücretsiz) — Emel ya da Ahmet
-- 🎞️ Pexels'ten dikey stok videolar (bulunamazsa dikey fotoğraflar)
+- 🎞️ Pixabay'den stok videolar (bulunamazsa dikey fotoğraflar). Pexels isteğe bağlı yedek kaynak.
+- 🌈 Görüntü bulunamazsa ya da anahtar yoksa renkli hareketli arka plan; video her durumda tamamlanır
 - 💬 Ekranın ortasında büyük, kalın, siyah kenarlıklı beyaz altyazı
 - 📱 1080x1920, 30 fps MP4
 
@@ -15,18 +16,23 @@ Türkçe YouTube Shorts hazırlayan sistem. Sen bir konu verirsin; Claude senary
 
 Bu adımlar için **tarayıcıdan github.com**'u kullan. GitHub mobil uygulamasında Ayarlar menüsü yok. Sayfa sıkışık görünürse tarayıcı menüsünden **"Masaüstü sitesi"**ni açabilirsin.
 
-### 1. Pexels API anahtarını al
-1. [pexels.com/api](https://www.pexels.com/api/) adresine git ve ücretsiz hesap aç (ya da giriş yap).
-2. **"Your API Key"** bölümündeki anahtarı kopyala.
+### 1. Pixabay API anahtarını al
+1. [pixabay.com](https://pixabay.com) adresinde ücretsiz hesap aç (ya da giriş yap).
+2. [pixabay.com/api/docs](https://pixabay.com/api/docs/) sayfasını aç.
+3. Sayfadaki **Parameters** tablosunda, `key` satırında yeşil renkte yazan anahtarı kopyala.
 
 ### 2. Anahtarı GitHub Secret olarak ekle
 1. github.com/MeraKKutusu/youtube-bot adresini aç.
 2. **Settings** → **Secrets and variables** → **Actions**.
 3. **New repository secret**'a dokun.
-4. **Name** kutusuna tam olarak `PEXELS_API_KEY` yaz, **Secret** kutusuna anahtarı yapıştır.
+4. **Name** kutusuna tam olarak `PIXABAY_API_KEY` yaz, **Secret** kutusuna anahtarı yapıştır.
 5. **Add secret**'a dokun.
 
 > 🔒 Anahtarı başka hiçbir yere yazma: ne bir dosyaya, ne commit mesajına, ne de sohbete. Yalnızca bu Secret'ta durmalı.
+
+> İsteğe bağlı: Bir Pexels anahtarın varsa aynı yolla `PEXELS_API_KEY` adıyla ekleyebilirsin. Pixabay'de bulunamayan görüntüler için yedek kaynak olarak kullanılır. Gerekli değildir.
+>
+> Hiç anahtar eklemesen bile workflow çalışır; görüntülerin yerine renkli hareketli arka plan kullanılır.
 
 ---
 
@@ -68,14 +74,16 @@ Actions'ta biten işe gir, sayfanın altındaki **Artifacts** bölümünden zip'
   "aciklama": "Açıklama metni\n\n#shorts #etiket",
   "etiketler": ["etiket1", "etiket2"],
   "bolumler": [
-    { "metin": "Seslendirilecek Türkçe metin.", "arama": "english pexels keywords" }
+    { "metin": "Seslendirilecek Türkçe metin.", "arama": "english search keywords" }
   ]
 }
 ```
 
 - Tüm bölümlerin metni birlikte 45–55 saniye tutmalı (yaklaşık 110–125 kelime).
 - Her bölüm kendi metni okunurken ekranda kendi görüntüsünü gösterir.
-- `arama` İngilizce yazılır; Pexels İngilizce aramalarda daha iyi sonuç verir.
+- `arama` İngilizce yazılır; stok görsel siteleri İngilizce aramalarda daha iyi sonuç verir.
+- Her bölüm için sıra: Pixabay video (önce dikey, yoksa yatay video ortadan kırpılır) → Pixabay dikey fotoğraf → Pexels (anahtar varsa) → renkli hareketli arka plan.
+- Pixabay ya da Pexels kullanıldıysa `youtube-bilgileri.txt`'deki açıklamanın sonuna `Görüntüler: Pixabay` (ya da `Görüntüler: Pixabay, Pexels`) satırı eklenir.
 
 Örnek: [`senaryolar/ornek.json`](senaryolar/ornek.json)
 
@@ -83,14 +91,14 @@ Actions'ta biten işe gir, sayfanın altındaki **Artifacts** bölümünden zip'
 
 | Hata | Çözüm |
 |---|---|
-| `PEXELS_API_KEY secret'ı eklenmemiş` | Kurulum adım 2'yi yap. |
-| `Pexels anahtarı geçersiz` | Secret'ı silip anahtarı yeniden ekle. |
+| Sarı uyarı: `PIXABAY_API_KEY yok` | Video arka planla üretildi. Görüntü istiyorsan kurulum adım 2'yi yap. |
+| Sarı uyarı: `Pixabay anahtarı reddedildi` | Secret'ı silip anahtarı yeniden ekle; başında ya da sonunda boşluk olmasın. |
+| Sarı uyarı: `... için görüntü bulunamadı` | O bölüm arka planla üretildi. İstersen Claude'dan o bölümün `arama` kelimelerini değiştirmesini iste. |
 | `edge-tts seslendirmesi ... başarısız` | Ücretsiz servis anlık hata vermiş olabilir. İşi aç, **Re-run jobs**'a dokun. |
-| `... için görsel bulunamadı` | Claude'dan o bölümün `arama` kelimelerini değiştirmesini iste. |
 | Ses süresi uyarısı | Video yine üretilir. Süre 45–55 sn dışındaysa Claude'dan metni kısaltmasını ya da uzatmasını iste. |
 
 ## Güvenlik
 
-- API anahtarları yalnızca GitHub Secrets'ta durur; kodda yalnızca `${{ secrets.PEXELS_API_KEY }}` adıyla geçer.
+- API anahtarları yalnızca GitHub Secrets'ta durur; kodda yalnızca `${{ secrets.PIXABAY_API_KEY }}` ve `${{ secrets.PEXELS_API_KEY }}` adlarıyla geçer. Hata mesajlarında anahtar `***` ile gizlenir.
 - `.gitignore`, `.env`, token ve anahtar dosyalarının repoya girmesini engeller.
 - `.claude/hooks/gizli-koru.py` (PreToolUse hook'u), Claude Code'un gizli dosyalara yazmasını, onları commit'lemesini ya da herhangi bir dosyaya açık bir anahtar değeri yazmasını engeller.

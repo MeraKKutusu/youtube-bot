@@ -3,12 +3,17 @@
 
 Adımlar:
   1. edge-tts ile Türkçe seslendirme + kelime zamanlamaları
-  2. Her bölüm için Pexels'ten dikey video (yoksa dikey fotoğraf)
+  2. Her bölüm için görüntü, bu sırayla denenir:
+       a. Pixabay video (dikey olanlar önce), yoksa Pixabay dikey fotoğraf
+       b. Pexels video/fotoğraf (isteğe bağlı; yalnızca anahtar varsa)
+       c. Hiçbiri olmazsa ffmpeg ile renkli, hareketli arka plan
+     Anahtar olmaması ya da sonuç bulunamaması videoyu durdurmaz.
   3. Ekranın ortasında büyük, kalın, siyah kenarlıklı beyaz altyazı
   4. ffmpeg ile 1080x1920, 30 fps MP4
 
-Pexels anahtarı yalnızca PEXELS_API_KEY ortam değişkeninden okunur
-(GitHub Actions'ta bir Secret'tan gelir). Kodda ya da repoda tutulmaz.
+API anahtarları yalnızca ortam değişkenlerinden okunur (PIXABAY_API_KEY,
+PEXELS_API_KEY); GitHub Actions'ta Secret'lardan gelir. Kodda ya da repoda
+tutulmaz ve loglara yazılmaz.
 
 Kullanım:
   python scripts/uret.py --senaryo senaryolar/ornek.json --ses Emel \
@@ -36,8 +41,25 @@ YAN_BOSLUK = 130           # sağdaki Shorts butonlarından uzak dursun
 EN_FAZLA_KELIME = 3        # ekranda aynı anda en fazla kaç kelime
 EN_FAZLA_HARF = 18         # bir altyazı parçasının en fazla uzunluğu
 
-PEXELS_VIDEO = "https://api.pexels.com/videos/search"
+PIXABAY_VIDEO = "https://pixabay.com/api/videos/"
+PIXABAY_FOTO = "https://pixabay.com/api/"
+PEXELS_VIDEO = "https://api.pexels.com/v1/videos/search"
 PEXELS_FOTO = "https://api.pexels.com/v1/search"
+EN_BUYUK_VIDEO = 80 * 1024 * 1024   # bundan büyük video dosyalarını indirme
+
+# Görüntü bulunamazsa kullanılacak hareketli arka plan renkleri
+RENK_PALETLERI = [
+    ("0x1e3a8a", "0x7c3aed", "0x06b6d4"),
+    ("0x0f766e", "0x22c55e", "0xfacc15"),
+    ("0x9d174d", "0xf97316", "0xfde047"),
+    ("0x312e81", "0xdb2777", "0xf472b6"),
+    ("0x14532d", "0x0ea5e9", "0x6366f1"),
+    ("0x7f1d1d", "0xea580c", "0xa855f7"),
+]
+
+
+class KomutHatasi(RuntimeError):
+    pass
 
 
 def hata(mesaj):
@@ -45,11 +67,16 @@ def hata(mesaj):
     sys.exit(1)
 
 
+def uyari(mesaj):
+    # GitHub Actions bu biçimi sarı uyarı olarak gösterir
+    print(f"::warning::{mesaj}")
+
+
 def calistir(komut):
     sonuc = subprocess.run(komut, capture_output=True, text=True)
     if sonuc.returncode != 0:
         print(sonuc.stderr[-3000:], file=sys.stderr)
-        hata(f"komut başarısız oldu: {komut[0]}")
+        raise KomutHatasi(f"komut başarısız oldu: {komut[0]}")
     return sonuc.stdout
 
 
@@ -206,27 +233,40 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     Path(ass_yolu).write_text(baslik + "\n".join(satirlar) + "\n", encoding="utf-8")
 
 
-# ---------------------------------------------------------------- Pexels
+# ---------------------------------------------------------------- görüntü kaynakları
 
-def _pexels_get(anahtar, url, sorgu):
+class KaynakKapali(Exception):
+    """Anahtar geçersiz: bu kaynak bu çalıştırmada bir daha denenmez."""
+
+
+def _gizle(yazi, anahtarlar):
+    """Hata mesajlarındaki anahtarları siler (Pixabay anahtarı URL'de gider)."""
+    yazi = str(yazi)
+    for a in anahtarlar:
+        if a:
+            yazi = yazi.replace(a, "***")
+    return re.sub(r"key=[^&\s]+", "key=***", yazi)
+
+
+def _api_get(url, params, headers, anahtar):
     import requests
 
     for deneme in range(1, 4):
         try:
-            r = requests.get(url, headers={"Authorization": anahtar},
-                             params={"query": sorgu, "orientation": "portrait", "per_page": 15},
-                             timeout=30)
-            if r.status_code == 401:
-                hata("Pexels anahtarı geçersiz (PEXELS_API_KEY secret'ını kontrol edin)")
+            r = requests.get(url, params=params, headers=headers, timeout=30)
+            if r.status_code in (400, 401, 403) and deneme == 1:
+                ilk = r.text[:200]
+                if "key" in ilk.lower() or r.status_code in (401, 403):
+                    raise KaynakKapali(_gizle(f"HTTP {r.status_code}: {ilk}", [anahtar]))
             if r.status_code == 429:
                 time.sleep(10 * deneme)
                 continue
             r.raise_for_status()
             return r.json()
-        except SystemExit:
+        except KaynakKapali:
             raise
         except Exception as e:
-            print(f"Pexels isteği başarısız ({sorgu}, deneme {deneme}): {e}", file=sys.stderr)
+            print(f"İstek başarısız (deneme {deneme}): {_gizle(e, [anahtar])}", file=sys.stderr)
             time.sleep(3 * deneme)
     return {}
 
@@ -239,43 +279,111 @@ def _indir(url, hedef):
         with open(hedef, "wb") as f:
             for blok in r.iter_content(1 << 20):
                 f.write(blok)
+    if Path(hedef).stat().st_size == 0:
+        raise ValueError("boş dosya indi")
 
 
-def medya_bul_indir(anahtar, sorgu, klasor, sira, kullanilan):
-    """Sorgu için dikey video (yoksa fotoğraf) indirir; (tür, yol) döndürür."""
-    sorgular = [sorgu]
-    ilk_kelime = sorgu.split()[0] if sorgu.split() else ""
-    if ilk_kelime and ilk_kelime != sorgu:
-        sorgular.append(ilk_kelime)
+def _sorgular(sorgu):
+    sorgu = sorgu.strip()[:100]  # Pixabay en fazla 100 karakter kabul ediyor
+    liste = [sorgu]
+    kelimeler = sorgu.split()
+    if len(kelimeler) > 2:
+        liste.append(" ".join(kelimeler[:2]))
+    if len(kelimeler) > 1:
+        liste.append(kelimeler[0])
+    return liste
 
-    for s in sorgular:
-        for v in _pexels_get(anahtar, PEXELS_VIDEO, s).get("videos", []):
-            if ("v", v["id"]) in kullanilan:
+
+def pixabay_adaylar(anahtar, sorgu):
+    """Sırayla denenecek (tür, url, kimlik) adayları üretir: önce video, sonra foto."""
+    for s in _sorgular(sorgu):
+        veri = _api_get(PIXABAY_VIDEO, {"key": anahtar, "q": s, "per_page": 20,
+                                        "safesearch": "true"}, None, anahtar)
+        dikey, yatay = [], []
+        for v in veri.get("hits", []):
+            boyutlar = [b for b in (v.get("videos") or {}).values()
+                        if b.get("url") and b.get("width") and b.get("height")
+                        and (b.get("size") or 0) <= EN_BUYUK_VIDEO]
+            if not boyutlar:
                 continue
+            # Kısa kenarı 1080'e en yakın boyut: ne bulanık ne gereksiz büyük
+            boyutlar.sort(key=lambda b: abs(min(b["width"], b["height"]) - GENISLIK))
+            b = boyutlar[0]
+            (dikey if b["height"] > b["width"] else yatay).append(
+                ("video", b["url"], ("pixabay-v", v.get("id"))))
+        yield from dikey
+        yield from yatay  # yatay videolar ortadan 9:16 kırpılır
+
+    for s in _sorgular(sorgu):
+        veri = _api_get(PIXABAY_FOTO, {"key": anahtar, "q": s, "image_type": "photo",
+                                       "orientation": "vertical", "per_page": 20,
+                                       "safesearch": "true"}, None, anahtar)
+        for p in veri.get("hits", []):
+            url = p.get("largeImageURL") or p.get("webformatURL")
+            if url:
+                yield ("foto", url, ("pixabay-f", p.get("id")))
+
+
+def pexels_adaylar(anahtar, sorgu):
+    basliklar = {"Authorization": anahtar}
+    for s in _sorgular(sorgu):
+        veri = _api_get(PEXELS_VIDEO, {"query": s, "orientation": "portrait", "per_page": 15},
+                        basliklar, anahtar)
+        for v in veri.get("videos", []):
             dosyalar = [f for f in v.get("video_files", [])
                         if f.get("file_type") == "video/mp4" and f.get("width") and f.get("height")
                         and f["height"] > f["width"] and f["width"] >= 540]
-            if not dosyalar:
-                continue
-            dosyalar.sort(key=lambda f: abs(f["width"] - GENISLIK))
-            yol = Path(klasor) / f"medya_{sira:02d}.mp4"
-            _indir(dosyalar[0]["link"], yol)
-            kullanilan.add(("v", v["id"]))
-            return "video", yol
+            if dosyalar:
+                dosyalar.sort(key=lambda f: abs(f["width"] - GENISLIK))
+                yield ("video", dosyalar[0]["link"], ("pexels-v", v.get("id")))
+    for s in _sorgular(sorgu):
+        veri = _api_get(PEXELS_FOTO, {"query": s, "orientation": "portrait", "per_page": 15},
+                        basliklar, anahtar)
+        for p in veri.get("photos", []):
+            url = (p.get("src") or {}).get("large2x") or (p.get("src") or {}).get("portrait")
+            if url:
+                yield ("foto", url, ("pexels-f", p.get("id")))
 
-    for s in sorgular + ["nature"]:
-        for p in _pexels_get(anahtar, PEXELS_FOTO, s).get("photos", []):
-            if ("f", p["id"]) in kullanilan:
-                continue
-            url = p.get("src", {}).get("large2x") or p.get("src", {}).get("portrait")
-            if not url:
-                continue
-            yol = Path(klasor) / f"medya_{sira:02d}.jpg"
-            _indir(url, yol)
-            kullanilan.add(("f", p["id"]))
-            return "foto", yol
 
-    hata(f"Pexels'te '{sorgu}' için görsel bulunamadı; bu bölümün 'arama' kelimelerini değiştirin")
+def kaynaklari_hazirla():
+    """Anahtarı olan kaynakları öncelik sırasıyla döndürür: [(ad, anahtar, aday_fonk)]."""
+    kaynaklar = []
+    pixabay = os.environ.get("PIXABAY_API_KEY", "").strip()
+    pexels = os.environ.get("PEXELS_API_KEY", "").strip()
+    if pixabay:
+        kaynaklar.append(["Pixabay", pixabay, pixabay_adaylar])
+    if pexels:
+        kaynaklar.append(["Pexels", pexels, pexels_adaylar])
+    if not kaynaklar:
+        uyari("PIXABAY_API_KEY yok; tüm bölümlerde renkli hareketli arka plan kullanılacak")
+    return kaynaklar
+
+
+def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan):
+    """(tür, yol, kaynak_adı) döndürür. Hiçbir şey bulunamazsa ("arka_plan", None, None)."""
+    for kaynak in list(kaynaklar):
+        ad, anahtar, adaylar = kaynak
+        try:
+            for tur, url, kimlik in adaylar(anahtar, sorgu):
+                if kimlik in kullanilan:
+                    continue
+                uzanti = "mp4" if tur == "video" else "jpg"
+                yol = Path(klasor) / f"medya_{sira:02d}.{uzanti}"
+                try:
+                    _indir(url, yol)
+                except Exception as e:
+                    print(f"{ad} indirmesi başarısız: {_gizle(e, [anahtar])}", file=sys.stderr)
+                    continue
+                kullanilan.add(kimlik)
+                return tur, yol, ad
+        except KaynakKapali as e:
+            uyari(f"{ad} anahtarı reddedildi ({e}); bu kaynak atlanıyor")
+            kaynaklar.remove(kaynak)
+        except Exception as e:
+            uyari(f"{ad} araması başarısız: {_gizle(e, [anahtar])}")
+    if kaynaklar:
+        uyari(f"'{sorgu}' için görüntü bulunamadı; hareketli arka plan kullanılıyor")
+    return "arka_plan", None, None
 
 
 # ---------------------------------------------------------------- video
@@ -285,56 +393,67 @@ def sure_olc(yol):
                            "-of", "default=nw=1:nk=1", str(yol)]).strip())
 
 
-def parca_olustur(tur, kaynak, sure, hedef):
-    olcek = (f"scale={GENISLIK}:{YUKSEKLIK}:force_original_aspect_ratio=increase,"
-             f"crop={GENISLIK}:{YUKSEKLIK},setsar=1,fps={FPS}")
-    if tur == "video":
-        giris = ["-stream_loop", "-1", "-i", str(kaynak)]
-        filtre = olcek
-    else:
-        # Fotoğrafta hafif yakınlaşma efekti
-        kare = max(1, round(sure * FPS))
-        giris = ["-loop", "1", "-i", str(kaynak)]
-        filtre = (f"scale={GENISLIK * 2}:{YUKSEKLIK * 2}:force_original_aspect_ratio=increase,"
-                  f"crop={GENISLIK * 2}:{YUKSEKLIK * 2},"
-                  f"zoompan=z='1+0.10*on/{kare}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
-                  f":d=1:s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
+def _kodla(giris, filtre, sure, hedef):
     calistir(["ffmpeg", "-y", "-loglevel", "error", *giris, "-t", f"{sure:.3f}",
               "-vf", filtre, "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
               "-pix_fmt", "yuv420p", str(hedef)])
 
 
-def youtube_bilgileri_yaz(veri, yol):
+def arka_plan_olustur(sira, sure, hedef):
+    """Renkli, yavaşça dönen gradyan arka plan üretir."""
+    r1, r2, r3 = RENK_PALETLERI[sira % len(RENK_PALETLERI)]
+    boyut = f"{GENISLIK}x{YUKSEKLIK}"
+    try:
+        _kodla(["-f", "lavfi", "-i",
+                f"gradients=s={boyut}:r={FPS}:c0={r1}:c1={r2}:c2={r3}:n=3:speed=0.015:type=radial"],
+               "format=yuv420p,setsar=1", sure, hedef)
+    except KomutHatasi:
+        # Eski ffmpeg'de gradients yoksa: rengi zamanla dönen düz arka plan
+        _kodla(["-f", "lavfi", "-i", f"color=c={r1}:s={boyut}:r={FPS}"],
+               "format=yuv420p,hue=h=t*25:s=1.4,setsar=1", sure, hedef)
+
+
+def parca_olustur(tur, kaynak, sure, hedef, sira):
+    if tur == "arka_plan":
+        arka_plan_olustur(sira, sure, hedef)
+        return
+    olcek = (f"scale={GENISLIK}:{YUKSEKLIK}:force_original_aspect_ratio=increase,"
+             f"crop={GENISLIK}:{YUKSEKLIK},setsar=1,fps={FPS}")
+    if tur == "video":
+        _kodla(["-stream_loop", "-1", "-i", str(kaynak)], olcek, sure, hedef)
+    else:
+        # Fotoğrafta hafif yakınlaşma efekti
+        kare = max(1, round(sure * FPS))
+        filtre = (f"scale={GENISLIK * 2}:{YUKSEKLIK * 2}:force_original_aspect_ratio=increase,"
+                  f"crop={GENISLIK * 2}:{YUKSEKLIK * 2},"
+                  f"zoompan=z='1+0.10*on/{kare}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                  f":d=1:s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
+        _kodla(["-loop", "1", "-i", str(kaynak)], filtre, sure, hedef)
+
+
+def youtube_bilgileri_yaz(veri, kaynak_adlari, yol):
     etiketler = veri["etiketler"]
     if isinstance(etiketler, list):
         etiketler = ", ".join(str(e).strip() for e in etiketler)
+    aciklama = veri["aciklama"].strip()
+    if kaynak_adlari:
+        aciklama += f"\n\nGörüntüler: {', '.join(kaynak_adlari)}"
     Path(yol).write_text(
         f"BAŞLIK\n{veri['baslik'].strip()}\n\n"
-        f"AÇIKLAMA\n{veri['aciklama'].strip()}\n\n"
+        f"AÇIKLAMA\n{aciklama}\n\n"
         f"ETİKETLER\n{etiketler}\n",
         encoding="utf-8")
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--senaryo", required=True)
-    ap.add_argument("--ses", choices=sorted(SESLER), default="Emel")
-    ap.add_argument("--cikti", default="cikti")
-    ap.add_argument("--calisma", default="calisma")
-    args = ap.parse_args()
-
-    anahtar = os.environ.get("PEXELS_API_KEY", "").strip()
-    if not anahtar:
-        hata("PEXELS_API_KEY ortam değişkeni boş (GitHub Secret olarak ekleyin)")
-
+def uret(args):
     veri = senaryo_oku(args.senaryo)
     cikti, calisma = Path(args.cikti), Path(args.calisma)
     cikti.mkdir(parents=True, exist_ok=True)
     calisma.mkdir(parents=True, exist_ok=True)
+    kaynaklar = kaynaklari_hazirla()
 
     metin, bolum_konumlari = tam_metin_ve_bolum_konumlari(veri["bolumler"])
-    kelime_sayisi = len(metin.split())
-    print(f"Senaryo: {len(veri['bolumler'])} bölüm, {kelime_sayisi} kelime")
+    print(f"Senaryo: {len(veri['bolumler'])} bölüm, {len(metin.split())} kelime")
 
     # 1. Seslendirme
     mp3 = calisma / "ses.mp3"
@@ -343,7 +462,7 @@ def main():
     ses_suresi = sure_olc(mp3)
     print(f"Ses süresi: {ses_suresi:.1f} sn")
     if not 45 <= ses_suresi <= 55:
-        print(f"::warning::Ses süresi {ses_suresi:.1f} sn; hedef 45-55 sn aralığı")
+        uyari(f"Ses süresi {ses_suresi:.1f} sn; hedef 45-55 sn aralığı")
     toplam_sure = ses_suresi + 0.3
 
     # 2. Altyazı
@@ -359,13 +478,20 @@ def main():
     baslangiclar.append(toplam_sure)
 
     # 4. Görseller ve parçalar
-    kullanilan, liste = set(), []
+    kullanilan, liste, kullanilan_kaynaklar = set(), [], []
     for i, b in enumerate(veri["bolumler"]):
         sure = max(0.5, baslangiclar[i + 1] - baslangiclar[i])
-        print(f"Bölüm {i + 1}: '{b['arama']}' ({sure:.1f} sn)")
-        tur, kaynak = medya_bul_indir(anahtar, b["arama"], calisma, i, kullanilan)
+        tur, kaynak, kaynak_adi = medya_bul_indir(kaynaklar, b["arama"], calisma, i, kullanilan)
         parca = calisma / f"parca_{i:02d}.mp4"
-        parca_olustur(tur, kaynak, sure, parca)
+        try:
+            parca_olustur(tur, kaynak, sure, parca, i)
+        except KomutHatasi:
+            uyari(f"{i + 1}. bölümün görüntüsü işlenemedi; hareketli arka plan kullanılıyor")
+            tur, kaynak_adi = "arka_plan", None
+            arka_plan_olustur(i, sure, parca)
+        if kaynak_adi and kaynak_adi not in kullanilan_kaynaklar:
+            kullanilan_kaynaklar.append(kaynak_adi)
+        print(f"Bölüm {i + 1}: '{b['arama']}' -> {kaynak_adi or 'arka plan'} {tur} ({sure:.1f} sn)")
         liste.append(f"file '{parca.resolve()}'")
     (calisma / "liste.txt").write_text("\n".join(liste) + "\n", encoding="utf-8")
 
@@ -381,8 +507,21 @@ def main():
               "-r", str(FPS), "-c:a", "aac", "-b:a", "160k",
               "-t", f"{toplam_sure:.3f}", "-movflags", "+faststart", str(video)])
 
-    youtube_bilgileri_yaz(veri, cikti / "youtube-bilgileri.txt")
+    youtube_bilgileri_yaz(veri, kullanilan_kaynaklar, cikti / "youtube-bilgileri.txt")
     print(f"Hazır: {video} ({sure_olc(video):.1f} sn)")
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--senaryo", required=True)
+    ap.add_argument("--ses", choices=sorted(SESLER), default="Emel")
+    ap.add_argument("--cikti", default="cikti")
+    ap.add_argument("--calisma", default="calisma")
+    args = ap.parse_args()
+    try:
+        uret(args)
+    except KomutHatasi as e:
+        hata(str(e))
 
 
 if __name__ == "__main__":
