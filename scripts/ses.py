@@ -7,10 +7,10 @@ Her şey ffmpeg ile sentezlenir; telifli ses kullanılmaz. `assets/muzik/<mood>.
   Müzik     : mood'a göre (tense / mysterious / fun / epic), konuşma sırasında
               sidechain kompresörle otomatik kısılır
   Vurgu     : videonun başında (kancada) derin bir "boom"
-  Whoosh    : her sahne geçişinde
   Uğultu    : tense/mysterious mood'da tüm video boyunca, diğerlerinde
               "gerilim": true işaretli bölümlerde alçak uğultu
   Yükselen  : kapanış bölümünde yükselen ses (riser)
+  Anlatıcı  : konuşmaya hafif bas, sıkıştırma ve kısa yankı (belgesel tonu)
   Seviye    : iki geçişli loudnorm ile yaklaşık -14 LUFS, en fazla -1.5 dBTP
 
 Deneme:
@@ -32,7 +32,13 @@ HEDEF_TP = -1.5
 MUZIK_UZANTILARI = (".mp3", ".wav", ".m4a", ".ogg")
 
 # Seviyeler (müzik önce -20 LUFS'a getirilir, sonra bu çarpanla karışır)
-SEVIYE = {"muzik": 0.55, "vurgu": 0.8, "whoosh": 0.45, "ugultu": 0.5, "yukselen": 0.4}
+SEVIYE = {"muzik": 0.55, "vurgu": 0.8, "ugultu": 0.5, "yukselen": 0.4}
+
+# Belgesel anlatıcısı tonu: göğüs sesini öne çıkaran hafif bas, dengeli sıkıştırma,
+# çok kısa oda yankısı. Konuşmanın anlaşılırlığını bozmayacak kadar hafif.
+ANLATICI_FILTRESI = ("highpass=f=70,bass=g=4:f=140:w=0.8,equalizer=f=3200:t=q:w=1.2:g=1.5,"
+                     "acompressor=threshold=0.08:ratio=3:attack=8:release=180:makeup=1.6,"
+                     "aecho=0.9:0.5:35:0.12")
 
 
 class SesHatasi(RuntimeError):
@@ -178,12 +184,6 @@ def vurgu_uret(hedef):
     return _aeval(ifade, 1.6, hedef, "lowpass=f=4000")
 
 
-def whoosh_uret(hedef, sure=0.7):
-    ifade = f"(random(0)*2-1)*pow(sin(PI*t/{sure}),3)"
-    return _aeval(ifade, sure, hedef,
-                  "bandpass=f=1400:width_type=o:w=2.5,highpass=f=300,volume=3")
-
-
 def ugultu_uret(sure, hedef):
     ifade = (f"({_sin(41.2)}+0.6*{_sin(61.74)}+0.3*{_sin(82.41)})"
              f"*(0.7+0.3*sin(2*PI*0.3*t))*0.6")
@@ -240,7 +240,7 @@ def ses_tasarimi(konusma, sure, mood, gecisler, kapanis, gerilimler, hedef, cali
                  muzik_klasoru="assets/muzik"):
     """Konuşmayı müzik ve efektlerle karıştırıp -14 LUFS'a getirilmiş wav yazar.
 
-    gecisler  : sahne geçiş zamanları (sn) -> whoosh
+    gecisler  : sahne geçiş zamanları (sn); şimdilik efekt çalmaz (whoosh kaldırıldı)
     kapanis   : kapanış bölümünün başladığı an (sn) -> yükselen ses
     gerilimler: [(başlangıç, bitiş)] alçak uğultu aralıkları
     """
@@ -250,7 +250,8 @@ def ses_tasarimi(konusma, sure, mood, gecisler, kapanis, gerilimler, hedef, cali
     calisma.mkdir(parents=True, exist_ok=True)
 
     girdiler = [str(konusma)]
-    zincirler = [f"[0:a]aresample={ORNEKLEME},aformat=sample_fmts=fltp:channel_layouts=stereo,"
+    zincirler = [f"[0:a]aresample={ORNEKLEME},{ANLATICI_FILTRESI},"
+                 f"aformat=sample_fmts=fltp:channel_layouts=stereo,"
                  f"apad=whole_dur={sure:.3f},asplit=2[ses][yan]"]
     karisim = ["[ses]"]
 
@@ -272,13 +273,6 @@ def ses_tasarimi(konusma, sure, mood, gecisler, kapanis, gerilimler, hedef, cali
 
     # Kancada vurgu
     karisim.append(f"[{ekle(vurgu_uret(calisma / 'vurgu.wav'), SEVIYE['vurgu'])}]")
-
-    # Geçişlerde whoosh (geçiş anı whoosh'un ortasına denk gelir)
-    gecisler = [g for g in gecisler if 0.5 < g < sure - 0.3]
-    if gecisler:
-        whoosh = whoosh_uret(calisma / "whoosh.wav")
-        for g in gecisler:
-            karisim.append(f"[{ekle(whoosh, SEVIYE['whoosh'], g - 0.35)}]")
 
     # Gerilimde alçak uğultu
     if mood in ("tense", "mysterious"):
