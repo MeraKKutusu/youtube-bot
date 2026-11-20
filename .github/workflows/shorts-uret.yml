@@ -59,13 +59,12 @@ jobs:
 
       - name: Videoyu üret
         env:
+          # Pixabay asıl kaynak, Pexels isteğe bağlı. İkisi de yoksa video
+          # renkli hareketli arka planla yine üretilir.
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           SES: ${{ inputs.ses }}
         run: |
-          if [ -z "$PEXELS_API_KEY" ]; then
-            echo "::error::PEXELS_API_KEY secret'ı eklenmemiş (Settings > Secrets and variables > Actions)"
-            exit 1
-          fi
           python scripts/uret.py \
             --senaryo "senaryolar/$SENARYO_AD.json" \
             --ses "$SES" \
