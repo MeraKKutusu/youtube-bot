@@ -1,0 +1,261 @@
+{
+  "tarih": "2026-11-20",
+  "kota": 808,
+  "toplanan": 355,
+  "incelenen": 116,
+  "hayvanli": 22,
+  "konular": [
+    {
+      "hayvan": "Whale",
+      "tur": "deniz",
+      "izlenme": 2627722,
+      "video": 6,
+      "kanal": 4,
+      "durum": "tasindi"
+    },
+    {
+      "hayvan": "Shark",
+      "tur": "deniz",
+      "izlenme": 283831,
+      "video": 3,
+      "kanal": 3,
+      "durum": "tasindi"
+    },
+    {
+      "hayvan": "Lion",
+      "tur": "kara",
+      "izlenme": 415413,
+      "video": 2,
+      "kanal": 2,
+      "durum": "eklendi"
+    },
+    {
+      "hayvan": "Elephant",
+      "tur": "kara",
+      "izlenme": 21248585,
+      "video": 1,
+      "kanal": 1,
+      "durum": "tasindi"
+    },
+    {
+      "hayvan": "Jellyfish",
+      "tur": "deniz",
+      "izlenme": 7438051,
+      "video": 1,
+      "kanal": 1,
+      "durum": "tasindi"
+    }
+  ],
+  "kaliplar": [
+    {
+      "kalip": "soru",
+      "ad": "Soruyla açılış",
+      "sablon": "Bu hayvan neden ...? / Sence ... ne yapar?",
+      "oran": 0.27,
+      "kat": 3.15,
+      "video": 6
+    },
+    {
+      "kalip": "rekor",
+      "ad": "Rekor / 'dünyanın en ...'",
+      "sablon": "Dünyanın en ... hayvanı / Bunu yapabilen tek canlı",
+      "oran": 0.18,
+      "kat": 0.56,
+      "video": 4
+    },
+    {
+      "kalip": "tehlike",
+      "ad": "Tehlike / korku",
+      "sablon": "Bu canlı tek dokunuşla ...",
+      "oran": 0.14,
+      "kat": 0.2,
+      "video": 3
+    },
+    {
+      "kalip": "unlem",
+      "ad": "Ünlem / büyük harf vurgusu",
+      "sablon": "Kısa ve tek kelimelik vurgu",
+      "oran": 0.5,
+      "kat": 0.19,
+      "video": 11
+    }
+  ],
+  "en_cok": [
+    {
+      "baslik": "What It Is Finding In This Elephant's Eyes??? #wildlife",
+      "kanal": "Info Nest",
+      "izlenme": 21248585,
+      "tarih": "2026-11-13",
+      "hayvan": "Elephant",
+      "dil": "en"
+    },
+    {
+      "baslik": "This Man Saved a Dying Jellyfish... But What Happened Next Was Unbelievable#shorts",
+      "kanal": "LunaPaw",
+      "izlenme": 7438051,
+      "tarih": "2026-10-30",
+      "hayvan": "Jellyfish",
+      "dil": "en"
+    },
+    {
+      "baslik": "The only dad in nature who goes into labor #shorts #seahorse",
+      "kanal": "Ashzfilms",
+      "izlenme": 2945951,
+      "tarih": "2026-10-27",
+      "hayvan": "Seahorse",
+      "dil": "en"
+    },
+    {
+      "baslik": "Mavi Balinalar Hakkında Asla Unutamayacağınız 3 Bilgi! 🤯 #shorts #hayvanlar  #ilginçbilgiler",
+      "kanal": "CybermonkBelgesel",
+      "izlenme": 1087187,
+      "tarih": "2026-10-23",
+      "hayvan": "Whale",
+      "dil": "tr"
+    },
+    {
+      "baslik": "A Baby Bat Is Born Upside Down! 😱 The Mother’s Amazing Parenting | #Shorts#wildlife #nature",
+      "kanal": "Arjun UK",
+      "izlenme": 900176,
+      "tarih": "2026-11-12",
+      "hayvan": "Bat",
+      "dil": "en"
+    },
+    {
+      "baslik": "Sea Life Whale Attack on Ships  #thalassophobia #thalassophobic #shorts",
+      "kanal": "A2Z PhobiaX",
+      "izlenme": 605924,
+      "tarih": "2026-10-24",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Pangolin 🐜 #animals #forest #information #ant #shorts #viralshorts #trending #facts",
+      "kanal": "TK logs",
+      "izlenme": 589506,
+      "tarih": "2026-11-14",
+      "hayvan": "Pangolin",
+      "dil": "en"
+    },
+    {
+      "baslik": "Why You Shouldn't Remove Whale Barnacles! #shorts #facts",
+      "kanal": "Fast fact",
+      "izlenme": 516180,
+      "tarih": "2026-11-13",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Whale shark🦈🐋 #short #fashion #whaleshark #bts",
+      "kanal": "WildSipHindi",
+      "izlenme": 465615,
+      "tarih": "2026-11-15",
+      "hayvan": "Whale shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "Blue Whale Is NOT a Fish! 😱 | World's Largest Animal Facts #shorts",
+      "kanal": "HappyFacta",
+      "izlenme": 442333,
+      "tarih": "2026-11-13",
+      "hayvan": "Blue whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Top 3 Most Dangerous And Powerful Lions In History 🤯😱 #shorts",
+      "kanal": "The animal adventure in हिन्दी",
+      "izlenme": 378841,
+      "tarih": "2026-10-28",
+      "hayvan": "Lion",
+      "dil": "en"
+    },
+    {
+      "baslik": "Sea Life Whale Eats A Submarine #thalassophobia #thalassophobic #shorts",
+      "kanal": "A2Z PhobiaX",
+      "izlenme": 242626,
+      "tarih": "2026-11-04",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "This man is a true SAVIOR  🦈♥️#shorts #shortsviral #shark #squid #sea #CuteAnimals #AnimalStor",
+      "kanal": "PHTAYA",
+      "izlenme": 202153,
+      "tarih": "2026-11-05",
+      "hayvan": "Shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "Why This OCTOPUS Learned to Play Piano (It’s Not What You Think!) 🐙 #Octopus #Science #Shorts",
+      "kanal": " JITIYSCOPE",
+      "izlenme": 161700,
+      "tarih": "2026-10-28",
+      "hayvan": "Octopus",
+      "dil": "en"
+    },
+    {
+      "baslik": "This Whale Eats Sea Monsters 🐋",
+      "kanal": "Wildly Curious",
+      "izlenme": 125316,
+      "tarih": "2026-10-26",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Mavi Balinalar Bebekken Bile O Kadar Büyük Ki!  #ilginçbilgiler #bilim #doğa",
+      "kanal": "CybermonkBelgesel",
+      "izlenme": 50489,
+      "tarih": "2026-11-04",
+      "hayvan": "Whale",
+      "dil": "tr"
+    },
+    {
+      "baslik": "Beachgoers Team Up To Rescue Huge Stingray Trapped In Rocks! 🌊 #shorts #oceanrescue #hero",
+      "kanal": "Happy Hearts",
+      "izlenme": 43306,
+      "tarih": "2026-11-15",
+      "hayvan": "Stingray",
+      "dil": "en"
+    },
+    {
+      "baslik": "Shark apna bachha kaise paida karti hai? 🦈🤯 #shorts  #facts  #ocean",
+      "kanal": "crazyunifacts ",
+      "izlenme": 42285,
+      "tarih": "2026-11-20",
+      "hayvan": "Shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "The SECOND-LARGEST Shark on Earth Is TERRIFYING! 😨💀 #facts #marinemystery #sharkworld #ocean",
+      "kanal": "Abyssora",
+      "izlenme": 39393,
+      "tarih": "2026-11-15",
+      "hayvan": "Shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "Nesli Tükenen Dev Aslan! 🦁😱 #shorts #aslan #belgesel #hayvanlar #bilgi #keşfet",
+      "kanal": "Hayvanların Gizli Dünyası",
+      "izlenme": 36572,
+      "tarih": "2026-10-28",
+      "hayvan": "Lion",
+      "dil": "tr"
+    },
+    {
+      "baslik": "Deep Sea Angler Fish : Head Par Light",
+      "kanal": "Facthesis",
+      "izlenme": 27299,
+      "tarih": "2026-11-14",
+      "hayvan": "Anglerfish",
+      "dil": "en"
+    },
+    {
+      "baslik": "🐡 The Ocean's Angriest Little Balloon! 🎈 Meet the Pufferfish #shorts",
+      "kanal": "AYAN",
+      "izlenme": 25735,
+      "tarih": "2026-11-18",
+      "hayvan": "Pufferfish",
+      "dil": "en"
+    }
+  ]
+}
