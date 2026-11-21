@@ -1,0 +1,126 @@
+{
+  "seri_no": 1,
+  "konu": "Sperm whales sleep vertically",
+  "mood": "mysterious",
+  "kanca_yazisi": {
+    "en": "How do whales sleep?",
+    "tr": "Balinalar nasıl uyur?"
+  },
+  "sabit_yorum": {
+    "en": "Would you swim among sleeping whales? 👇",
+    "tr": "Uyuyan balinaların arasında yüzer miydin? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Sperm Whales Sleep Standing Up in the Ocean 🐋",
+      "aciklama": "Sperm whales take short naps floating vertically near the surface, and sleep only about 7% of the time.",
+      "hashtagler": [
+        "#shorts",
+        "#spermwhale",
+        "#whale",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Kaşalotlar Okyanusta Ayakta Uyur 🐋",
+      "aciklama": "Kaşalotlar yüzeye yakın, dikey süzülerek kısa şekerlemeler yapar ve zamanın yalnızca yüzde yedisinde uyur.",
+      "hashtagler": [
+        "#shorts",
+        "#balina",
+        "#hayvanlar",
+        "#okyanus",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://news.st-andrews.ac.uk/archive/drifting-off-to-sleep/",
+    "https://www.nationalgeographic.com/photography/article/sperm-whales-nap-sleeping-photography-spd",
+    "https://pubmed.ncbi.nlm.nih.gov/18177706/"
+  ],
+  "bolumler": [
+    {
+      "arama": "sperm whale ocean",
+      "cumleler": [
+        {
+          "tr": "Bir balina nasıl uyur?",
+          "en": "How does a whale sleep?"
+        },
+        {
+          "tr": "Cevap ürkütücü.",
+          "en": "The answer is eerie."
+        }
+      ]
+    },
+    {
+      "arama": "sperm whale underwater",
+      "cumleler": [
+        {
+          "tr": "Kaşalotlar suda dikey durur.",
+          "en": "Sperm whales hang vertically."
+        },
+        {
+          "tr": "Başları yüzeye yakın.",
+          "en": "Heads near the surface."
+        },
+        {
+          "tr": "Hiç kıpırdamadan süzülürler.",
+          "en": "They drift without moving."
+        }
+      ]
+    },
+    {
+      "arama": "sperm whale pod",
+      "cumleler": [
+        {
+          "tr": "Ama asıl şaşırtıcı olan başka.",
+          "en": "But the real surprise is something else."
+        },
+        {
+          "tr": "Zamanın yalnızca yüzde yedisinde uyurlar.",
+          "en": "They sleep only seven percent of the time."
+        },
+        {
+          "tr": "En az uyuyan memeli olabilirler.",
+          "en": "They may be the least-sleeping mammal."
+        }
+      ]
+    },
+    {
+      "arama": "sperm whale sleeping",
+      "gerilim": true,
+      "cumleler": [
+        {
+          "tr": "Bir gün araştırmacılar motoru kapatıp yaklaştı.",
+          "en": "One day, researchers drifted closer, engine off."
+        },
+        {
+          "tr": "Balinalar tepki vermedi.",
+          "en": "The whales didn't react."
+        },
+        {
+          "tr": "Ta ki tekne kazara birine dokunana dek.",
+          "en": "Until the boat accidentally touched one."
+        },
+        {
+          "tr": "Ancak o zaman uyandılar.",
+          "en": "Only then did they wake."
+        }
+      ]
+    },
+    {
+      "arama": "sperm whale deep blue",
+      "cumleler": [
+        {
+          "tr": "Sen aralarında yüzmeye cesaret eder miydin?",
+          "en": "Would you dare swim among them?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

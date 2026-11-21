@@ -5,8 +5,8 @@
 # Günlük görev yukarıdan aşağı sıradaki 2 işaretsiz konuyu alır.
 # İşaretsiz konu 5'in altına inince 10 yeni konu eklenir (~6 deniz, ~4 kara).
 
-- [ ] (deniz) Sperm whales sleep vertically
-- [ ] (deniz) Greenland shark lifespan
+- [x] (deniz) Sperm whales sleep vertically -> senaryolar/001-sperm-whale-vertical-sleep.json
+- [x] (deniz) Greenland shark lifespan -> senaryolar/002-greenland-shark-lifespan.json
 - [ ] (kara) Lion (trend 2026-11-20; özgün bir şaşırtıcı bilgi seç)
 - [ ] (kara) Elephants hear through their feet
 - [ ] (deniz) Immortal jellyfish

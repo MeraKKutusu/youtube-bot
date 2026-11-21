@@ -1,0 +1,122 @@
+{
+  "seri_no": 2,
+  "konu": "Greenland shark lifespan",
+  "mood": "epic",
+  "kanca_yazisi": {
+    "en": "It lives for centuries",
+    "tr": "Yüzyıllarca yaşayan bir köpekbalığı"
+  },
+  "sabit_yorum": {
+    "en": "Is there an older animal in the sea? 👇",
+    "tr": "Denizlerde daha yaşlısı var mı? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "This Shark Can Live for Centuries 🦈",
+      "aciklama": "Eye lens dating showed Greenland sharks live at least 272 years, the longest-lived known vertebrate.",
+      "hashtagler": [
+        "#shorts",
+        "#greenlandshark",
+        "#shark",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Bu Köpekbalığı Yüzyıllarca Yaşıyor 🦈",
+      "aciklama": "Göz merceği analizi, Grönland köpekbalığının en az 272 yıl yaşadığını gösterdi: bilinen en uzun ömürlü omurgalı.",
+      "hashtagler": [
+        "#shorts",
+        "#köpekbalığı",
+        "#hayvanlar",
+        "#okyanus",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.nationalgeographic.com/animals/article/greenland-sharks-animals-science-age",
+    "https://www.scientificamerican.com/article/near-blind-shark-is-world-s-longest-lived-vertebrate1/",
+    "https://pubmed.ncbi.nlm.nih.gov/27516602/"
+  ],
+  "bolumler": [
+    {
+      "arama": "greenland shark",
+      "cumleler": [
+        {
+          "tr": "Bu köpekbalığı yüzyıllardır yaşıyor.",
+          "en": "This shark has lived for centuries."
+        }
+      ]
+    },
+    {
+      "arama": "greenland shark deep sea",
+      "cumleler": [
+        {
+          "tr": "Bilim insanları yaşını gözünden ölçtü.",
+          "en": "Scientists measured its age from its eyes."
+        },
+        {
+          "tr": "Göz merceğinin merkezi yavruyken oluşur.",
+          "en": "The lens core forms when it's a pup."
+        },
+        {
+          "tr": "Oradaki karbon yaşı ele verir.",
+          "en": "The carbon there reveals its age."
+        }
+      ]
+    },
+    {
+      "arama": "greenland shark arctic",
+      "gerilim": true,
+      "cumleler": [
+        {
+          "tr": "Sonuç inanılmazdı.",
+          "en": "The result was stunning."
+        },
+        {
+          "tr": "En büyüğü en az 272 yaşındaydı.",
+          "en": "The largest was at least 272."
+        },
+        {
+          "tr": "Belki de yaklaşık 400.",
+          "en": "Perhaps around 400."
+        },
+        {
+          "tr": "Bilinen en uzun yaşayan omurgalı bu.",
+          "en": "The longest-lived vertebrate known."
+        }
+      ]
+    },
+    {
+      "arama": "greenland shark ice",
+      "cumleler": [
+        {
+          "tr": "Ama bunun bir bedeli var.",
+          "en": "But there's a price."
+        },
+        {
+          "tr": "Yılda bir santimden az büyür.",
+          "en": "It grows under a centimeter a year."
+        },
+        {
+          "tr": "Dişiler ancak yaklaşık 150 yaşında üreyebilir.",
+          "en": "Females breed only at around 150."
+        }
+      ]
+    },
+    {
+      "arama": "greenland shark swimming",
+      "cumleler": [
+        {
+          "tr": "Sence denizlerde daha yaşlısı var mı?",
+          "en": "Is there anything older in the sea?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}
