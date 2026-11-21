@@ -1,0 +1,124 @@
+{
+  "seri_no": 3,
+  "konu": "Lion dark mane",
+  "mood": "epic",
+  "kanca_yazisi": {
+    "en": "Why some manes are black",
+    "tr": "Yele neden kararır?"
+  },
+  "sabit_yorum": {
+    "en": "Dark mane or light mane? 👇",
+    "tr": "Koyu yele mi, açık yele mi? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Why Lionesses Choose the Darkest Mane 🦁",
+      "aciklama": "In Serengeti experiments, lionesses preferred dark-maned males, a sign of higher testosterone, but dark manes run hot.",
+      "hashtagler": [
+        "#shorts",
+        "#lion",
+        "#animalfacts",
+        "#wildlife"
+      ]
+    },
+    "tr": {
+      "baslik": "Dişi Aslanlar Neden En Koyu Yeleyi Seçer? 🦁",
+      "aciklama": "Serengeti deneylerinde dişi aslanlar koyu yeleli erkekleri seçti. Koyu yele testosteronun işareti ama vücudu ısıtıyor.",
+      "hashtagler": [
+        "#shorts",
+        "#aslan",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://pubmed.ncbi.nlm.nih.gov/12193785/",
+    "https://lioncenter.umn.edu/our-work/mane-research",
+    "https://www.eurekalert.org/news-releases/576077"
+  ],
+  "bolumler": [
+    {
+      "arama": "lion mane",
+      "cumleler": [
+        {
+          "tr": "Bu aslanın yelesi neden siyah?",
+          "en": "Why is this lion's mane black?"
+        }
+      ]
+    },
+    {
+      "arama": "lioness savanna",
+      "cumleler": [
+        {
+          "tr": "Cevap bir aşk hikâyesi.",
+          "en": "The answer is a love story."
+        },
+        {
+          "tr": "Dişi aslanlar koyu yeleyi seçer.",
+          "en": "Lionesses choose dark manes."
+        },
+        {
+          "tr": "Bilim insanları bunu test etti.",
+          "en": "Scientists tested it."
+        },
+        {
+          "tr": "Gerçek boyutta sahte aslanlar koydular.",
+          "en": "They set out life-size dummy lions."
+        },
+        {
+          "tr": "Dişiler on denemenin dokuzunda koyu yeleliye gitti.",
+          "en": "Nine times in ten, females chose the darker one."
+        }
+      ]
+    },
+    {
+      "arama": "male lion portrait",
+      "cumleler": [
+        {
+          "tr": "Peki koyu yele ne anlatır?",
+          "en": "So what does a dark mane say?"
+        },
+        {
+          "tr": "Daha yüksek testosteron.",
+          "en": "Higher testosterone."
+        },
+        {
+          "tr": "Ve yaralardan daha iyi iyileşme.",
+          "en": "And better recovery from injuries."
+        }
+      ]
+    },
+    {
+      "arama": "lion resting heat",
+      "cumleler": [
+        {
+          "tr": "Ama bir bedeli var.",
+          "en": "But there's a price."
+        },
+        {
+          "tr": "Koyu yele aslanı ısıtır.",
+          "en": "A dark mane runs hot."
+        },
+        {
+          "tr": "Serengeti'nin sıcağında bu bir yük.",
+          "en": "In Serengeti heat, that's a burden."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "lion pride",
+      "cumleler": [
+        {
+          "tr": "Sence dişiler haklı mı?",
+          "en": "Do you think the females are right?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

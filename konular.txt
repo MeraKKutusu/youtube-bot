@@ -7,8 +7,8 @@
 
 - [x] (deniz) Sperm whales sleep vertically -> senaryolar/001-sperm-whale-vertical-sleep.json
 - [x] (deniz) Greenland shark lifespan -> senaryolar/002-greenland-shark-lifespan.json
-- [ ] (kara) Lion (trend 2026-11-20; özgün bir şaşırtıcı bilgi seç)
-- [ ] (kara) Elephants hear through their feet
+- [x] (kara) Lion (trend 2026-11-20; özgün bir şaşırtıcı bilgi seç) -> senaryolar/003-lion-dark-mane.json
+- [x] (kara) Elephants hear through their feet -> senaryolar/004-elephant-seismic-hearing.json
 - [ ] (deniz) Immortal jellyfish
 - [ ] (deniz) Box jellyfish eyes
 - [ ] (deniz) Octopus has three hearts and blue blood

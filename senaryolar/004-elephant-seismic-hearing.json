@@ -1,0 +1,119 @@
+{
+  "seri_no": 4,
+  "konu": "Elephants hear through their feet",
+  "mood": "mysterious",
+  "kanca_yazisi": {
+    "en": "Elephants hear with feet",
+    "tr": "Filler ayaklarıyla duyar"
+  },
+  "sabit_yorum": {
+    "en": "Which other animal listens to the ground? 👇",
+    "tr": "Başka hangi hayvan yeri dinler? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Elephants Can Hear Through Their Feet 🐘",
+      "aciklama": "Elephants sense distant rumbles as ground vibrations, and can tell familiar herds' alarm calls from strangers'.",
+      "hashtagler": [
+        "#shorts",
+        "#elephant",
+        "#animalfacts",
+        "#wildlife"
+      ]
+    },
+    "tr": {
+      "baslik": "Filler Ayaklarıyla Duyabiliyor 🐘",
+      "aciklama": "Filler uzaktaki homurtuları yer titreşimi olarak hisseder; tanıdık sürünün alarmını yabancıdan ayırt eder.",
+      "hashtagler": [
+        "#shorts",
+        "#fil",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://med.stanford.edu/news/all-news/2007/05/caller-id-in-the-wild-african-elephants-communicate-by-ground-vibration-stanford-researcher-finds",
+    "https://www.kqed.org/science/1926248/how-elephants-listen-with-their-feet"
+  ],
+  "bolumler": [
+    {
+      "arama": "elephant feet",
+      "cumleler": [
+        {
+          "tr": "Filler ayaklarıyla duyar.",
+          "en": "Elephants hear with their feet."
+        }
+      ]
+    },
+    {
+      "arama": "elephant herd walking",
+      "cumleler": [
+        {
+          "tr": "Ayaklarının kenarında titreşim alıcıları var.",
+          "en": "Their feet have vibration sensors."
+        },
+        {
+          "tr": "Uzaktaki fillerin homurtusu yerden yayılır.",
+          "en": "Distant rumbles travel through the ground."
+        },
+        {
+          "tr": "Filler bu titreşimi hisseder.",
+          "en": "Elephants feel those vibrations."
+        }
+      ]
+    },
+    {
+      "arama": "elephant savanna",
+      "cumleler": [
+        {
+          "tr": "Bir sinyal gelince sürü donar.",
+          "en": "When a signal comes, the herd freezes."
+        },
+        {
+          "tr": "Kulaklarını başına yapıştırır.",
+          "en": "Ears pressed flat."
+        },
+        {
+          "tr": "Öne eğilip bir ayağını kaldırır.",
+          "en": "They lean forward and lift a foot."
+        }
+      ]
+    },
+    {
+      "arama": "elephant waterhole",
+      "cumleler": [
+        {
+          "tr": "Asıl şaşırtıcı olan ne?",
+          "en": "The most surprising part?"
+        },
+        {
+          "tr": "Tanıdık sesi ayırt edebilirler.",
+          "en": "They recognize familiar voices."
+        },
+        {
+          "tr": "Tanıdık sürünün aslan alarmında toplandılar.",
+          "en": "A familiar herd's lion alarm made them bunch up."
+        },
+        {
+          "tr": "Yabancı sürününkini umursamadılar.",
+          "en": "A stranger's alarm, they ignored."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "elephant family",
+      "cumleler": [
+        {
+          "tr": "Sence başka hangi hayvan yeri dinler?",
+          "en": "What other animal listens to the ground?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}
