@@ -647,6 +647,17 @@ def _sorgular(sorgu, hayvan=""):
     return list(dict.fromkeys(x for x in liste if x))
 
 
+# Etiketinde bunlardan biri de geçen görsel büyük olasılıkla başka bir hayvanı gösterir
+# (ör. "shark" etiketli yunus gösterisi). Videonun kendi hayvanının adındakiler hariç.
+BASKA_HAYVANLAR = ("dolphin", "whale", "orca", "seal", "turtle", "octopus", "squid", "jellyfish",
+                   "crab", "shrimp", "lobster", "stingray", "manta", "eel", "penguin", "otter",
+                   "horse", "wolf", "dog", "cat", "bird", "eagle", "lion", "tiger", "leopard",
+                   "cheetah", "elephant", "bear", "deer", "cow", "sheep", "goat", "monkey",
+                   "gorilla", "giraffe", "zebra", "hippo", "crocodile", "snake", "frog",
+                   "spider", "insect", "butterfly", "human", "people", "man", "woman", "diver",
+                   "toy", "show", "performance", "circus", "statue", "sculpture", "plush")
+
+
 def ilgili_mi(metin, hayvan):
     """Görselin etiket/açıklama metninde hayvanın tür adı (son kelime) geçiyor mu?
     Dönüş: 2 = tam ad geçiyor, 1 = yalnızca tür adı geçiyor, 0 = ilgisiz."""
@@ -662,6 +673,9 @@ def ilgili_mi(metin, hayvan):
     if f" {hayvan_kok} " in f" {metin_kok} ":
         return 2
     if bas in kelimeler or f"{bas}ess" in kelimeler:   # lioness, tigress
+        kendi = set(hayvan_kok.split())
+        if any(_kok(b) in kelimeler and _kok(b) not in kendi for b in BASKA_HAYVANLAR):
+            return 0
         return 1
     return 0
 
