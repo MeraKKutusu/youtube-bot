@@ -74,8 +74,14 @@ Shorts'larını tarar, en güçlü 5 konuyu `konular.txt`'nin en üstüne ekler 
 - `yayin.en` ve `yayin.tr`: `baslik` (en fazla 70 karakter, seri numarasını yazma; sistem
   ekler), `aciklama` (1-2 cümle), `hashtagler` (3-5 adet, ilki `#shorts`).
   TikTok'a en fazla 5 hashtag gider.
-- `arama`: Pixabay için İngilizce, **hayvanın adını içeren** 2-4 kelime
-  (ör. `mantis shrimp reef`).
+- `hayvan`: videodaki hayvanın İngilizce adı (ör. `greenland shark`, `box jellyfish`, `lion`).
+  Görseller yalnızca etiketinde bu adın son kelimesi (`shark`, `jellyfish`, `lion`) geçenlerden
+  seçilir; böylece ilgisiz hayvan ya da manzara görüntüsü gelmez.
+- `arama`: Pixabay için İngilizce, **her birinde hayvanın adı geçen** 2-4 kelime
+  (ör. `mantis shrimp reef`). Yer adı (`arctic`, `greenland`), soyut kavram (`sleeping`,
+  `heat`) ya da başka hayvan (`lioness` yerine `lion female`) tek başına kullanma; tür adı
+  her zaman aramada olsun. Nadir hayvanlarda stok görüntü az olabilir; o zaman genel tür
+  adıyla ara (`greenland shark` yerine bazı bölümlerde `shark deep sea`).
 - Mit, abartı ve tık tuzağı yalan yok. Başlık şaşırtıcı olabilir ama doğru olmalı.
 
 ## Senaryo JSON biçimi
@@ -84,6 +90,7 @@ Shorts'larını tarar, en güçlü 5 konuyu `konular.txt`'nin en üstüne ekler 
 {
   "seri_no": 12,
   "konu": "Mantis shrimp punch",
+  "hayvan": "mantis shrimp",
   "mood": "epic",
   "kanca_yazisi": { "en": "Fastest punch on Earth", "tr": "Dünyanın en hızlı yumruğu" },
   "sabit_yorum": { "en": "Would you keep one in an aquarium? 👇", "tr": "Akvaryumda besler miydin? 👇" },
