@@ -142,6 +142,16 @@ def kontrol(veri, dosya_adi=""):
                     if not re.fullmatch(r"#[^\s#]+", str(h)):
                         hatalar.append(f"geçersiz hashtag: {h!r}")
 
+    hayvan = " ".join(str(veri.get("hayvan", "")).lower().split())
+    if not hayvan:
+        uyarilar.append("'hayvan' alanı yok (ör. \"greenland shark\"); görseller aramalardan tahmin edilir")
+    else:
+        bas = hayvan.split()[-1]
+        kok = bas[:-1] if bas.endswith("s") and not bas.endswith(("ss", "us")) else bas
+        for i, b in enumerate(bolumler, 1):
+            if kok not in str(b.get("arama", "")).lower():
+                hatalar.append(f"{i}. bölümün 'arama'sında hayvanın adı ('{bas}') yok: {b.get('arama')!r}")
+
     if not veri.get("kaynaklar"):
         uyarilar.append("'kaynaklar' boş: bilgileri doğrulayan kaynak linkleri ekleyin")
 

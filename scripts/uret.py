@@ -602,15 +602,68 @@ def _indir(url, hedef):
         raise ValueError("boş dosya indi")
 
 
-def _sorgular(sorgu):
-    sorgu = sorgu.strip()[:100]  # Pixabay en fazla 100 karakter kabul ediyor
+def _kok(kelime):
+    """Basit tekil kök: sharks -> shark, jellyfishes -> jellyfish, lioness -> lioness."""
+    k = kelime.lower().strip()
+    if len(k) <= 4 or k.endswith(("ss", "us", "is")):
+        return k
+    if k.endswith("es") and k[:-2].endswith(("sh", "ch", "x", "us", "ss")):
+        return k[:-2]
+    if k.endswith("s"):
+        return k[:-1]
+    return k
+
+
+def hayvan_adi(veri):
+    """Senaryonun hayvanı (İngilizce). Önce 'hayvan' alanı; yoksa aramaların çoğunda
+    geçen kelimeler (ör. 'greenland shark'); o da yoksa konunun ilk iki kelimesi."""
+    if str(veri.get("hayvan", "")).strip():
+        return " ".join(str(veri["hayvan"]).lower().split())
+    aramalar = [str(b.get("arama", "")).lower().split() for b in veri.get("bolumler", [])]
+    aramalar = [a for a in aramalar if a]
+    if aramalar:
+        sayac = {}
+        for a in aramalar:
+            for k in dict.fromkeys(_kok(x) for x in a):
+                sayac[k] = sayac.get(k, 0) + 1
+        esik = max(1, round(len(aramalar) * 0.6))
+        ortak = [k for k in dict.fromkeys(_kok(x) for a in aramalar for x in a) if sayac[k] >= esik]
+        if ortak:
+            return " ".join(ortak)
+    return " ".join(str(veri.get("konu", "")).lower().split()[:2])
+
+
+def _sorgular(sorgu, hayvan=""):
+    """Arama sırası: tam arama -> hayvan adı -> hayvanın tür adı (son kelime).
+    Hayvan adı hiçbir zaman düşürülmez (eskiden 'greenland shark arctic' için
+    'greenland' aranıp kurt/at görüntüleri geliyordu)."""
+    sorgu = " ".join(sorgu.split())[:100]  # Pixabay en fazla 100 karakter kabul ediyor
     liste = [sorgu]
-    kelimeler = sorgu.split()
-    if len(kelimeler) > 2:
-        liste.append(" ".join(kelimeler[:2]))
-    if len(kelimeler) > 1:
-        liste.append(kelimeler[0])
-    return liste
+    if hayvan:
+        liste.append(hayvan)
+        bas = hayvan.split()[-1]
+        if bas not in liste:
+            liste.append(bas)
+    return list(dict.fromkeys(x for x in liste if x))
+
+
+def ilgili_mi(metin, hayvan):
+    """Görselin etiket/açıklama metninde hayvanın tür adı (son kelime) geçiyor mu?
+    Dönüş: 2 = tam ad geçiyor, 1 = yalnızca tür adı geçiyor, 0 = ilgisiz."""
+    if not hayvan:
+        return 1
+    kelimeler = [_kok(k) for k in re.findall(r"[a-z]+", str(metin).lower())]
+    metin_kok = " ".join(kelimeler)
+    hayvan_kok = " ".join(_kok(k) for k in hayvan.split())
+    bas = hayvan_kok.split()[-1]
+    # 'sea lion' bir aslan değildir
+    if f" sea {bas} " in f" {metin_kok} " and not hayvan_kok.startswith("sea "):
+        return 0
+    if f" {hayvan_kok} " in f" {metin_kok} ":
+        return 2
+    if bas in kelimeler or f"{bas}ess" in kelimeler:   # lioness, tigress
+        return 1
+    return 0
 
 
 # Gerçek hayvan görüntüsü yerine yapay zekâ/fantastik içerik gelmesin
@@ -628,14 +681,21 @@ def _uygun_mu(hit):
     return not any(y in etiketler for y in YASAK_ETIKETLER)
 
 
-def pixabay_adaylar(anahtar, sorgu):
-    """Sırayla denenecek (tür, url, kimlik) adayları üretir: önce video, sonra foto."""
-    for s in _sorgular(sorgu):
-        veri = _api_get(PIXABAY_VIDEO, {"key": anahtar, "q": s, "per_page": 20,
+def _sirala(adaylar):
+    """(puan, dikey_mi, aday) listesini önce tam ad, sonra dikey olacak şekilde sıralar."""
+    return [x[2] for x in sorted(adaylar, key=lambda x: (-x[0], not x[1]))]
+
+
+def pixabay_adaylar(anahtar, sorgu, hayvan=""):
+    """Sırayla denenecek (tür, url, kimlik) adayları üretir: önce video, sonra foto.
+    Etiketlerinde hayvanın adı geçmeyen görseller kullanılmaz."""
+    for s in _sorgular(sorgu, hayvan):
+        veri = _api_get(PIXABAY_VIDEO, {"key": anahtar, "q": s, "per_page": 30,
                                         "safesearch": "true"}, None, anahtar)
-        dikey, yatay = [], []
+        adaylar = []
         for v in veri.get("hits", []):
-            if not _uygun_mu(v):
+            puan = ilgili_mi(v.get("tags", ""), hayvan)
+            if not puan or not _uygun_mu(v):
                 continue
             boyutlar = [b for b in (v.get("videos") or {}).values()
                         if b.get("url") and b.get("width") and b.get("height")
@@ -645,42 +705,51 @@ def pixabay_adaylar(anahtar, sorgu):
             # Kısa kenarı 1080'e en yakın boyut: ne bulanık ne gereksiz büyük
             boyutlar.sort(key=lambda b: abs(min(b["width"], b["height"]) - GENISLIK))
             b = boyutlar[0]
-            (dikey if b["height"] > b["width"] else yatay).append(
-                ("video", b["url"], ("pixabay-v", v.get("id"))))
-        yield from dikey
-        yield from yatay  # yatay videolar ortadan 9:16 kırpılır
+            adaylar.append((puan, b["height"] > b["width"],
+                            ("video", b["url"], ("pixabay-v", v.get("id")))))
+        yield from _sirala(adaylar)   # yatay videolar ortadan 9:16 kırpılır
 
-    for s in _sorgular(sorgu):
+    for s in _sorgular(sorgu, hayvan):
         veri = _api_get(PIXABAY_FOTO, {"key": anahtar, "q": s, "image_type": "photo",
-                                       "orientation": "vertical", "per_page": 20,
+                                       "orientation": "vertical", "per_page": 30,
                                        "safesearch": "true"}, None, anahtar)
+        adaylar = []
         for p in veri.get("hits", []):
-            if not _uygun_mu(p):
+            puan = ilgili_mi(p.get("tags", ""), hayvan)
+            if not puan or not _uygun_mu(p):
                 continue
             url = p.get("largeImageURL") or p.get("webformatURL")
             if url:
-                yield ("foto", url, ("pixabay-f", p.get("id")))
+                adaylar.append((puan, True, ("foto", url, ("pixabay-f", p.get("id")))))
+        yield from _sirala(adaylar)
 
 
-def pexels_adaylar(anahtar, sorgu):
+def pexels_adaylar(anahtar, sorgu, hayvan=""):
     basliklar = {"Authorization": anahtar}
-    for s in _sorgular(sorgu):
+    for s in _sorgular(sorgu, hayvan):
         veri = _api_get(PEXELS_VIDEO, {"query": s, "orientation": "portrait", "per_page": 15},
                         basliklar, anahtar)
+        adaylar = []
         for v in veri.get("videos", []):
+            # Pexels'te etiket yok; sayfa adresindeki açıklama kullanılır
+            puan = ilgili_mi(str(v.get("url", "")).replace("-", " "), hayvan)
             dosyalar = [f for f in v.get("video_files", [])
                         if f.get("file_type") == "video/mp4" and f.get("width") and f.get("height")
                         and f["height"] > f["width"] and f["width"] >= 540]
-            if dosyalar:
+            if puan and dosyalar:
                 dosyalar.sort(key=lambda f: abs(f["width"] - GENISLIK))
-                yield ("video", dosyalar[0]["link"], ("pexels-v", v.get("id")))
-    for s in _sorgular(sorgu):
+                adaylar.append((puan, True, ("video", dosyalar[0]["link"], ("pexels-v", v.get("id")))))
+        yield from _sirala(adaylar)
+    for s in _sorgular(sorgu, hayvan):
         veri = _api_get(PEXELS_FOTO, {"query": s, "orientation": "portrait", "per_page": 15},
                         basliklar, anahtar)
+        adaylar = []
         for p in veri.get("photos", []):
+            puan = ilgili_mi(f"{p.get('alt', '')} {str(p.get('url', '')).replace('-', ' ')}", hayvan)
             url = (p.get("src") or {}).get("large2x") or (p.get("src") or {}).get("portrait")
-            if url:
-                yield ("foto", url, ("pexels-f", p.get("id")))
+            if puan and url:
+                adaylar.append((puan, True, ("foto", url, ("pexels-f", p.get("id")))))
+        yield from _sirala(adaylar)
 
 
 def kaynaklari_hazirla():
@@ -697,12 +766,12 @@ def kaynaklari_hazirla():
     return kaynaklar
 
 
-def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan):
+def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan, hayvan=""):
     """(tür, yol, kaynak_adı) döndürür. Hiçbir şey bulunamazsa ("arka_plan", None, None)."""
     for kaynak in list(kaynaklar):
         ad, anahtar, adaylar = kaynak
         try:
-            for tur, url, kimlik in adaylar(anahtar, sorgu):
+            for tur, url, kimlik in adaylar(anahtar, sorgu, hayvan):
                 if kimlik in kullanilan:
                     continue
                 uzanti = "mp4" if tur == "video" else "jpg"
@@ -719,8 +788,6 @@ def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan):
             kaynaklar.remove(kaynak)
         except Exception as e:
             uyari(f"{ad} araması başarısız: {_gizle(e, [anahtar])}")
-    if kaynaklar:
-        uyari(f"'{sorgu}' için görüntü bulunamadı; hareketli arka plan kullanılıyor")
     return "arka_plan", None, None
 
 
@@ -751,14 +818,21 @@ def arka_plan_olustur(sira, sure, hedef):
                "format=yuv420p,hue=h=t*25:s=1.4,setsar=1", sure, hedef)
 
 
-def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False):
+def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False, baslangic=0.0):
     if tur == "arka_plan":
         arka_plan_olustur(sira, sure, hedef)
     else:
         olcek = (f"scale={GENISLIK}:{YUKSEKLIK}:force_original_aspect_ratio=increase,"
                  f"crop={GENISLIK}:{YUKSEKLIK},setsar=1,fps={FPS}")
         if tur == "video":
-            _kodla(["-stream_loop", "-1", "-i", str(kaynak)], olcek, sure, hedef)
+            ofset = []
+            if baslangic > 0:
+                try:
+                    uzunluk = sure_olc(kaynak)
+                    ofset = ["-ss", f"{baslangic % max(uzunluk - 0.5, 0.5):.2f}"]
+                except (KomutHatasi, ValueError):
+                    ofset = []
+            _kodla([*ofset, "-stream_loop", "-1", "-i", str(kaynak)], olcek, sure, hedef)
         else:
             # Fotoğrafta hafif yakınlaşma efekti (ilk sahnede zaten zoom var)
             kare = max(1, round(sure * FPS))
@@ -880,13 +954,33 @@ def uret(args):
     sinir = sahne_sinirlari(len(veri["bolumler"]), cumleler, toplam_sure)
 
     # 4. Görseller ve parçalar
-    kullanilan, liste, kullanilan_kaynaklar = set(), [], []
+    kullanilan = set()
+    hayvan = hayvan_adi(veri)
+    print(f"Görseller: yalnızca etiketinde '{hayvan.split()[-1] if hayvan else '-'}' geçenler "
+          f"(hayvan: {hayvan or '-'})")
+    bulunanlar = []
+    for i, b in enumerate(veri["bolumler"]):
+        tur, kaynak, kaynak_adi = medya_bul_indir(kaynaklar, b["arama"], calisma, i, kullanilan, hayvan)
+        bulunanlar.append((tur, kaynak, kaynak_adi))
+    # Görsel bulunamayan bölüm, bu videonun başka bir bölümünde bulunan görüntünün
+    # farklı bir anını kullanır (ilgisiz görüntü ya da düz arka plan yerine).
+    iyi = [x for x in bulunanlar if x[0] != "arka_plan"]
+    if kaynaklar and not iyi:
+        uyari(f"'{hayvan}' için hiç uygun görüntü bulunamadı; hareketli arka plan kullanılıyor")
+
+    liste, kullanilan_kaynaklar = [], []
     for i, b in enumerate(veri["bolumler"]):
         sure = max(0.5, sinir[i + 1] - sinir[i])
-        tur, kaynak, kaynak_adi = medya_bul_indir(kaynaklar, b["arama"], calisma, i, kullanilan)
+        tur, kaynak, kaynak_adi = bulunanlar[i]
+        baslangic = 0.0
+        if tur == "arka_plan" and iyi:
+            tur, kaynak, kaynak_adi = iyi[i % len(iyi)]
+            baslangic = 2.5 + 3.1 * i
+            uyari(f"{i + 1}. bölüm ('{b['arama']}') için ayrı görüntü bulunamadı; "
+                  f"aynı hayvanın başka bir görüntüsü kullanılıyor")
         parca = calisma / f"parca_{i:02d}.mp4"
         try:
-            parca_olustur(tur, kaynak, sure, parca, i, giris_zoom=(i == 0))
+            parca_olustur(tur, kaynak, sure, parca, i, giris_zoom=(i == 0), baslangic=baslangic)
         except KomutHatasi:
             uyari(f"{i + 1}. bölümün görüntüsü işlenemedi; hareketli arka plan kullanılıyor")
             tur, kaynak_adi = "arka_plan", None
