@@ -1,0 +1,123 @@
+{
+  "seri_no": 5,
+  "konu": "Immortal jellyfish",
+  "mood": "mysterious",
+  "kanca_yazisi": {
+    "en": "It restarts its life",
+    "tr": "Hayatına baştan başlıyor"
+  },
+  "sabit_yorum": {
+    "en": "Would you want to live forever? 👇",
+    "tr": "Sonsuza dek yaşamak ister miydin? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "This Tiny Jellyfish Can Restart Its Own Life 🪼",
+      "aciklama": "When stressed, Turritopsis dohrnii collapses into a ball of tissue and grows back into a polyp, its baby stage.",
+      "hashtagler": [
+        "#shorts",
+        "#jellyfish",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Hayatına Baştan Başlayabilen Minik Denizanası 🪼",
+      "aciklama": "Turritopsis dohrnii zor durumda kalınca doku topuna dönüşür ve yeniden polip, yani bebeklik evresine döner.",
+      "hashtagler": [
+        "#shorts",
+        "#denizanası",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://thebiologist.rsb.org.uk/biologist-features/everlasting-life-the-immortal-jellyfish"
+  ],
+  "bolumler": [
+    {
+      "arama": "immortal jellyfish",
+      "cumleler": [
+        {
+          "tr": "Bir hayvan hayatına baştan başlayabilir mi?",
+          "en": "Can an animal restart its life?"
+        }
+      ]
+    },
+    {
+      "arama": "small jellyfish macro",
+      "cumleler": [
+        {
+          "tr": "Bu minik denizanası yapabilir.",
+          "en": "This tiny jellyfish can."
+        },
+        {
+          "tr": "Boyu yalnızca birkaç milimetre.",
+          "en": "It's only a few millimeters long."
+        }
+      ]
+    },
+    {
+      "arama": "jellyfish dark water",
+      "gerilim": true,
+      "cumleler": [
+        {
+          "tr": "Ama zor durumda kalırsa...",
+          "en": "But when it's stressed..."
+        },
+        {
+          "tr": "Bir doku topuna dönüşür.",
+          "en": "It turns into a ball of tissue."
+        },
+        {
+          "tr": "Ve dibe çöker.",
+          "en": "And sinks to the bottom."
+        }
+      ]
+    },
+    {
+      "arama": "jellyfish polyp",
+      "cumleler": [
+        {
+          "tr": "Sonra asıl şaşırtıcı olan olur.",
+          "en": "Then comes the real surprise."
+        },
+        {
+          "tr": "Bu toptan yeni bir polip çıkar.",
+          "en": "A new polyp grows from it."
+        },
+        {
+          "tr": "Yani bebeklik evresine geri döner.",
+          "en": "It's back to its baby stage."
+        },
+        {
+          "tr": "Üstelik bunu birkaç kez yapabilir.",
+          "en": "And it can do it several times."
+        }
+      ]
+    },
+    {
+      "arama": "jellyfish ocean",
+      "cumleler": [
+        {
+          "tr": "Bu sır 1980'lerde tesadüfen keşfedildi.",
+          "en": "It was found by accident in the 1980s."
+        }
+      ]
+    },
+    {
+      "arama": "jellyfish underwater glow",
+      "cumleler": [
+        {
+          "tr": "Sence sonsuza dek yaşamak ister miydin?",
+          "en": "Would you want to live forever?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

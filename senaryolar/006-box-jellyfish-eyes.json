@@ -1,0 +1,127 @@
+{
+  "seri_no": 6,
+  "konu": "Box jellyfish eyes",
+  "mood": "tense",
+  "kanca_yazisi": {
+    "en": "24 eyes, no brain",
+    "tr": "24 göz, beyin yok"
+  },
+  "sabit_yorum": {
+    "en": "How does a brainless animal see? 👇",
+    "tr": "Beyinsiz bir canlı nasıl görür? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "This Jellyfish Has 24 Eyes but No Brain 👁️",
+      "aciklama": "One box jellyfish species keeps four of its eyes pointed at the sky to watch mangrove trees through the water's surface.",
+      "hashtagler": [
+        "#shorts",
+        "#boxjellyfish",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "24 Gözü Var Ama Beyni Yok: Kutu Denizanası 👁️",
+      "aciklama": "Bir kutu denizanası türü dört gözünü hep gökyüzüne çevirir ve suyun içinden mangrov ağaçlarını izler.",
+      "hashtagler": [
+        "#shorts",
+        "#denizanası",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.nationalgeographic.com/science/article/why-box-jellyfish-always-have-four-eyes-on-the-sky",
+    "https://www.sciencedaily.com/releases/2011/04/110428123938.htm"
+  ],
+  "bolumler": [
+    {
+      "arama": "box jellyfish",
+      "cumleler": [
+        {
+          "tr": "Bu canlının 24 gözü var.",
+          "en": "This creature has 24 eyes."
+        }
+      ]
+    },
+    {
+      "arama": "box jellyfish underwater",
+      "cumleler": [
+        {
+          "tr": "Ama bir sorun var.",
+          "en": "But there's a catch."
+        },
+        {
+          "tr": "Merkezi bir beyni yok.",
+          "en": "It has no central brain."
+        },
+        {
+          "tr": "Gözler dört kümede duruyor.",
+          "en": "The eyes sit in four clusters."
+        },
+        {
+          "tr": "Her kümede altı göz.",
+          "en": "Six in each cluster."
+        }
+      ]
+    },
+    {
+      "arama": "box jellyfish swimming",
+      "cumleler": [
+        {
+          "tr": "Asıl şaşırtıcı olan ne?",
+          "en": "The strangest part?"
+        },
+        {
+          "tr": "Dört gözü hep gökyüzüne bakar.",
+          "en": "Four eyes always face the sky."
+        },
+        {
+          "tr": "Ağır bir kristal onları dik tutar.",
+          "en": "A heavy crystal keeps them upright."
+        },
+        {
+          "tr": "Hayvan nasıl dönerse dönsün.",
+          "en": "No matter how it turns."
+        }
+      ]
+    },
+    {
+      "arama": "jellyfish mangrove",
+      "gerilim": true,
+      "cumleler": [
+        {
+          "tr": "Suyun içinden ağaçları görür.",
+          "en": "It watches trees through the surface."
+        },
+        {
+          "tr": "Mangrov ormanının kenarında kalır.",
+          "en": "It stays near the mangrove forest."
+        },
+        {
+          "tr": "Çünkü açık suya sürüklenirse...",
+          "en": "Because if it drifts into open water..."
+        },
+        {
+          "tr": "Açlıktan ölür.",
+          "en": "It starves."
+        }
+      ]
+    },
+    {
+      "arama": "box jellyfish ocean",
+      "cumleler": [
+        {
+          "tr": "Sence beyinsiz bir canlı nasıl görüyor?",
+          "en": "How does a brainless creature see?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}
