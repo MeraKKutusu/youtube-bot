@@ -1,0 +1,205 @@
+{
+  "tarih": "2026-11-23",
+  "kota": 808,
+  "toplanan": 355,
+  "incelenen": 114,
+  "hayvanli": 17,
+  "konular": [
+    {
+      "hayvan": "Jellyfish",
+      "tur": "deniz",
+      "izlenme": 9308839,
+      "video": 2,
+      "kanal": 2,
+      "durum": "kullanildi"
+    },
+    {
+      "hayvan": "Whale",
+      "tur": "deniz",
+      "izlenme": 488684,
+      "video": 4,
+      "kanal": 4,
+      "durum": "kullanildi"
+    },
+    {
+      "hayvan": "Shark",
+      "tur": "deniz",
+      "izlenme": 340711,
+      "video": 2,
+      "kanal": 2,
+      "durum": "kullanildi"
+    },
+    {
+      "hayvan": "Rhino",
+      "tur": "kara",
+      "izlenme": 3225866,
+      "video": 1,
+      "kanal": 1,
+      "durum": "eklendi"
+    },
+    {
+      "hayvan": "Seahorse",
+      "tur": "deniz",
+      "izlenme": 3029207,
+      "video": 1,
+      "kanal": 1,
+      "durum": "tasindi"
+    }
+  ],
+  "kaliplar": [
+    {
+      "kalip": "soru",
+      "ad": "Soruyla açılış",
+      "sablon": "Bu hayvan neden ...? / Sence ... ne yapar?",
+      "oran": 0.29,
+      "kat": 2.07,
+      "video": 5
+    },
+    {
+      "kalip": "unlem",
+      "ad": "Ünlem / büyük harf vurgusu",
+      "sablon": "Kısa ve tek kelimelik vurgu",
+      "oran": 0.41,
+      "kat": 0.38,
+      "video": 7
+    }
+  ],
+  "en_cok": [
+    {
+      "baslik": "This Man Saved a Dying Jellyfish... But What Happened Next Was Unbelievable#shorts",
+      "kanal": "LunaPaw",
+      "izlenme": 7811739,
+      "tarih": "2026-10-30",
+      "hayvan": "Jellyfish",
+      "dil": "en"
+    },
+    {
+      "baslik": "Only two northern white rhinos are left #shorts #animals #rhino",
+      "kanal": "Chronicle Vault",
+      "izlenme": 3225866,
+      "tarih": "2026-11-01",
+      "hayvan": "Rhino",
+      "dil": "en"
+    },
+    {
+      "baslik": "The only dad in nature who goes into labor #shorts #seahorse",
+      "kanal": "Ashzfilms",
+      "izlenme": 3029207,
+      "tarih": "2026-10-27",
+      "hayvan": "Seahorse",
+      "dil": "en"
+    },
+    {
+      "baslik": "Saved a Jellyfish... She Returned with a Deep Sea Treasure!#usa #shorts",
+      "kanal": "Wonder Wild",
+      "izlenme": 1497100,
+      "tarih": "2026-11-20",
+      "hayvan": "Jellyfish",
+      "dil": "en"
+    },
+    {
+      "baslik": "A Baby Bat Is Born Upside Down! 😱 The Mother’s Amazing Parenting | #Shorts#wildlife #nature",
+      "kanal": "Arjun UK",
+      "izlenme": 986364,
+      "tarih": "2026-11-12",
+      "hayvan": "Bat",
+      "dil": "en"
+    },
+    {
+      "baslik": "Whale shark🦈🐋 #short #fashion #whaleshark #bts",
+      "kanal": "WildSipHindi",
+      "izlenme": 579968,
+      "tarih": "2026-11-15",
+      "hayvan": "Whale shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "Sea Life Whale Eats A Submarine #thalassophobia #thalassophobic #shorts",
+      "kanal": "A2Z PhobiaX",
+      "izlenme": 264123,
+      "tarih": "2026-11-04",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "This man is a true SAVIOR  🦈♥️#shorts #shortsviral #shark #squid #sea #CuteAnimals #AnimalStor",
+      "kanal": "PHTAYA",
+      "izlenme": 208806,
+      "tarih": "2026-11-05",
+      "hayvan": "Shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "Shark apna bachha kaise paida karti hai? 🦈🤯 #shorts  #facts  #ocean",
+      "kanal": "crazyunifacts ",
+      "izlenme": 131905,
+      "tarih": "2026-11-20",
+      "hayvan": "Shark",
+      "dil": "en"
+    },
+    {
+      "baslik": "This Whale Eats Sea Monsters 🐋",
+      "kanal": "Wildly Curious",
+      "izlenme": 130760,
+      "tarih": "2026-10-26",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Who Wins? Orca or Giant Squid? 🫍🦑",
+      "kanal": "Sparky Vox",
+      "izlenme": 58533,
+      "tarih": "2026-11-19",
+      "hayvan": "Giant squid",
+      "dil": "en"
+    },
+    {
+      "baslik": "Mavi Balinalar Bebekken Bile O Kadar Büyük Ki!  #ilginçbilgiler #bilim #doğa",
+      "kanal": "CybermonkBelgesel",
+      "izlenme": 50582,
+      "tarih": "2026-11-04",
+      "hayvan": "Whale",
+      "dil": "tr"
+    },
+    {
+      "baslik": "Beachgoers Team Up To Rescue Huge Stingray Trapped In Rocks! 🌊 #shorts #oceanrescue #hero",
+      "kanal": "Happy Hearts",
+      "izlenme": 44576,
+      "tarih": "2026-11-15",
+      "hayvan": "Stingray",
+      "dil": "en"
+    },
+    {
+      "baslik": "Could a Whale Swallow You? What Really Happened in 2021",
+      "kanal": "Factnovs",
+      "izlenme": 43219,
+      "tarih": "2026-11-06",
+      "hayvan": "Whale",
+      "dil": "en"
+    },
+    {
+      "baslik": "Nesli Tükenen Dev Aslan! 🦁😱 #shorts #aslan #belgesel #hayvanlar #bilgi #keşfet",
+      "kanal": "Hayvanların Gizli Dünyası",
+      "izlenme": 36580,
+      "tarih": "2026-10-28",
+      "hayvan": "Lion",
+      "dil": "tr"
+    },
+    {
+      "baslik": "Deep Sea Angler Fish : Head Par Light",
+      "kanal": "Facthesis",
+      "izlenme": 27748,
+      "tarih": "2026-11-14",
+      "hayvan": "Anglerfish",
+      "dil": "en"
+    },
+    {
+      "baslik": "🐡 The Ocean's Angriest Little Balloon! 🎈 Meet the Pufferfish #shorts",
+      "kanal": "AYAN",
+      "izlenme": 26709,
+      "tarih": "2026-11-18",
+      "hayvan": "Pufferfish",
+      "dil": "en"
+    }
+  ]
+}
