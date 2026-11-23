@@ -1,0 +1,131 @@
+{
+  "seri_no": 9,
+  "konu": "Pistol shrimp snap",
+  "hayvan": "pistol shrimp",
+  "mood": "tense",
+  "kanca_yazisi": {
+    "en": "A shrimp that fires",
+    "tr": "Ateş eden bir karides"
+  },
+  "sabit_yorum": {
+    "en": "Would you swim near this shrimp? 👇",
+    "tr": "Bu karidesin yanında yüzer miydin? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "This Shrimp's Snap Is Almost as Hot as the Sun ☀️",
+      "aciklama": "The pistol shrimp snaps its claw so fast that a collapsing bubble flashes almost as hot as the Sun's surface, loud enough to jam sonar.",
+      "hashtagler": [
+        "#shorts",
+        "#pistolshrimp",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Bu Karidesin Kıskacı Neredeyse Güneş Kadar Isınıyor ☀️",
+      "aciklama": "Tabanca karidesi kıskacını öyle hızlı kapatır ki patlayan kabarcık neredeyse Güneş'in yüzeyi kadar ısınır ve sonarları bile bozar.",
+      "hashtagler": [
+        "#shorts",
+        "#tabancakaridesi",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://pubmed.ncbi.nlm.nih.gov/11586346/",
+    "https://physicsworld.com/a/the-bubble-bursts-for-shrimps/",
+    "https://www.sciencenews.org/article/shrimps-spew-bubbles-hot-sun",
+    "https://www.whoi.edu/oceanus/feature/snap-chat-eavesdropping-on-snapping-shrimp-communication/"
+  ],
+  "bolumler": [
+    {
+      "arama": "pistol shrimp",
+      "cumleler": [
+        {
+          "tr": "Bir karides nasıl silah gibi ateş eder?",
+          "en": "How does a shrimp fire like a gun?"
+        }
+      ]
+    },
+    {
+      "arama": "pistol shrimp reef",
+      "cumleler": [
+        {
+          "tr": "Adı tabanca karidesi.",
+          "en": "Meet the pistol shrimp."
+        },
+        {
+          "tr": "Dev bir kıskacı var.",
+          "en": "It has one giant claw."
+        },
+        {
+          "tr": "Kıskaç hızla kapanır.",
+          "en": "The claw snaps shut."
+        },
+        {
+          "tr": "Su jeti fırlar.",
+          "en": "A water jet shoots out."
+        }
+      ]
+    },
+    {
+      "arama": "pistol shrimp claw",
+      "cumleler": [
+        {
+          "tr": "Ama asıl şaşırtıcı olan...",
+          "en": "But the strangest part..."
+        },
+        {
+          "tr": "Ses kıskaçtan gelmez.",
+          "en": "The sound isn't the claw."
+        },
+        {
+          "tr": "Suda bir kabarcık patlar.",
+          "en": "A bubble collapses in the water."
+        },
+        {
+          "tr": "Bir anlığına...",
+          "en": "For an instant..."
+        },
+        {
+          "tr": "Neredeyse Güneş'in yüzeyi kadar ısınır.",
+          "en": "It gets nearly as hot as the Sun's surface."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "shrimp coral",
+      "cumleler": [
+        {
+          "tr": "Şok dalgası küçük avları sersemletir.",
+          "en": "The shock wave stuns small prey."
+        },
+        {
+          "tr": "İkinci Dünya Savaşı'nda...",
+          "en": "In World War II..."
+        },
+        {
+          "tr": "Bu çıtırtılar denizaltı sonarlarını bozdu.",
+          "en": "This crackling jammed submarine sonar."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "shrimp ocean",
+      "cumleler": [
+        {
+          "tr": "Sence bu karidesin yanında yüzer miydin?",
+          "en": "Would you swim near it?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

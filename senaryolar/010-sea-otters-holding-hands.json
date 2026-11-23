@@ -1,0 +1,125 @@
+{
+  "seri_no": 10,
+  "konu": "Sea otters holding hands",
+  "hayvan": "sea otter",
+  "mood": "fun",
+  "kanca_yazisi": {
+    "en": "They sleep holding hands",
+    "tr": "El ele uyuyan hayvanlar"
+  },
+  "sabit_yorum": {
+    "en": "Whose hand would you hold while sleeping? 👇",
+    "tr": "Uyurken kimin elini tutardın? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Why Some Sea Otters Hold Paws While They Sleep 🦦",
+      "aciklama": "Sea otters sleep floating on their backs. Some hold paws or use kelp so the current doesn't carry them away.",
+      "hashtagler": [
+        "#shorts",
+        "#seaotter",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Bazı Deniz Su Samurları Neden El Ele Uyur? 🦦",
+      "aciklama": "Deniz su samurları sırtüstü yüzerek uyur. Bazıları akıntıya kapılmamak için patilerini tutar ya da yosun kullanır.",
+      "hashtagler": [
+        "#shorts",
+        "#susamuru",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.seattleaquarium.org/animal/sea-otter/",
+    "https://www.seattleaquarium.org/stories/the-densest-fur-of-any-animal-on-earth-all-about-sea-otters/",
+    "https://oceantoday.noaa.gov/seaotters101/",
+    "https://www.guinnessworldrecords.com/world-records/77983-densest-fur"
+  ],
+  "bolumler": [
+    {
+      "arama": "sea otter",
+      "cumleler": [
+        {
+          "tr": "Bu hayvanlar neden el ele uyur?",
+          "en": "Why do these animals sleep holding hands?"
+        }
+      ]
+    },
+    {
+      "arama": "sea otter floating",
+      "cumleler": [
+        {
+          "tr": "Onlar deniz su samurları.",
+          "en": "They're sea otters."
+        },
+        {
+          "tr": "Sırtüstü yüzerek uyurlar.",
+          "en": "They sleep floating on their backs."
+        },
+        {
+          "tr": "Ama bir sorun var.",
+          "en": "But there's a problem."
+        },
+        {
+          "tr": "Akıntı onları sürükler.",
+          "en": "The current carries them away."
+        }
+      ]
+    },
+    {
+      "arama": "sea otter kelp",
+      "cumleler": [
+        {
+          "tr": "Bu yüzden bazıları...",
+          "en": "So some of them..."
+        },
+        {
+          "tr": "Uyurken patilerini tutar.",
+          "en": "Hold paws while sleeping."
+        },
+        {
+          "tr": "Gruptan kopmamak için.",
+          "en": "To stay with the group."
+        },
+        {
+          "tr": "Bazıları karnına deniz yosunu serer.",
+          "en": "Others drape kelp over their bellies."
+        }
+      ]
+    },
+    {
+      "arama": "sea otter fur",
+      "cumleler": [
+        {
+          "tr": "Üstelik vücutlarında yağ tabakası yok.",
+          "en": "And they have no blubber."
+        },
+        {
+          "tr": "Onları kürkleri sıcak tutar.",
+          "en": "Their fur keeps them warm."
+        },
+        {
+          "tr": "Dünyanın en yoğun kürkü onlarda.",
+          "en": "The densest fur on Earth."
+        }
+      ]
+    },
+    {
+      "arama": "otter ocean",
+      "cumleler": [
+        {
+          "tr": "Sence uyurken kimin elini tutardın?",
+          "en": "Whose hand would you hold?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}
