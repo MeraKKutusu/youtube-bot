@@ -11,8 +11,8 @@
 - [x] (kara) Elephants hear through their feet -> senaryolar/004-elephant-seismic-hearing.json
 - [x] (deniz) Immortal jellyfish -> senaryolar/005-immortal-jellyfish-reset.json
 - [x] (deniz) Box jellyfish eyes -> senaryolar/006-box-jellyfish-eyes.json
-- [ ] (deniz) Octopus has three hearts and blue blood
-- [ ] (deniz) Mantis shrimp punch
+- [x] (deniz) Octopus has three hearts and blue blood -> senaryolar/007-octopus-three-hearts.json
+- [x] (deniz) Mantis shrimp punch -> senaryolar/008-mantis-shrimp-punch.json
 - [ ] (deniz) Pistol shrimp snap
 - [ ] (deniz) Sea otters holding hands
 - [ ] (deniz) Male seahorse pregnancy

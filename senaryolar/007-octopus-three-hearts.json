@@ -1,0 +1,120 @@
+{
+  "seri_no": 7,
+  "konu": "Octopus has three hearts and blue blood",
+  "hayvan": "octopus",
+  "mood": "mysterious",
+  "kanca_yazisi": {
+    "en": "Three hearts, blue blood",
+    "tr": "Üç kalp, mavi kan"
+  },
+  "sabit_yorum": {
+    "en": "Which heart matters most? 👇",
+    "tr": "Sence hangi kalp daha önemli? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Why Does the Octopus Need Three Hearts? 🐙",
+      "aciklama": "Two hearts pump blood through the gills, one feeds the body, and that one stops when the octopus swims.",
+      "hashtagler": [
+        "#shorts",
+        "#octopus",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Ahtapotun Neden Üç Kalbi Var? 🐙",
+      "aciklama": "İki kalp kanı solungaçlara, biri vücuda pompalar. Vücut kalbi ahtapot yüzerken durur.",
+      "hashtagler": [
+        "#shorts",
+        "#ahtapot",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.smithsonianmag.com/science-nature/ten-curious-facts-about-octopuses-7625828/",
+    "https://www.livescience.com/how-many-hearts-does-an-octopus-have"
+  ],
+  "bolumler": [
+    {
+      "arama": "octopus",
+      "cumleler": [
+        {
+          "tr": "Bu hayvanın neden üç kalbi var?",
+          "en": "Why does this animal have three hearts?"
+        }
+      ]
+    },
+    {
+      "arama": "octopus underwater",
+      "cumleler": [
+        {
+          "tr": "Üstelik kanı mavi.",
+          "en": "And its blood is blue."
+        },
+        {
+          "tr": "Çünkü kanında demir yok.",
+          "en": "Because its blood lacks iron."
+        },
+        {
+          "tr": "Oksijeni bakır taşır.",
+          "en": "Copper carries the oxygen."
+        }
+      ]
+    },
+    {
+      "arama": "octopus reef",
+      "cumleler": [
+        {
+          "tr": "İki kalp yalnızca solungaçlara çalışır.",
+          "en": "Two hearts serve only the gills."
+        },
+        {
+          "tr": "Kanı oradan geçirip temizler.",
+          "en": "They push blood through them for oxygen."
+        },
+        {
+          "tr": "Üçüncüsü tüm vücudu besler.",
+          "en": "The third feeds the whole body."
+        }
+      ]
+    },
+    {
+      "arama": "octopus swimming",
+      "cumleler": [
+        {
+          "tr": "Ama bir sorun var.",
+          "en": "But there's a catch."
+        },
+        {
+          "tr": "Yüzerken bu kalp durur.",
+          "en": "This heart stops while it swims."
+        },
+        {
+          "tr": "Belki de bu yüzden...",
+          "en": "Maybe that's why..."
+        },
+        {
+          "tr": "Yüzmek yerine sürünmeyi sever.",
+          "en": "It prefers crawling to swimming."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "octopus ocean",
+      "cumleler": [
+        {
+          "tr": "Sence hangi kalbi daha önemli?",
+          "en": "Which heart matters most?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

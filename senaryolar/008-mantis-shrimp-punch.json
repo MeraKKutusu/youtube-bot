@@ -1,0 +1,118 @@
+{
+  "seri_no": 8,
+  "konu": "Mantis shrimp punch",
+  "hayvan": "mantis shrimp",
+  "mood": "epic",
+  "kanca_yazisi": {
+    "en": "A punch like a bullet",
+    "tr": "Mermi gibi bir yumruk"
+  },
+  "sabit_yorum": {
+    "en": "Which animal hits harder? 👇",
+    "tr": "Sence daha sert vuran hayvan var mı? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "This Tiny Shrimp Punches Like a Bullet 🥊",
+      "aciklama": "The mantis shrimp's club accelerates like a small bullet and hits twice: once with the club, once with a collapsing bubble.",
+      "hashtagler": [
+        "#shorts",
+        "#mantisshrimp",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Bu Küçük Karides Mermi Gibi Yumruk Atıyor 🥊",
+      "aciklama": "Mantis karidesinin kolu küçük bir mermi gibi hızlanır ve iki kez vurur: önce kol, sonra patlayan kabarcık.",
+      "hashtagler": [
+        "#shorts",
+        "#mantiskaridesi",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://newsarchive.berkeley.edu/news/media/releases/2004/04/21_shrimp.shtml",
+    "https://www.nationalgeographic.com/science/article/the-mantis-shrimp-has-the-worlds-fastest-punch",
+    "https://pateklab.biology.duke.edu/research/mechanics-of-ultrafast-movement/mechanics-of-movement-mantis-shrimp/",
+    "https://doi.org/10.1038/428819a"
+  ],
+  "bolumler": [
+    {
+      "arama": "mantis shrimp",
+      "cumleler": [
+        {
+          "tr": "Bu yumruk mermi gibi hızlanır.",
+          "en": "This punch accelerates like a bullet."
+        }
+      ]
+    },
+    {
+      "arama": "mantis shrimp reef",
+      "cumleler": [
+        {
+          "tr": "Sahibi küçük bir karides.",
+          "en": "Its owner is a small shrimp."
+        },
+        {
+          "tr": "Adı mantis karidesi.",
+          "en": "The mantis shrimp."
+        },
+        {
+          "tr": "Kolu saatte yaklaşık seksen kilometreye ulaşır.",
+          "en": "Its club hits about 80 km/h."
+        }
+      ]
+    },
+    {
+      "arama": "mantis shrimp underwater",
+      "cumleler": [
+        {
+          "tr": "Ama asıl şaşırtıcı olan...",
+          "en": "But the strangest part..."
+        },
+        {
+          "tr": "Darbe iki kez vurur.",
+          "en": "The strike hits twice."
+        },
+        {
+          "tr": "Önce kolun kendisi.",
+          "en": "First, the club itself."
+        },
+        {
+          "tr": "Sonra suda bir kabarcık çöker.",
+          "en": "Then a bubble collapses in the water."
+        },
+        {
+          "tr": "Işık ve ısı saçarak.",
+          "en": "Giving off light and heat."
+        }
+      ],
+      "gerilim": true
+    },
+    {
+      "arama": "mantis shrimp coral",
+      "cumleler": [
+        {
+          "tr": "Salyangoz kabukları paramparça olur.",
+          "en": "Snail shells shatter."
+        }
+      ]
+    },
+    {
+      "arama": "mantis shrimp ocean",
+      "cumleler": [
+        {
+          "tr": "Sence bundan güçlüsü var mı?",
+          "en": "Is anything stronger?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}
