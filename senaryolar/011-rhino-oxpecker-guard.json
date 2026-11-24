@@ -1,0 +1,143 @@
+{
+  "seri_no": 11,
+  "konu": "Rhino (trend 2026-11-23) - oxpecker alarm calls",
+  "hayvan": "rhino",
+  "mood": "tense",
+  "kanca_yazisi": {
+    "en": "The rhino's secret guard",
+    "tr": "Gergedanın gizli bekçisi"
+  },
+  "sabit_yorum": {
+    "en": "Do you think the birds warn them on purpose? 👇",
+    "tr": "Sence kuşlar bilerek mi uyarıyor? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "The Tiny Bird That Warns Rhinos About Humans 🦏",
+      "aciklama": "Black rhinos see poorly. Oxpeckers riding on their backs sound the alarm when people approach.",
+      "hashtagler": [
+        "#shorts",
+        "#rhino",
+        "#animalfacts",
+        "#wildlife"
+      ]
+    },
+    "tr": {
+      "baslik": "Gergedanı İnsanlara Karşı Uyaran Minik Kuş 🦏",
+      "aciklama": "Kara gergedanlar çok kötü görür. Sırtlarındaki öküzkuşları, insan yaklaşınca alarm verir.",
+      "hashtagler": [
+        "#shorts",
+        "#gergedan",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.sciencedaily.com/releases/2020/04/200409110524.htm",
+    "https://www.nationalgeographic.com/animals/article/bird-calls-warn-black-rhinos-humans-poachers",
+    "https://www.sciencenews.org/article/oxpecker-birds-warn-endangered-black-rhinos-people-near-poaching",
+    "https://www.vu.edu.au/about-vu/news-events/news/black-rhinos-eavesdrop-on-alarm-calls-of-hitchhiking-oxpeckers-to-avoid-humans"
+  ],
+  "bolumler": [
+    {
+      "arama": "rhino",
+      "cumleler": [
+        {
+          "tr": "Gergedanı kim korur?",
+          "en": "Who guards the rhino?"
+        }
+      ]
+    },
+    {
+      "arama": "black rhino",
+      "cumleler": [
+        {
+          "tr": "Kara gergedanlar çok kötü görür.",
+          "en": "Black rhinos see very poorly."
+        },
+        {
+          "tr": "İnsanı çoğu zaman fark etmez.",
+          "en": "They often miss an approaching human."
+        }
+      ]
+    },
+    {
+      "arama": "rhino oxpecker",
+      "cumleler": [
+        {
+          "tr": "Ama sırtında küçük yolcular var.",
+          "en": "But tiny passengers ride on its back."
+        },
+        {
+          "tr": "Öküzkuşları.",
+          "en": "Oxpeckers."
+        },
+        {
+          "tr": "Gergedanın kenelerini yerler.",
+          "en": "They eat the rhino's ticks."
+        }
+      ]
+    },
+    {
+      "arama": "rhino savanna",
+      "gerilim": true,
+      "cumleler": [
+        {
+          "tr": "Bir insan yaklaşınca...",
+          "en": "When a human approaches..."
+        },
+        {
+          "tr": "Kuşlar alarm çığlığı atar.",
+          "en": "The birds sound an alarm."
+        },
+        {
+          "tr": "Gergedan bu sesi duyar.",
+          "en": "The rhino hears it."
+        },
+        {
+          "tr": "Ve tetikte döner.",
+          "en": "And turns, on full alert."
+        }
+      ]
+    },
+    {
+      "arama": "rhino africa",
+      "cumleler": [
+        {
+          "tr": "Asıl şaşırtıcı olan şu.",
+          "en": "Here's the surprising part."
+        },
+        {
+          "tr": "Kuşlu gergedanlar insanı her seferinde fark etti.",
+          "en": "With birds, rhinos noticed humans every time."
+        },
+        {
+          "tr": "Kuşsuzlar ise yaklaşık dörtte birinde.",
+          "en": "Without them, only about a quarter of the time."
+        },
+        {
+          "tr": "Svahilicede bu kuşun adı...",
+          "en": "In Swahili, this bird's name means..."
+        },
+        {
+          "tr": "Gergedanın bekçisi.",
+          "en": "The rhino's guard."
+        }
+      ]
+    },
+    {
+      "arama": "rhino wildlife",
+      "cumleler": [
+        {
+          "tr": "Sence kuşlar bilerek mi uyarıyor?",
+          "en": "Do the birds warn them on purpose?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

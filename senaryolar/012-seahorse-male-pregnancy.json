@@ -1,0 +1,128 @@
+{
+  "seri_no": 12,
+  "konu": "Male seahorse pregnancy",
+  "hayvan": "seahorse",
+  "mood": "mysterious",
+  "kanca_yazisi": {
+    "en": "Fathers who get pregnant",
+    "tr": "Hamile kalan babalar"
+  },
+  "sabit_yorum": {
+    "en": "Should more animal dads do this? 👇",
+    "tr": "Sence başka babalar da bunu yapmalı mı? 👇"
+  },
+  "yayin": {
+    "en": {
+      "baslik": "Seahorse Dads Carry the Babies, Not Moms 🌊",
+      "aciklama": "Female seahorses put their eggs in the male's pouch. He supplies oxygen and nutrients until birth.",
+      "hashtagler": [
+        "#shorts",
+        "#seahorse",
+        "#animalfacts",
+        "#ocean"
+      ]
+    },
+    "tr": {
+      "baslik": "Denizatlarında Yavruyu Anne Değil Baba Taşır 🌊",
+      "aciklama": "Dişi denizatı yumurtaları erkeğin kesesine bırakır. Baba, doğuma kadar oksijen ve besin sağlar.",
+      "hashtagler": [
+        "#shorts",
+        "#denizatı",
+        "#hayvanlar",
+        "#bilgi"
+      ]
+    }
+  },
+  "kaynaklar": [
+    "https://www.sydney.edu.au/news-opinion/news/2021/09/20/pregnant-male-seahorses-support-growing-babies-by-forming-placen.html",
+    "https://sydney.edu.au/news-opinion/news/2020/07/12/male-seahorses-transport-nutrients-to-embryos-research.html",
+    "https://www.sydney.edu.au/news-opinion/news/2015/09/02/male-seahorse-and-human-pregnancies-remarkably-alike.html"
+  ],
+  "bolumler": [
+    {
+      "arama": "seahorse",
+      "cumleler": [
+        {
+          "tr": "Hamile kalan bir baba düşünebilir misin?",
+          "en": "Can you imagine a pregnant father?"
+        }
+      ]
+    },
+    {
+      "arama": "seahorse coral",
+      "cumleler": [
+        {
+          "tr": "Bu bir erkek denizatı.",
+          "en": "This is a male seahorse."
+        },
+        {
+          "tr": "Dişi yumurtalarını ona verir.",
+          "en": "The female gives him her eggs."
+        },
+        {
+          "tr": "Karnındaki özel bir keseye.",
+          "en": "Into a special pouch on his belly."
+        }
+      ]
+    },
+    {
+      "arama": "seahorse male",
+      "cumleler": [
+        {
+          "tr": "Ama iş burada bitmiyor.",
+          "en": "But it doesn't end there."
+        },
+        {
+          "tr": "Baba yavrulara oksijen sağlar.",
+          "en": "The father supplies oxygen."
+        },
+        {
+          "tr": "Besin ve yağ taşır.",
+          "en": "He delivers nutrients and fats."
+        },
+        {
+          "tr": "Onları mikroplardan da korur.",
+          "en": "And protects them from infection."
+        }
+      ]
+    },
+    {
+      "arama": "seahorse underwater",
+      "cumleler": [
+        {
+          "tr": "Asıl şaşırtıcı olan şu.",
+          "en": "Here's the surprising part."
+        },
+        {
+          "tr": "Bazı türlerde kesede damarlar çoğalır.",
+          "en": "In some species, the pouch grows blood vessels."
+        },
+        {
+          "tr": "Plasentaya benzer bir yapı oluşur.",
+          "en": "A placenta-like structure forms."
+        },
+        {
+          "tr": "Birkaç hafta sonra...",
+          "en": "A few weeks later..."
+        },
+        {
+          "tr": "Baba bine kadar yavru doğurur.",
+          "en": "He gives birth to up to a thousand babies."
+        }
+      ]
+    },
+    {
+      "arama": "seahorse ocean",
+      "cumleler": [
+        {
+          "tr": "Sen olsan bu yükü taşır mıydın?",
+          "en": "Would you carry that load?"
+        },
+        {
+          "tr": "Takip et, yarın daha şaşırtıcısı var.",
+          "en": "Follow, tomorrow's is even crazier."
+        }
+      ]
+    }
+  ]
+}

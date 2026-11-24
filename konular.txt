@@ -5,8 +5,8 @@
 # Günlük görev yukarıdan aşağı sıradaki 2 işaretsiz konuyu alır.
 # İşaretsiz konu 5'in altına inince 10 yeni konu eklenir (~6 deniz, ~4 kara).
 
-- [ ] (kara) Rhino (trend 2026-11-23; özgün bir şaşırtıcı bilgi seç)
-- [ ] (deniz) Male seahorse pregnancy
+- [x] (kara) Rhino (trend 2026-11-23; özgün bir şaşırtıcı bilgi seç) -> senaryolar/011-rhino-oxpecker-guard.json
+- [x] (deniz) Male seahorse pregnancy -> senaryolar/012-seahorse-male-pregnancy.json
 - [x] (deniz) Sperm whales sleep vertically -> senaryolar/001-sperm-whale-vertical-sleep.json
 - [x] (deniz) Greenland shark lifespan -> senaryolar/002-greenland-shark-lifespan.json
 - [x] (kara) Lion (trend 2026-11-20; özgün bir şaşırtıcı bilgi seç) -> senaryolar/003-lion-dark-mane.json
