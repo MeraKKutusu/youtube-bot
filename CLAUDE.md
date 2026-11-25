@@ -53,8 +53,10 @@ adlı çiçekli ağaç videoya girebiliyor. Bu yüzden hiçbir video gözle bak�
    konunun hayvanı en az birkaç karede görünmeli.
 3. **Uygunsa:** `Videoyu Onayla` workflow'unu (`onayla.yml`) `etiketler` girdisiyle çalıştır
    (iki video virgülle). Bu, Buffer'da sıradaki boş saate koyar.
-4. **Uygun değilse:** senaryonun `arama` alanlarını değiştir (daha genel tür adı,
-   farklı ortam kelimesi), commit/push et ve `Shorts Üret`'i o senaryo için elle çalıştır
+4. **Uygun değilse:** Release'teki `meta.json` → `secilen_gorseller` listesinden kötü
+   görüntünün `kimlik`ini bul (ör. `pixabay-f-744520`) ve senaryoya
+   `"haric": ["pixabay-f-744520"]` olarak ekle; gerekirse `arama` alanlarını da değiştir
+   (daha genel tür adı, farklı ortam kelimesi). Commit/push et ve `Shorts Üret`'i o senaryo için elle çalıştır
    (`senaryo`, `buffer_paylas: false`), sonra tekrar bak. İki denemede de olmazsa onaylama;
    kullanıcıya hangi videonun neden bekletildiğini söyle.
 5. **Gerçek görüntüsü olmayan hayvan:** sistem önce gerçek görüntü arar; hiç bulamazsa

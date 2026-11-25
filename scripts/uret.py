@@ -706,6 +706,7 @@ YEMEK_ETIKETLERI = ("food", "dish", "meal", "cooking", "cooked", "fried", "grill
                     "edible", "salad", "noodle", "rice", "soup", "barbecue", "bbq",
                     "catch of the day", "fishmonger", "flower", "blossom", "bouquet",
                     "azalea", "cherry", "sakura", "landscape", "scenery", "garden")
+SECILENLER = []     # meta.json'a yazılır: hangi bölümde hangi görüntü (görsel kontrol için)
 ETIKET_KAYDI = {}   # kimlik -> etiketler (loglarda hangi görüntünün neden seçildiği görünsün)
 
 
@@ -842,6 +843,8 @@ def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan, hayvan="", yapay
                     print(f"{ad} indirmesi başarısız: {_gizle(e, [anahtar])}", file=sys.stderr)
                     continue
                 kullanilan.add(kimlik)
+                SECILENLER.append({"bolum": sira + 1, "kimlik": f"{kimlik[0]}-{kimlik[1]}",
+                                   "etiketler": ETIKET_KAYDI.get(kimlik, "")})
                 print(f"  seçilen {kimlik}: {ETIKET_KAYDI.get(kimlik, '-')}")
                 return tur, yol, ad
         except KaynakKapali as e:
@@ -1019,6 +1022,11 @@ def uret(args):
 
     # 4. Görseller ve parçalar
     kullanilan = set()
+    # Görsel kontrolde reddedilen görüntüler: senaryoda "haric": ["pixabay-f-744520", ...]
+    for h in veri.get("haric") or []:
+        tur_, _, no_ = str(h).rpartition("-")
+        if tur_ and no_:
+            kullanilan.add((tur_, int(no_) if no_.isdigit() else no_))
     hayvan = hayvan_adi(veri)
     print(f"Görseller: yalnızca etiketinde '{hayvan.split()[-1] if hayvan else '-'}' geçenler "
           f"(hayvan: {hayvan or '-'})")
@@ -1101,7 +1109,7 @@ def uret(args):
         "cumle_sayisi": len(cumleler), "altyazi_sayisi": altyazi_sayisi,
         "kanca_yazisi": kanca, "goruntu_kaynaklari": kullanilan_kaynaklar,
         "gercek_goruntu": len(iyi), "bolum_sayisi": len(veri["bolumler"]),
-        "yapay_goruntu": yapay_kullanildi,
+        "yapay_goruntu": yapay_kullanildi, "secilen_gorseller": SECILENLER,
         "goruntu_kaynagi_var": bool(kaynaklar),
         "release_adi": release_adi, **yayin,
     }
