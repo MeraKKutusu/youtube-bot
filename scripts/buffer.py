@@ -3,7 +3,7 @@
 
 Komutlar:
   sirala   : kalite kontrolünden geçen videoyu ertesi günün boş slotuna
-             (12:30 ya da 20:30, Europe/Istanbul) iki kanala da planlar
+             (gün bazlı saatler, bkz. GUN_SLOTLARI; Europe/Istanbul) iki kanala da planlar
   kanallar : bağlı Buffer kanallarını listeler (kurulum kontrolü için)
 
 Ortam değişkenleri:
@@ -28,7 +28,21 @@ from zoneinfo import ZoneInfo
 
 API = "https://api.buffer.com"
 SAAT_DILIMI = ZoneInfo("Europe/Istanbul")
-SLOTLAR = ((12, 30), (20, 30))
+# Gün bazlı paylaşım saatleri (İstanbul). Kaynak: Buffer 2026 (1,8 M YouTube, 7,1 M TikTok
+# gönderisi: akşam 18-23 güçlü, Cuma 16-19 Shorts zirvesi, hafta sonu sabahı), PostEverywhere
+# 2026 Shorts çalışması (Pzt 10-13, Paz 8-11, Cuma 16-19 güçlü; 18-21 kalabalık) ve Türkiye'de
+# geç akşam telefon kullanımı. 2-3 hafta sonra kanalın kendi verisiyle gözden geçirilmeli.
+# weekday(): 0=Pazartesi ... 6=Pazar
+GUN_SLOTLARI = {
+    0: ((12, 30), (21, 30)),
+    1: ((12, 30), (21, 30)),
+    2: ((12, 30), (21, 30)),
+    3: ((12, 30), (21, 30)),
+    4: ((17, 30), (21, 30)),   # Cuma: Shorts'un en güçlü öğleden sonrası
+    5: ((11, 30), (21, 30)),   # Cumartesi: hafta sonu öğlesi
+    6: ((10, 30), (21, 30)),   # Pazar: hafta sonu sabahı
+}
+SLOTLAR = GUN_SLOTLARI[0]  # geriye dönük uyumluluk
 EN_AZ_ONCE = timedelta(hours=2)   # slot en az bu kadar ileride olmalı
 
 
@@ -139,13 +153,22 @@ def kayit_ekle(yol, kayit):
 
 
 def slot_sec(kayitlar, simdi=None):
-    """Ertesi günden başlayarak 12:30 / 20:30 slotlarından ilk boş olanı (UTC) döndürür."""
+    """Ertesi günden başlayarak o günün GUN_SLOTLARI saatlerinden ilk boş olanı (UTC) döndürür."""
     simdi = simdi or datetime.now(timezone.utc)
     dolu = {k.get("due_at") for k in kayitlar if k.get("durum") in ("planlandi", "kismi")}
+    gunluk = {}   # yerel tarih -> o gün planlı gönderi sayısı (saatler değişse de günde en fazla 2)
+    for iso in dolu:
+        try:
+            t = datetime.fromisoformat(str(iso).replace("Z", "+00:00")).astimezone(SAAT_DILIMI).date()
+        except ValueError:
+            continue
+        gunluk[t] = gunluk.get(t, 0) + 1
     bugun = simdi.astimezone(SAAT_DILIMI).date()
     for gun in range(1, 31):
         tarih = bugun + timedelta(days=gun)
-        for saat, dakika in SLOTLAR:
+        if gunluk.get(tarih, 0) >= len(GUN_SLOTLARI[tarih.weekday()]):
+            continue
+        for saat, dakika in GUN_SLOTLARI[tarih.weekday()]:
             yerel = datetime(tarih.year, tarih.month, tarih.day, saat, dakika, tzinfo=SAAT_DILIMI)
             utc = yerel.astimezone(timezone.utc)
             iso = utc.strftime("%Y-%m-%dT%H:%M:%S.000Z")

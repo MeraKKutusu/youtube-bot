@@ -12,7 +12,8 @@ Her gün 2 video: deniz ve vahşi doğa hayvanları hakkında az bilinen, şaş�
        GitHub Actions videoyu üretir: Türkçe belgesel anlatıcısı sesi (Ahmet), İngilizce altyazı,
        kanca yazısı, Pixabay görüntüleri, mood'a göre müzik ve efektler, -14 LUFS
   ↓    Kalite kontrolü: süre 30-45 sn, ses seviyesi, siyah kare, altyazı
-  ↓    Geçerse: Release + Buffer'da ertesi gün 12:30 ya da 20:30'a sıraya konur
+  ↓    Geçerse: Release + Buffer'da sıradaki boş saate konur (Pzt-Per 12:30/21:30, Cuma 17:30/21:30,
+       Cmt 11:30/21:30, Paz 10:30/21:30)
        Geçmezse: paylaşılmaz, sana GitHub Issue açılır
 Pazar  Haftalık özet Issue'su ("Bu hafta viral olanlar" bölümüyle)
 Pzt    Trend avcısı: YouTube'da son 30 günün en çok izlenen hayvan Shorts'larını tarar,
