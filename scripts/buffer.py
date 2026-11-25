@@ -153,7 +153,7 @@ def kayit_ekle(yol, kayit):
 
 
 def slot_sec(kayitlar, simdi=None):
-    """Ertesi günden başlayarak o günün GUN_SLOTLARI saatlerinden ilk boş olanı (UTC) döndürür."""
+    """Bugünden başlayarak o günün GUN_SLOTLARI saatlerinden ilk boş olanı (UTC) döndürür."""
     simdi = simdi or datetime.now(timezone.utc)
     dolu = {k.get("due_at") for k in kayitlar if k.get("durum") in ("planlandi", "kismi")}
     gunluk = {}   # yerel tarih -> o gün planlı gönderi sayısı (saatler değişse de günde en fazla 2)
@@ -164,7 +164,7 @@ def slot_sec(kayitlar, simdi=None):
             continue
         gunluk[t] = gunluk.get(t, 0) + 1
     bugun = simdi.astimezone(SAAT_DILIMI).date()
-    for gun in range(1, 31):
+    for gun in range(0, 31):   # bugün de olur (en az EN_AZ_ONCE ileride ise)
         tarih = bugun + timedelta(days=gun)
         if gunluk.get(tarih, 0) >= len(GUN_SLOTLARI[tarih.weekday()]):
             continue
