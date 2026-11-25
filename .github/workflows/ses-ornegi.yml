@@ -1,0 +1,39 @@
+name: Ses Örneği
+
+# Ahmet sesinin farklı ton/hız ayarlarıyla kısa örneklerini üretir ve
+# "ses-ornegi" ön sürümüne (pre-release) mp3 olarak yükler. Paylaşım yapmaz.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/ses-ornegi.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  ornek:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      METIN: "Bacağını kaybetsen, yeniden çıkar mıydı? Bu hayvanınki çıkıyor. Bu bir aksolotl. Kopan bacağını yeniden büyütür. Üstelik iz bile kalmaz."
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install edge-tts
+      - name: Örnekleri üret
+        run: |
+          mkdir -p ornek
+          uret() { edge-tts --voice tr-TR-AhmetNeural --rate="$2" --pitch="$3" --text "$METIN" --write-media "ornek/$1.mp3"; }
+          uret 1-simdiki-ayar -8% -6Hz
+          uret 2-daha-tok -12% -12Hz
+          uret 3-en-tok -15% -18Hz
+          ls -la ornek
+      - name: Ön sürüme yükle
+        run: |
+          gh release view ses-ornegi >/dev/null 2>&1 || \
+            gh release create ses-ornegi --prerelease --title "Ses örneği (Ahmet)" \
+              --notes "Ahmet sesinin ton/hız örnekleri. Paylaşılmaz."
+          gh release upload ses-ornegi ornek/*.mp3 --clobber
