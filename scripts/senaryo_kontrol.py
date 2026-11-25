@@ -14,10 +14,16 @@ from pathlib import Path
 
 MOODLAR = ("tense", "mysterious", "fun", "epic")
 DILLER = ("en", "tr")
-KAPANIS_TR = "Takip et, yarın daha şaşırtıcısı var."
+KAPANISLAR_TR = (
+    "Takip et, yarın daha şaşırtıcısı var.",
+    "Takip et, sıradaki daha da şaşırtıcı.",
+    "Takip et, vahşi gerçekler bitmiyor.",
+    "Takip et, yarın yeni bir sır var.",
+)
+KAPANIS_TR = KAPANISLAR_TR[0]
 EN_FAZLA_BASLIK = 70
-KELIME_ARALIGI = (45, 80)      # dışı hata
-HEDEF_KELIME = (52, 70)        # dışı uyarı (gerçek ölçüm: 73 kelime ≈ 40 sn konuşma)
+KELIME_ARALIGI = (40, 72)      # dışı hata
+HEDEF_KELIME = (48, 60)        # dışı uyarı (ölçüm: 69 kelime ≈ 43,5 sn video; hedef ~35 sn)
 
 
 def _sade(yazi):
@@ -165,8 +171,8 @@ def kontrol(veri, dosya_adi=""):
     # Kapanış: izleyiciye soru + takip çağrısı
     tum = [c for b in bolumler for c in (b.get("cumleler") or [])]
     if tum:
-        if _sade(tum[-1].get("tr", "")) != _sade(KAPANIS_TR):
-            hatalar.append(f"son cümle tam olarak \"{KAPANIS_TR}\" olmalı")
+        if _sade(tum[-1].get("tr", "")) not in {_sade(k) for k in KAPANISLAR_TR}:
+            hatalar.append("son cümle şunlardan biri olmalı: " + " | ".join(KAPANISLAR_TR))
         if not any("?" in str(c.get("tr", "")) for c in tum[-3:-1]):
             hatalar.append("kapanışta (son cümleden hemen önce) izleyiciye bir soru olmalı")
 

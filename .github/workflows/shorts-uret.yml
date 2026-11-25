@@ -20,9 +20,9 @@ on:
       altyazi_dili:
         description: "Altyazı, başlık ve açıklama dili"
         required: true
-        default: en
+        default: tr
         type: choice
-        options: [en, tr]
+        options: [tr, en]
       buffer_paylas:
         description: "Kalite kontrolünden geçerse Buffer'da sıraya koy"
         required: false
@@ -110,7 +110,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       SES: ${{ inputs.ses || 'Ahmet' }}
-      DIL: ${{ inputs.altyazi_dili || vars.ALTYAZI_DILI || 'en' }}
+      DIL: ${{ inputs.altyazi_dili || vars.ALTYAZI_DILI || 'tr' }}
       PAYLAS: ${{ github.event_name == 'push' || inputs.buffer_paylas }}
     steps:
       - uses: actions/checkout@v4

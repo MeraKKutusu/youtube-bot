@@ -896,7 +896,7 @@ def yayin_dosyalari_yaz(veri, dil, kaynak_adlari, cikti):
         aciklama += f"\n\n{GORUNTU_SATIRI[dil]}: {', '.join(kaynak_adlari)}"
 
     tt_hashtag = [h for h in y["hashtagler"] if h.lower() != "#shorts"]
-    tt_hashtag = (tt_hashtag + ["#fyp"])[:TIKTOK_EN_FAZLA_HASHTAG]
+    tt_hashtag = list(dict.fromkeys(tt_hashtag + ["#merakkutusu"]))[:TIKTOK_EN_FAZLA_HASHTAG]
     tiktok = f"{y['baslik']}\n{seri}\n\n{_hashtag_satiri(tt_hashtag)}"
 
     etiket_basligi = {"en": ("TITLE", "DESCRIPTION", "TAGS", "PINNED COMMENT"),

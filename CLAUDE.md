@@ -72,11 +72,34 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
   rakip başlıklarını çevirip kullanmak. Gerçek, kaynaklı bir olay ya da araştırma anlat.
   `senaryo_kontrol.py` rakip başlıklarını da kopya denetimine katar.
 
+## Erişim kuralları (izlenme için)
+
+YouTube Shorts ve TikTok yeni videoyu önce küçük bir izleyici grubuna gösterir; ilk
+saniyelerde kaydırılmayan ve sonuna kadar izlenen video daha geniş kitleye açılır. TikTok
+aramada konuşmayı (transkript), ekrandaki yazıyı ve açıklamayı okur. Bu yüzden:
+
+- **Hayvanın Türkçe adı ilk 2 cümlede sesli geçsin** (ör. "Bu bir aksolotl."), mümkünse
+  ilk cümlede. `kanca_yazisi.tr` da merak uyandırsın ama boş vaat olmasın.
+- **`yayin.tr.baslik`:** insanların arayacağı ifadeyle başla, hayvanın adı ilk 3 kelimede
+  olsun ("Aksolotl kalbini nasıl yeniden yapar?"). En fazla 60 karakter, 0-1 emoji.
+- **`yayin.tr.hashtagler`:** `#shorts` + hayvanın Türkçe adı (`#aksolotl`) + konu
+  (`#hayvanlar`, `#doğa`, `#deniz`, `#belgesel`) + en fazla bir İngilizce tür etiketi.
+  `#fyp`, `#keşfet` gibi genel etiket yok.
+- **Kalıp tekrarı yok:** YouTube aynı şablonla seri üretilmiş görünen videoların gelirini
+  kısıtlıyor. Son 3 senaryoyu oku; aynı geçiş cümlesini ("Asıl şaşırtıcı olan şu.",
+  "Ama iş burada bitmiyor.") ve aynı kapanışı art arda kullanma. Kanca biçimini
+  (soru / karşılaşma / rekor / gizli bilgi) her videoda değiştir.
+- **Özgün değer:** her senaryoda kaynakta geçen en az bir somut ayrıntı (yer, yıl,
+  araştırmacı, ölçüm) olsun; genel geçer "ilginç bilgi" tekrarı değil.
+- AI etiketi açık kalır (`AI_ETIKETI=true`); YouTube açıklamasına göre etiket tek başına
+  erişimi düşürmez.
+
 ## Senaryo kuralları (30-40 sn)
 
 - Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: biraz yavaş (-8%),
   pes (-6Hz); cümle aralarında, kancadan ve sorulardan sonra kısa duraklamalar sistem
-  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **52-70 Türkçe kelime** (73 kelime ≈ 40 sn).
+  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **48-60 Türkçe kelime** (ölçüm: 69 kelime ≈ 43,5 sn video; hedef ~35 sn,
+  çünkü kısa Shorts'ta izlenme oranı yükselir).
 - **Anlatıcı üslubu:** kısa, vurucu cümleler (çoğunlukla 3-8 kelime); her cümle tek bir bilgi.
   Merak uyandıran duraklama için bilgiyi ikiye böl: önce merak ettiren yarım cümle, sonra
   cevap ("Ama bir sorun var." → "Yüzerken kalbi durur."). Gerilimi artıran kelimeler
@@ -85,8 +108,10 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
 - **0-2 sn kanca:** ilk cümle tek başına şok edici bir iddia ya da soru olsun, kısa olsun.
   `kanca_yazisi`: ekranın üstünde görünen **3-5 kelimelik** yazı (en ve tr).
 - **Gövde:** 2-3 şaşırtıcı detay. Her bölüm bir sahne; sahne cümle sonunda değişir.
-- **Kapanış:** sondan bir önceki cümle izleyiciye soru, son cümle tam olarak:
-  `Takip et, yarın daha şaşırtıcısı var.`
+- **Kapanış:** sondan bir önceki cümle izleyiciye soru, son cümle şunlardan **biri**
+  (bir önceki senaryodakinden farklı olanı seç):
+  `Takip et, yarın daha şaşırtıcısı var.` / `Takip et, sıradaki daha da şaşırtıcı.` /
+  `Takip et, vahşi gerçekler bitmiyor.` / `Takip et, yarın yeni bir sır var.`
 - Her cümlenin `tr` (seslendirilen) ve `en` (altyazı) hali olsun. İngilizce çeviri kısa ve
   doğal olsun, Türkçe cümleden çok uzun olmasın.
 - `mood`: `tense` | `mysterious` | `fun` | `epic`. Gerilimli bölümlere `"gerilim": true`
@@ -94,7 +119,10 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
 - `sabit_yorum`: izleyiciye soru (en ve tr). Kullanıcı bunu videonun altına sabitler.
 - `yayin.en` ve `yayin.tr`: `baslik` (en fazla 70 karakter, seri numarasını yazma; sistem
   ekler), `aciklama` (1-2 cümle), `hashtagler` (3-5 adet, ilki `#shorts`).
-  TikTok'a en fazla 5 hashtag gider.
+  TikTok'a en fazla 5 hashtag gider; sistem sona `#merakkutusu` ekler.
+  **Yayın dili Türkçe** (`ALTYAZI_DILI` varsayılanı `tr`): seslendirme Türkçe olduğu için
+  izleyicinin gördüğü başlık, açıklama, altyazı ve sabit yorum `tr` alanlarından gelir;
+  `tr` alanlarını asıl metin gibi özenle yaz. `en` alanları yedek olarak yine doldurulur.
 - `hayvan`: videodaki hayvanın İngilizce adı (ör. `greenland shark`, `box jellyfish`, `lion`).
   Görseller yalnızca etiketinde bu adın son kelimesi (`shark`, `jellyfish`, `lion`) geçenlerden
   seçilir; böylece ilgisiz hayvan ya da manzara görüntüsü gelmez.
@@ -117,7 +145,7 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
   "sabit_yorum": { "en": "Would you keep one in an aquarium? 👇", "tr": "Akvaryumda besler miydin? 👇" },
   "yayin": {
     "en": { "baslik": "...", "aciklama": "...", "hashtagler": ["#shorts", "#mantisshrimp", "#animalfacts"] },
-    "tr": { "baslik": "...", "aciklama": "...", "hashtagler": ["#shorts", "#hayvanlar", "#bilgi"] }
+    "tr": { "baslik": "...", "aciklama": "...", "hashtagler": ["#shorts", "#mantiskarides", "#hayvanlar", "#deniz"] }
   },
   "kaynaklar": ["https://..."],
   "bolumler": [

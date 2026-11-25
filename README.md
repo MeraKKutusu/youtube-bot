@@ -63,7 +63,7 @@ Ayarlar GitHub mobil uygulamasında yok; **tarayıcıdan github.com**'u kullan
 
 | Name | Değer | Ne işe yarar |
 |---|---|---|
-| `ALTYAZI_DILI` | `en` ya da `tr` | Otomatik videoların altyazı/başlık dili (varsayılan `en`) |
+| `ALTYAZI_DILI` | `en` ya da `tr` | Otomatik videoların altyazı/başlık dili (varsayılan `tr`) |
 | `AI_ETIKETI` | `true` ya da `false` | YouTube/TikTok "AI ile üretildi" işareti (varsayılan `true`) |
 | `BUFFER_YOUTUBE_KANAL` | Buffer'daki kanal adı | Birden çok YouTube kanalın varsa |
 | `BUFFER_TIKTOK_KANAL` | Buffer'daki kanal adı | Birden çok TikTok kanalın varsa |
