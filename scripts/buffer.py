@@ -234,7 +234,16 @@ def sirala(args):
 
     ai = _dogru_mu(os.environ.get("AI_ETIKETI"), True)
     kategori = os.environ.get("YOUTUBE_KATEGORI", "").strip() or "15"
-    due_at, yerel = slot_sec(kayitlar)
+    # Daha önce yalnızca bir kanala gidebilmişse (kismi): aynı saate yalnızca eksik kanalı ekle
+    onceki = next((k for k in reversed(kayitlar)
+                   if k.get("senaryo") == meta["senaryo"] and k.get("durum") == "kismi"
+                   and k.get("due_at")), None)
+    if onceki:
+        due_at = onceki["due_at"]
+        yerel = datetime.fromisoformat(due_at.replace("Z", "+00:00")).astimezone(SAAT_DILIMI)
+        print(f"Kısmi kayıt bulundu; eksik kanal aynı saate ekleniyor: {yerel:%Y-%m-%d %H:%M}")
+    else:
+        due_at, yerel = slot_sec(kayitlar)
     print(f"Slot: {yerel:%Y-%m-%d %H:%M} (İstanbul) = {due_at}")
 
     url_kontrol(args.video_url)
@@ -256,6 +265,11 @@ def sirala(args):
     }
 
     sonuc, hatalar = {}, []
+    if onceki:
+        for servis in list(hedefler):
+            if "id" in (onceki.get(servis) or {}):
+                sonuc[servis] = onceki[servis]          # zaten planlı; tekrar gönderme
+                del hedefler[servis]
     for servis, (ad, ek) in hedefler.items():
         try:
             kanal = kanal_sec(kanallar, servis, ad)
@@ -267,7 +281,8 @@ def sirala(args):
             hatalar.append(f"{servis}: {e}")
             print(f"✗ {servis}: {e}", file=sys.stderr)
 
-    durum = "planlandi" if not hatalar else ("kismi" if len(hatalar) < len(hedefler) else "hata")
+    basarili = sum(1 for v in sonuc.values() if "id" in v)
+    durum = "planlandi" if not hatalar else ("kismi" if basarili else "hata")
     kayit_ekle(args.kayit, {
         "zaman": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "senaryo": meta["senaryo"], "seri_no": meta.get("seri_no"), "konu": meta.get("konu"),
