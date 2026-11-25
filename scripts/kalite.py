@@ -143,6 +143,12 @@ def main():
         sonuclar.append(("Altyazı", *altyazi_kontrol(video, k / "altyazi.ass",
                                                       meta.get("cumle_sayisi", 0),
                                                       meta.get("ses_suresi", 0))))
+    if meta.get("goruntu_kaynagi_var"):
+        iyi, toplam = meta.get("gercek_goruntu", 0), meta.get("bolum_sayisi", 0)
+        # Hayvanın gerçek görüntüsü hiç yoksa ya da tek görüntü her şeyi taşıyorsa paylaşma
+        ok = iyi >= min(2, toplam)
+        sonuclar.append(("Görüntü", ok, f"{iyi}/{toplam} bölümde hayvanın kendi görüntüsü"
+                         + ("" if ok else "; renkli arka planla paylaşılmaz")))
     gecti = all(ok for _, ok, _ in sonuclar)
     rapor = {"gecti": gecti, "kontroller": [{"ad": a, "gecti": ok, "detay": d} for a, ok, d in sonuclar]}
     (k / "kalite.json").write_text(json.dumps(rapor, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -683,7 +683,21 @@ def ilgili_mi(metin, hayvan):
 # Gerçek hayvan görüntüsü yerine yapay zekâ/fantastik içerik gelmesin
 YASAK_ETIKETLER = ("ai generated", "ai-generated", "generated", "fantasy", "monster", "creature",
                    "alien", "dragon", "demon", "cartoon", "illustration", "3d", "render",
-                   "digital art", "animation", "cgi", "sci-fi", "horror", "kraken")
+                   "digital art", "animation", "cgi", "sci-fi", "horror", "kraken",
+                   "x-ray", "xray", "skeleton", "drawing", "sketch")
+# Yemek / mutfak / süs görüntüleri: "shrimp" etiketli suşi, tavada kızaran karides,
+# tabakta ahtapot ya da çiçek süslemeli yemek gelmesin
+YEMEK_ETIKETLERI = ("food", "dish", "meal", "cooking", "cooked", "fried", "grill", "roast", "boil",
+                    "restaurant", "sushi", "sashimi", "plate", "cuisine", "delicious", "dinner",
+                    "lunch", "breakfast", "kitchen", "recipe", "menu", "snack", "sauce", "spicy",
+                    "garlic", "pan ", "frying", "chef", "market", "tasty", "gourmet", "appetizer",
+                    "edible", "salad", "noodle", "rice", "soup", "barbecue", "bbq",
+                    "catch of the day", "fishmonger", "flower", "blossom", "bouquet")
+
+
+def _yasak_mi(metin):
+    metin = f" {str(metin).lower()} "
+    return any(y in metin for y in YASAK_ETIKETLER + YEMEK_ETIKETLERI)
 
 
 def _uygun_mu(hit):
@@ -691,8 +705,7 @@ def _uygun_mu(hit):
         return False
     if hit.get("isAiGenerated") or hit.get("is_ai_generated"):
         return False
-    etiketler = str(hit.get("tags", "")).lower()
-    return not any(y in etiketler for y in YASAK_ETIKETLER)
+    return not _yasak_mi(hit.get("tags", ""))
 
 
 def _sirala(adaylar):
@@ -746,7 +759,8 @@ def pexels_adaylar(anahtar, sorgu, hayvan=""):
         adaylar = []
         for v in veri.get("videos", []):
             # Pexels'te etiket yok; sayfa adresindeki açıklama kullanılır
-            puan = ilgili_mi(str(v.get("url", "")).replace("-", " "), hayvan)
+            aciklama = str(v.get("url", "")).replace("-", " ")
+            puan = 0 if _yasak_mi(aciklama) else ilgili_mi(aciklama, hayvan)
             dosyalar = [f for f in v.get("video_files", [])
                         if f.get("file_type") == "video/mp4" and f.get("width") and f.get("height")
                         and f["height"] > f["width"] and f["width"] >= 540]
@@ -759,7 +773,8 @@ def pexels_adaylar(anahtar, sorgu, hayvan=""):
                         basliklar, anahtar)
         adaylar = []
         for p in veri.get("photos", []):
-            puan = ilgili_mi(f"{p.get('alt', '')} {str(p.get('url', '')).replace('-', ' ')}", hayvan)
+            aciklama = f"{p.get('alt', '')} {str(p.get('url', '')).replace('-', ' ')}"
+            puan = 0 if _yasak_mi(aciklama) else ilgili_mi(aciklama, hayvan)
             url = (p.get("src") or {}).get("large2x") or (p.get("src") or {}).get("portrait")
             if puan and url:
                 adaylar.append((puan, True, ("foto", url, ("pexels-f", p.get("id")))))
@@ -1041,6 +1056,8 @@ def uret(args):
         "ses_suresi": round(ses_suresi, 2), "video_suresi": round(sure_olc(video), 2),
         "cumle_sayisi": len(cumleler), "altyazi_sayisi": altyazi_sayisi,
         "kanca_yazisi": kanca, "goruntu_kaynaklari": kullanilan_kaynaklar,
+        "gercek_goruntu": len(iyi), "bolum_sayisi": len(veri["bolumler"]),
+        "goruntu_kaynagi_var": bool(kaynaklar),
         "release_adi": release_adi, **yayin,
     }
     Path(cikti, "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
