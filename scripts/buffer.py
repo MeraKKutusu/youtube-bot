@@ -301,6 +301,30 @@ def sirala(args):
     return 0 if not hatalar else 2
 
 
+def sil_komutu(args):
+    """Planlı Buffer gönderilerini siler (uygulamada silinemeyenler için)."""
+    hata = 0
+    for pid in [x.strip() for x in args.id.split(",") if x.strip()]:
+        try:
+            veri = gql("""mutation S($input: DeletePostInput!) {
+              deletePost(input: $input) { __typename ... on MutationError { message } }
+            }""", {"input": {"id": pid}})
+            print(f"✓ {pid}: {veri.get('deletePost')}")
+        except BufferHatasi as e:
+            hata = 2
+            print(f"✗ {pid}: {e}", file=sys.stderr)
+    if hata:
+        # Şema farklıysa mevcut mutation adlarını göster
+        try:
+            sema = gql('query { __schema { mutationType { fields { name args { name type { name kind ofType { name } } } } } } }')
+            for f in sema["__schema"]["mutationType"]["fields"]:
+                if "post" in f["name"].lower() or "delete" in f["name"].lower():
+                    print("mutation:", f["name"], [(a["name"], a["type"].get("name") or (a["type"].get("ofType") or {}).get("name")) for a in f["args"]])
+        except Exception as e:  # noqa: BLE001
+            print(f"şema okunamadı: {e}", file=sys.stderr)
+    return hata
+
+
 def kanallar_komutu(_args):
     org = organizasyon_id()
     print(f"Organizasyon: {org}")
@@ -320,7 +344,15 @@ def main():
     s.add_argument("--kayit", default="yayinlar/kayit.jsonl")
     s.add_argument("--rapor", default="cikti/buffer.md")
     alt.add_parser("kanallar")
+    sl = alt.add_parser("sil")
+    sl.add_argument("--id", required=True, help="Buffer gönderi id'leri, virgülle")
     args = ap.parse_args()
+    if args.komut == "sil":
+        try:
+            return sil_komutu(args)
+        except BufferHatasi as e:
+            print(f"HATA: {e}", file=sys.stderr)
+            return 2
     try:
         return sirala(args) if args.komut == "sirala" else kanallar_komutu(args)
     except BufferHatasi as e:

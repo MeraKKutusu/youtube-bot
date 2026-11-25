@@ -1,0 +1,29 @@
+name: Buffer Gönderisi Sil
+
+# Buffer uygulamasında silinemeyen planlı gönderileri API ile siler.
+# Gönderi id'leri yayinlar/kayit.jsonl içindeki youtube.id / tiktok.id alanlarıdır.
+on:
+  workflow_dispatch:
+    inputs:
+      idler:
+        description: "Buffer gönderi id'leri, virgülle ayrılmış"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  sil:
+    runs-on: ubuntu-latest
+    env:
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      IDLER: ${{ inputs.idler }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Sil
+        run: python scripts/buffer.py sil --id "$IDLER"
