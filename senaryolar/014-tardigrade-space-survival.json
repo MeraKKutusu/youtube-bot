@@ -1,0 +1,70 @@
+{
+  "seri_no": 14,
+  "konu": "Tardigrades surviving space",
+  "hayvan": "tardigrade",
+  "mood": "epic",
+  "kanca_yazisi": { "en": "It survived open space", "tr": "Uzay boşluğunda hayatta kaldı" },
+  "sabit_yorum": { "en": "Could life like this exist on other planets? 👇", "tr": "Başka gezegenlerde böyle canlılar olabilir mi? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "The Tiny Animal That Survived the Vacuum of Space 🚀",
+      "aciklama": "In 2007, dried-out tardigrades spent 10 days exposed to space in orbit. Many revived back on Earth, and some later laid eggs.",
+      "hashtagler": ["#shorts", "#tardigrade", "#animalfacts", "#space"]
+    },
+    "tr": {
+      "baslik": "Uzay Boşluğunda Hayatta Kalan Minik Hayvan 🚀",
+      "aciklama": "2007'de kurutulmuş tardigradlar yörüngede 10 gün uzaya açık kaldı. Birçoğu Dünya'da yeniden canlandı, bazıları sonra yumurta bıraktı.",
+      "hashtagler": ["#shorts", "#tardigrad", "#hayvanlar", "#uzay"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.esa.int/Our_Activities/Human_Spaceflight/Research/Tiny_animals_survive_exposure_to_space",
+    "https://www.nationalgeographic.com/science/article/tardigrades-become-first-animals-to-survive-vacuum-of-space",
+    "https://www.scientificamerican.com/article/first-animal-that-can-survive-in-space/",
+    "https://cordis.europa.eu/article/id/29839-water-bears-survive-space-environment-study-shows"
+  ],
+  "bolumler": [
+    {
+      "arama": "tardigrade",
+      "cumleler": [
+        { "tr": "Uzayda korumasız yaşayabilir misin?", "en": "Could you survive unprotected in space?" },
+        { "tr": "Bu minik hayvan yaşadı.", "en": "This tiny animal did." }
+      ]
+    },
+    {
+      "arama": "tardigrade microscope",
+      "cumleler": [
+        { "tr": "Bu bir tardigrad.", "en": "This is a tardigrade." },
+        { "tr": "Su ayısı da denir.", "en": "Also called a water bear." },
+        { "tr": "Çoğu bir milimetreden küçük.", "en": "Most are under a millimeter." }
+      ]
+    },
+    {
+      "arama": "tardigrade water bear",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Bilim insanları onları uzaya gönderdi.", "en": "Scientists sent them into space." },
+        { "tr": "Hem de kapsülün dışında.", "en": "Outside the capsule." },
+        { "tr": "On gün boyunca uzay boşluğunda.", "en": "Ten days in the vacuum of space." },
+        { "tr": "Peki nasıl dayandılar?", "en": "So how did they survive?" },
+        { "tr": "Vücutlarındaki suyun neredeyse tamamını attılar.", "en": "They lost almost all their water." },
+        { "tr": "Kuruyup minik bir topa dönüştüler.", "en": "They dried into a tiny ball." }
+      ]
+    },
+    {
+      "arama": "tardigrade animal",
+      "cumleler": [
+        { "tr": "Dünya'da suyla yeniden canlandılar.", "en": "Back on Earth, water revived them." },
+        { "tr": "Asıl şaşırtıcı olan şu.", "en": "Here's the amazing part." },
+        { "tr": "Bazıları sonra yumurta bıraktı.", "en": "Some later laid eggs." }
+      ]
+    },
+    {
+      "arama": "tardigrade micro",
+      "cumleler": [
+        { "tr": "Sence uzaylılar böyle mi görünür?", "en": "Do you think aliens look like this?" },
+        { "tr": "Takip et, yarın daha şaşırtıcısı var.", "en": "Follow, tomorrow's is even crazier." }
+      ]
+    }
+  ]
+}

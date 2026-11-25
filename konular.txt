@@ -17,8 +17,8 @@
 - [x] (deniz) Mantis shrimp punch -> senaryolar/008-mantis-shrimp-punch.json
 - [x] (deniz) Pistol shrimp snap -> senaryolar/009-pistol-shrimp-snap.json
 - [x] (deniz) Sea otters holding hands -> senaryolar/010-sea-otters-holding-hands.json
-- [ ] (kara) Axolotl regeneration
-- [ ] (kara) Tardigrades surviving space
+- [x] (kara) Axolotl regeneration -> senaryolar/013-axolotl-regeneration.json
+- [x] (kara) Tardigrades surviving space -> senaryolar/014-tardigrade-space-survival.json
 - [ ] (kara) Wood frog freezes solid
 - [ ] (kara) Hippo "blood sweat"
 - [ ] (kara) Crows remember human faces

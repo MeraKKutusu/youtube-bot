@@ -1,0 +1,71 @@
+{
+  "seri_no": 13,
+  "konu": "Axolotl regeneration",
+  "hayvan": "axolotl",
+  "mood": "mysterious",
+  "kanca_yazisi": { "en": "It regrows its own heart", "tr": "Kalbini bile yeniden yapar" },
+  "sabit_yorum": { "en": "Which body part would you want to regrow? 👇", "tr": "Sen hangi organını yeniden büyütmek isterdin? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "This Salamander Regrows Legs, Spinal Cord and Heart 🦎",
+      "aciklama": "The axolotl can rebuild lost limbs, its spinal cord and even parts of its heart and brain. In the wild, it is critically endangered.",
+      "hashtagler": ["#shorts", "#axolotl", "#animalfacts", "#science"]
+    },
+    "tr": {
+      "baslik": "Bacağını, Omuriliğini, Kalbini Yeniden Yapan Hayvan 🦎",
+      "aciklama": "Aksolotl kopan bacağını, omuriliğini, hatta kalbinin ve beyninin bazı kısımlarını yeniden yapabilir. Doğada nesli kritik tehlikede.",
+      "hashtagler": ["#shorts", "#aksolotl", "#hayvanlar", "#bilgi"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.mbl.edu/news/axolotl-can-regrow-lost-leg-piece-its-heart-parts-its-spinal-cord-and-even-sections-its-brain-no-scarring-space-daily",
+    "https://www.nationalgeographic.com/animals/amphibians/facts/axolotl",
+    "https://www.nhm.ac.uk/discover/axolotls-amphibians-that-never-grow-up.html",
+    "https://www.scientificamerican.com/article/biology-rsquo-s-beloved-amphibian-mdash-the-axolotl-mash-is-racing-towards-extinction/"
+  ],
+  "bolumler": [
+    {
+      "arama": "axolotl",
+      "cumleler": [
+        { "tr": "Bacağını kaybetsen, yeniden çıkar mıydı?", "en": "Lose a leg. Would it grow back?" },
+        { "tr": "Bu hayvanınki çıkıyor.", "en": "This animal's does." }
+      ]
+    },
+    {
+      "arama": "axolotl aquarium",
+      "cumleler": [
+        { "tr": "Bu bir aksolotl.", "en": "This is an axolotl." },
+        { "tr": "Meksika'ya özgü bir semender.", "en": "A salamander from Mexico." },
+        { "tr": "Kopan bacağını yeniden büyütür.", "en": "It regrows a lost leg." },
+        { "tr": "Kemiğiyle, kasıyla, siniriyle.", "en": "Bone, muscle and nerves." },
+        { "tr": "Üstelik iz bile kalmaz.", "en": "And without a scar." }
+      ]
+    },
+    {
+      "arama": "axolotl pink",
+      "cumleler": [
+        { "tr": "Ama asıl şaşırtıcı olan şu.", "en": "But here's the real shock." },
+        { "tr": "Omuriliğini onarabilir.", "en": "It can repair its spinal cord." },
+        { "tr": "Kalbinin parçalarını da.", "en": "Parts of its heart too." },
+        { "tr": "Hatta beyninin bir kısmını bile.", "en": "Even parts of its brain." }
+      ]
+    },
+    {
+      "arama": "axolotl underwater",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Bir özelliği daha var.", "en": "There's one more twist." },
+        { "tr": "Ömür boyu yavru görünümünde kalır.", "en": "It keeps its baby-like look for life." },
+        { "tr": "Ama doğada büyük tehlikede.", "en": "But in the wild, it's in danger." },
+        { "tr": "Nesli kritik tehlike altında.", "en": "It is critically endangered." }
+      ]
+    },
+    {
+      "arama": "axolotl water",
+      "cumleler": [
+        { "tr": "Sence bilim bu gücü çözebilir mi?", "en": "Can science unlock this power?" },
+        { "tr": "Takip et, yarın daha şaşırtıcısı var.", "en": "Follow, tomorrow's is even crazier." }
+      ]
+    }
+  ]
+}
