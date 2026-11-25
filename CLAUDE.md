@@ -96,10 +96,10 @@ aramada konuşmayı (transkript), ekrandaki yazıyı ve açıklamayı okur. Bu y
 
 ## Senaryo kuralları (30-40 sn)
 
-- Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: biraz yavaş (-8%),
+- Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: hafif yavaş (-3%),
   pes (-6Hz); cümle aralarında, kancadan ve sorulardan sonra kısa duraklamalar sistem
-  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **48-60 Türkçe kelime** (ölçüm: 69 kelime ≈ 43,5 sn video; hedef ~35 sn,
-  çünkü kısa Shorts'ta izlenme oranı yükselir).
+  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **52-62 Türkçe kelime** (hız -3%; hedef ~35 sn, kalite kontrolü 30 sn altını reddeder;
+  kısa Shorts'ta izlenme oranı yükselir).
 - **Anlatıcı üslubu:** kısa, vurucu cümleler (çoğunlukla 3-8 kelime); her cümle tek bir bilgi.
   Merak uyandıran duraklama için bilgiyi ikiye böl: önce merak ettiren yarım cümle, sonra
   cevap ("Ama bir sorun var." → "Yüzerken kalbi durur."). Gerilimi artıran kelimeler

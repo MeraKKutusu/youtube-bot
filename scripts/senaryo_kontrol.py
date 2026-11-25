@@ -22,8 +22,8 @@ KAPANISLAR_TR = (
 )
 KAPANIS_TR = KAPANISLAR_TR[0]
 EN_FAZLA_BASLIK = 70
-KELIME_ARALIGI = (40, 72)      # dışı hata
-HEDEF_KELIME = (48, 60)        # dışı uyarı (ölçüm: 69 kelime ≈ 43,5 sn video; hedef ~35 sn)
+KELIME_ARALIGI = (45, 72)      # dışı hata
+HEDEF_KELIME = (52, 62)        # dışı uyarı (hız -3%: ~52 kelime ≈ 32 sn, ~62 kelime ≈ 38 sn)
 
 
 def _sade(yazi):

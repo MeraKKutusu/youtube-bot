@@ -54,7 +54,7 @@ GIRIS_ZOOM = 0.08                       # ilk sahnede %8 yakınlaşma
 SESLER = {"Ahmet": "tr-TR-AhmetNeural", "Emel": "tr-TR-EmelNeural"}
 VARSAYILAN_SES = "Ahmet"
 # Belgesel anlatıcısı: biraz yavaş ve daha pes; cümle aralarında duraklama
-ANLATICI_HIZ = "-8%"
+ANLATICI_HIZ = "-3%"
 ANLATICI_TON = "-6Hz"
 DURAKLAMA = {"kanca": 0.7, "soru": 0.6, "sahne": 0.45, "cumle": 0.3}   # saniye
 TTS_ORNEKLEME = 24000
@@ -1067,7 +1067,7 @@ def main():
     ap.add_argument("--senaryo", required=True)
     ap.add_argument("--ses", type=ses_adi, default=VARSAYILAN_SES,
                     help="Ahmet (erkek, varsayılan) ya da Emel (kadın)")
-    ap.add_argument("--hiz", default=ANLATICI_HIZ, help="edge-tts hızı (varsayılan -8%%)")
+    ap.add_argument("--hiz", default=ANLATICI_HIZ, help="edge-tts hızı (varsayılan -3%%)")
     ap.add_argument("--ton", default=ANLATICI_TON, help="edge-tts tonu (varsayılan -6Hz)")
     ap.add_argument("--altyazi-dili", type=dil_adi, default="en", help="en (varsayılan) ya da tr")
     ap.add_argument("--muzik-klasoru", default="assets/muzik")

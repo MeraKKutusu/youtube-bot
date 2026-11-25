@@ -153,7 +153,7 @@ Sahne geçişleri cümle sonlarında, ilk sahnede hafif zoom. Görüntü sıras�
 Pixabay foto → Pexels (anahtar varsa) → renkli hareketli arka plan.
 
 **Ses:** Türkçe seslendirme (edge-tts Ahmet, isteğe bağlı Emel) belgesel anlatıcısı tonunda:
-hız -8%, ton -6Hz, hafif bas ve sıkıştırma. Cümleler ayrı seslendirilip aralarına duraklama
+hız -3%, ton -6Hz, hafif bas ve sıkıştırma. Cümleler ayrı seslendirilip aralarına duraklama
 konur: kancadan sonra 0.7 sn, sorudan sonra 0.6 sn, sahne sonunda 0.45 sn, diğer cümlelerde
 0.3 sn. Mood (`tense`, `mysterious`, `fun`, `epic`) müziği ffmpeg ile sentezlenir, konuşmada
 sidechain ile kısılır. Kancada vurgu, gerilimde alçak uğultu, kapanışta yükselen ses

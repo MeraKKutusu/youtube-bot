@@ -27,9 +27,7 @@ jobs:
         run: |
           mkdir -p ornek
           uret() { edge-tts --voice tr-TR-AhmetNeural --rate="$2" --pitch="$3" --text "$METIN" --write-media "ornek/$1.mp3"; }
-          uret 1-simdiki-ayar -8% -6Hz
-          uret 2-daha-tok -12% -12Hz
-          uret 3-en-tok -15% -18Hz
+          uret 4-yeni-ayar -3% -6Hz
           ls -la ornek
       - name: Ön sürüme yükle
         run: |
