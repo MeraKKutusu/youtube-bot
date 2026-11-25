@@ -655,6 +655,7 @@ BASKA_HAYVANLAR = ("dolphin", "whale", "orca", "seal", "turtle", "octopus", "squ
                    "cheetah", "elephant", "bear", "deer", "cow", "sheep", "goat", "monkey",
                    "gorilla", "giraffe", "zebra", "hippo", "crocodile", "snake", "frog",
                    "spider", "insect", "butterfly", "human", "people", "man", "woman", "diver",
+                   "fish", "snail", "gourami", "guppy", "betta", "goldfish", "koi",
                    "toy", "show", "performance", "circus", "statue", "sculpture", "plush")
 
 
@@ -692,7 +693,9 @@ YEMEK_ETIKETLERI = ("food", "dish", "meal", "cooking", "cooked", "fried", "grill
                     "lunch", "breakfast", "kitchen", "recipe", "menu", "snack", "sauce", "spicy",
                     "garlic", "pan ", "frying", "chef", "market", "tasty", "gourmet", "appetizer",
                     "edible", "salad", "noodle", "rice", "soup", "barbecue", "bbq",
-                    "catch of the day", "fishmonger", "flower", "blossom", "bouquet")
+                    "catch of the day", "fishmonger", "flower", "blossom", "bouquet",
+                    "azalea", "cherry", "sakura", "landscape", "scenery", "garden")
+ETIKET_KAYDI = {}   # kimlik -> etiketler (loglarda hangi görüntünün neden seçildiği görünsün)
 
 
 def _yasak_mi(metin):
@@ -732,6 +735,7 @@ def pixabay_adaylar(anahtar, sorgu, hayvan=""):
             # Kısa kenarı 1080'e en yakın boyut: ne bulanık ne gereksiz büyük
             boyutlar.sort(key=lambda b: abs(min(b["width"], b["height"]) - GENISLIK))
             b = boyutlar[0]
+            ETIKET_KAYDI[("pixabay-v", v.get("id"))] = v.get("tags", "")
             adaylar.append((puan, b["height"] > b["width"],
                             ("video", b["url"], ("pixabay-v", v.get("id")))))
         yield from _sirala(adaylar)   # yatay videolar ortadan 9:16 kırpılır
@@ -747,6 +751,7 @@ def pixabay_adaylar(anahtar, sorgu, hayvan=""):
                 continue
             url = p.get("largeImageURL") or p.get("webformatURL")
             if url:
+                ETIKET_KAYDI[("pixabay-f", p.get("id"))] = p.get("tags", "")
                 adaylar.append((puan, True, ("foto", url, ("pixabay-f", p.get("id")))))
         yield from _sirala(adaylar)
 
@@ -811,6 +816,7 @@ def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan, hayvan=""):
                     print(f"{ad} indirmesi başarısız: {_gizle(e, [anahtar])}", file=sys.stderr)
                     continue
                 kullanilan.add(kimlik)
+                print(f"  seçilen {kimlik}: {ETIKET_KAYDI.get(kimlik, '-')}")
                 return tur, yol, ad
         except KaynakKapali as e:
             uyari(f"{ad} anahtarı reddedildi ({e}); bu kaynak atlanıyor")
