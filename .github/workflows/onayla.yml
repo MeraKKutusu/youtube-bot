@@ -1,0 +1,91 @@
+name: Videoyu Onayla
+
+# Kareleri gözle kontrol edilmiş bir videoyu Buffer'da sıraya koyar.
+# Girdi: Release etiketi (ör. video-25-1-015-orca-great-white). Birden çok etiket
+# virgülle ayrılabilir; sırayla planlanır.
+on:
+  workflow_dispatch:
+    inputs:
+      etiketler:
+        description: "Release etiket(ler)i, virgülle ayrılmış"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: buffer-sira   # slot kaydı çakışmasın
+  cancel-in-progress: false
+
+jobs:
+  onayla:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ETIKETLER: ${{ inputs.etiketler }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
+      BUFFER_YOUTUBE_KANAL: ${{ vars.BUFFER_YOUTUBE_KANAL }}
+      BUFFER_TIKTOK_KANAL: ${{ vars.BUFFER_TIKTOK_KANAL }}
+      AI_ETIKETI: ${{ vars.AI_ETIKETI }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+
+      - name: Buffer'da sıraya koy
+        run: |
+          shopt -s nocaseglob nullglob; durdur=(DURDUR*); shopt -u nocaseglob nullglob
+          if [ ${#durdur[@]} -gt 0 ]; then
+            echo "::warning::DURDUR dosyası var; Buffer'a gönderilmiyor."; exit 0
+          fi
+          if [ -z "$BUFFER_API_KEY" ]; then
+            echo "::error::BUFFER_API_KEY secret'ı yok."; exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          hata=0
+          IFS=',' read -ra liste <<< "$ETIKETLER"
+          for etiket in "${liste[@]}"; do
+            etiket="$(echo "$etiket" | xargs)"
+            [ -z "$etiket" ] && continue
+            echo "## $etiket" >> "$GITHUB_STEP_SUMMARY"
+            if [ "$(gh release view "$etiket" --json isPrerelease -q .isPrerelease)" = "true" ]; then
+              echo "::error::$etiket kalite kontrolünden geçmemiş (pre-release); onaylanmadı."
+              echo "❌ kalite kontrolünden geçmemiş, onaylanmadı" >> "$GITHUB_STEP_SUMMARY"
+              hata=1; continue
+            fi
+            rm -rf indir && mkdir indir
+            gh release download "$etiket" -p meta.json -D indir
+            if [ "$(jq -r .test indir/meta.json)" = "true" ]; then
+              echo "Test senaryosu; atlanıyor." >> "$GITHUB_STEP_SUMMARY"; continue
+            fi
+            git pull --rebase --quiet origin main
+            url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video.mp4"
+            rurl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}"
+            kod=0
+            python scripts/buffer.py sirala --meta indir/meta.json --video-url "$url" \
+              --release-url "$rurl" --kayit yayinlar/kayit.jsonl --rapor indir/buffer.md || kod=$?
+            cat indir/buffer.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+            if [ -n "$(git status --porcelain yayinlar/)" ]; then
+              git add yayinlar/kayit.jsonl
+              git commit -q -m "Yayın kaydı: $etiket [skip ci]"
+              for i in 1 2 3 4 5; do
+                git push -q origin HEAD:main && break
+                sleep $((i * 3)); git pull --rebase --quiet origin main
+              done
+            fi
+            if [ "$kod" != "0" ]; then
+              hata=1
+              gh label create buffer --color fbca04 --description "Buffer paylaşım sorunu" --force
+              { echo "Onaylanan video Buffer'da sıraya konamadı."; echo; echo "- Video: $rurl"
+                echo; cat indir/buffer.md 2>/dev/null; } > issue.md
+              gh issue create --title "Buffer'a gönderilemedi: $etiket" --label buffer --body-file issue.md
+            fi
+          done
+          exit $hata

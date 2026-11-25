@@ -33,8 +33,35 @@ yazma, commit atma**; kullanıcıya sistemin durdurulduğunu söyle ve bitir.
 9. Tek commit at ve **doğrudan main'e** push'la
    (ör. `Vahşi Gerçekler #12-#13: mantis shrimp, greenland shark`).
    main'e push reddedilirse yeni bir dalda PR aç ve bunu kullanıcıya söyle.
-10. Push'tan sonra GitHub Actions videoları kendiliğinden üretir, kalite kontrolünden geçirir
-    ve Buffer'da sıraya koyar. Senin başka bir şey yapman gerekmez.
+10. Push'tan sonra GitHub Actions (`Shorts Üret`) videoları üretir ve kalite kontrolünden
+    geçirir ama **Buffer'a göndermez**. Sıraya koymak senin işin: aşağıdaki
+    **Görsel kontrol** bölümünü uygula.
+
+## Görsel kontrol (her video, Buffer'dan önce)
+
+Stok görüntü etiketleri güvenilmez: "shrimp" etiketli suşi, tavada karides, "otter class"
+adlı çiçekli ağaç videoya girebiliyor. Bu yüzden hiçbir video gözle bakılmadan paylaşılmaz.
+
+1. Push'tan sonra `Shorts Üret` çalışmalarının bitmesini bekle (~4-5 dk; GitHub MCP
+   `actions_list` ile izle). Her video için Release oluşur: `video-<run>-<attempt>-<ad>`.
+2. Release'teki `kareler.jpg` dosyasını indir
+   (`https://github.com/MeraKKutusu/youtube-bot/releases/download/<etiket>/kareler.jpg`)
+   ve Read ile **kendin bak**. Her karede videonun hayvanı (ya da konuyla doğrudan ilgili
+   sahne) olmalı. **Red sebebi:** yemek/tabak/mutfak, başka bir hayvan (balık, kunduz vb.),
+   insan, manzara/çiçek, oyuncak/çizgi film, renkli boş arka plan, alakasız akvaryum.
+   Yakın akraba tür kabul edilebilir (tabanca karidesi yerine başka resif karidesi) ama
+   konunun hayvanı en az birkaç karede görünmeli.
+3. **Uygunsa:** `Videoyu Onayla` workflow'unu (`onayla.yml`) `etiketler` girdisiyle çalıştır
+   (iki video virgülle). Bu, Buffer'da sıradaki boş saate koyar.
+4. **Uygun değilse:** senaryonun `arama` alanlarını değiştir (daha genel tür adı,
+   farklı ortam kelimesi), commit/push et ve `Shorts Üret`'i o senaryo için elle çalıştır
+   (`senaryo`, `buffer_paylas: false`), sonra tekrar bak. İki denemede de olmazsa onaylama;
+   kullanıcıya hangi videonun neden bekletildiğini söyle.
+5. **Gerçek görüntüsü olmayan hayvan:** sistem önce gerçek görüntü arar; hiç bulamazsa
+   gerçeğe çok yakın 3D/yapay zekâ görüntüsü dener (`meta.json`'da `yapay_goruntu: true`,
+   açıklamaya "görüntüler temsilîdir" notu eklenir, AI etiketi açık). Bunu yalnızca
+   görüntüler gerçekçi ise onayla; çizgi film, fantastik ya da hatalı anatomi varsa onaylama.
+   Gerçek görüntüsü bulunan bir hayvanda yapay görüntü kullanılmaz.
 
 ## Trendler (trend avcısı)
 

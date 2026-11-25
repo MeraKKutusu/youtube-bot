@@ -656,6 +656,7 @@ BASKA_HAYVANLAR = ("dolphin", "whale", "orca", "seal", "turtle", "octopus", "squ
                    "gorilla", "giraffe", "zebra", "hippo", "crocodile", "snake", "frog",
                    "spider", "insect", "butterfly", "human", "people", "man", "woman", "diver",
                    "fish", "snail", "gourami", "guppy", "betta", "goldfish", "koi",
+                   "beaver", "muskrat", "ostracod", "sea lion", "rat", "mouse",
                    "toy", "show", "performance", "circus", "statue", "sculpture", "plush")
 
 
@@ -673,6 +674,16 @@ def ilgili_mi(metin, hayvan):
         return 0
     if f" {hayvan_kok} " in f" {metin_kok} ":
         return 2
+    if "," in str(metin):
+        # Pixabay etiketleri virgülle ayrılır: tür adı bir etiketin SON kelimesi olmalı
+        # ("lake otter", "sea otters" geçer; "otter class" gibi yer/okul adları geçmez)
+        sonlar = set()
+        for etiket in str(metin).lower().split(","):
+            ek = [_kok(k) for k in re.findall(r"[a-z]+", etiket)]
+            if ek:
+                sonlar.add(ek[-1])
+        if bas not in sonlar and f"{bas}ess" not in sonlar:
+            return 0
     if bas in kelimeler or f"{bas}ess" in kelimeler:   # lioness, tigress
         kendi = set(hayvan_kok.split())
         if any(_kok(b) in kelimeler and _kok(b) not in kendi for b in BASKA_HAYVANLAR):
@@ -703,7 +714,18 @@ def _yasak_mi(metin):
     return any(y in metin for y in YASAK_ETIKETLER + YEMEK_ETIKETLERI)
 
 
-def _uygun_mu(hit):
+# Gerçek görüntü hiç yoksa kabul edilen gerçekçi 3D / yapay zekâ görüntüsünde de bunlar olmasın
+YAPAY_YASAK = ("cartoon", "fantasy", "monster", "creature", "alien", "dragon", "demon", "kraken",
+               "sci-fi", "horror", "drawing", "sketch", "anime", "comic", "toy", "plush", "logo",
+               "icon", "clipart", "vector", "emoji", "cute cartoon", "kawaii")
+
+
+def _uygun_mu(hit, yapay=False):
+    if yapay:
+        metin = f" {str(hit.get('tags', '')).lower()} "
+        if any(y in metin for y in YAPAY_YASAK + YEMEK_ETIKETLERI):
+            return False
+        return True
     if str(hit.get("type", "")).lower() == "animation":
         return False
     if hit.get("isAiGenerated") or hit.get("is_ai_generated"):
@@ -716,7 +738,7 @@ def _sirala(adaylar):
     return [x[2] for x in sorted(adaylar, key=lambda x: (-x[0], not x[1]))]
 
 
-def pixabay_adaylar(anahtar, sorgu, hayvan=""):
+def pixabay_adaylar(anahtar, sorgu, hayvan="", yapay=False):
     """Sırayla denenecek (tür, url, kimlik) adayları üretir: önce video, sonra foto.
     Etiketlerinde hayvanın adı geçmeyen görseller kullanılmaz."""
     for s in _sorgular(sorgu, hayvan):
@@ -725,7 +747,7 @@ def pixabay_adaylar(anahtar, sorgu, hayvan=""):
         adaylar = []
         for v in veri.get("hits", []):
             puan = ilgili_mi(v.get("tags", ""), hayvan)
-            if not puan or not _uygun_mu(v):
+            if not puan or not _uygun_mu(v, yapay):
                 continue
             boyutlar = [b for b in (v.get("videos") or {}).values()
                         if b.get("url") and b.get("width") and b.get("height")
@@ -741,13 +763,14 @@ def pixabay_adaylar(anahtar, sorgu, hayvan=""):
         yield from _sirala(adaylar)   # yatay videolar ortadan 9:16 kırpılır
 
     for s in _sorgular(sorgu, hayvan):
-        veri = _api_get(PIXABAY_FOTO, {"key": anahtar, "q": s, "image_type": "photo",
+        veri = _api_get(PIXABAY_FOTO, {"key": anahtar, "q": s,
+                                       "image_type": "all" if yapay else "photo",
                                        "orientation": "vertical", "per_page": 30,
                                        "safesearch": "true"}, None, anahtar)
         adaylar = []
         for p in veri.get("hits", []):
             puan = ilgili_mi(p.get("tags", ""), hayvan)
-            if not puan or not _uygun_mu(p):
+            if not puan or not _uygun_mu(p, yapay):
                 continue
             url = p.get("largeImageURL") or p.get("webformatURL")
             if url:
@@ -800,12 +823,15 @@ def kaynaklari_hazirla():
     return kaynaklar
 
 
-def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan, hayvan=""):
+def medya_bul_indir(kaynaklar, sorgu, klasor, sira, kullanilan, hayvan="", yapay=False):
     """(tür, yol, kaynak_adı) döndürür. Hiçbir şey bulunamazsa ("arka_plan", None, None)."""
     for kaynak in list(kaynaklar):
         ad, anahtar, adaylar = kaynak
+        if yapay and adaylar is not pixabay_adaylar:
+            continue   # yapay yedek yalnızca Pixabay'den (etiket ve AI bilgisi var)
         try:
-            for tur, url, kimlik in adaylar(anahtar, sorgu, hayvan):
+            ilerle = adaylar(anahtar, sorgu, hayvan, yapay=True) if yapay else adaylar(anahtar, sorgu, hayvan)
+            for tur, url, kimlik in ilerle:
                 if kimlik in kullanilan:
                     continue
                 uzanti = "mp4" if tur == "video" else "jpg"
@@ -913,6 +939,9 @@ def yayin_dosyalari_yaz(veri, dil, kaynak_adlari, cikti):
     if "#shorts" not in [h.lower() for h in yt_hashtag]:
         yt_hashtag.insert(0, "#shorts")
     aciklama = f"{seri}\n\n{y['aciklama']}\n\n{_hashtag_satiri(yt_hashtag[:5])}"
+    if veri.get("_yapay"):
+        aciklama += "\n\n" + {"tr": "Bu hayvanın gerçek görüntüsü bulunmadığından görüntüler temsilîdir (3D / yapay zekâ).",
+                               "en": "No real footage of this animal was available; visuals are illustrative (3D / AI)."}[dil]
     if kaynak_adlari:
         aciklama += f"\n\n{GORUNTU_SATIRI[dil]}: {', '.join(kaynak_adlari)}"
 
@@ -1000,8 +1029,17 @@ def uret(args):
     # Görsel bulunamayan bölüm, bu videonun başka bir bölümünde bulunan görüntünün
     # farklı bir anını kullanır (ilgisiz görüntü ya da düz arka plan yerine).
     iyi = [x for x in bulunanlar if x[0] != "arka_plan"]
+    yapay_kullanildi = False
     if kaynaklar and not iyi:
-        uyari(f"'{hayvan}' için hiç uygun görüntü bulunamadı; hareketli arka plan kullanılıyor")
+        # Hayvanın gerçek görüntüsü KESİNLİKLE yoksa: gerçekçi 3D / yapay zekâ görüntüsü
+        uyari(f"'{hayvan}' için gerçek görüntü bulunamadı; gerçekçi 3D/AI görüntü aranıyor")
+        bulunanlar = [medya_bul_indir(kaynaklar, b["arama"], calisma, i, kullanilan, hayvan, yapay=True)
+                      for i, b in enumerate(veri["bolumler"])]
+        iyi = [x for x in bulunanlar if x[0] != "arka_plan"]
+        yapay_kullanildi = bool(iyi)
+        veri["_yapay"] = yapay_kullanildi
+        if not iyi:
+            uyari(f"'{hayvan}' için hiç uygun görüntü bulunamadı; hareketli arka plan kullanılıyor")
 
     liste, kullanilan_kaynaklar = [], []
     for i, b in enumerate(veri["bolumler"]):
@@ -1063,6 +1101,7 @@ def uret(args):
         "cumle_sayisi": len(cumleler), "altyazi_sayisi": altyazi_sayisi,
         "kanca_yazisi": kanca, "goruntu_kaynaklari": kullanilan_kaynaklar,
         "gercek_goruntu": len(iyi), "bolum_sayisi": len(veri["bolumler"]),
+        "yapay_goruntu": yapay_kullanildi,
         "goruntu_kaynagi_var": bool(kaynaklar),
         "release_adi": release_adi, **yayin,
     }

@@ -111,7 +111,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       SES: ${{ inputs.ses || 'Ahmet' }}
       DIL: ${{ inputs.altyazi_dili || vars.ALTYAZI_DILI || 'tr' }}
-      PAYLAS: ${{ github.event_name == 'push' || inputs.buffer_paylas }}
+      # Otomatik (push) üretimde Buffer'a GÖNDERİLMEZ: Claude önce kareleri gözle kontrol eder,
+      # uygunsa "Videoyu Onayla" workflow'unu çalıştırır. Elle çalıştırmada isteğe bağlı.
+      PAYLAS: ${{ github.event_name == 'workflow_dispatch' && inputs.buffer_paylas }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -144,6 +146,14 @@ jobs:
         id: kalite
         run: python scripts/kalite.py --klasor cikti
 
+      - name: Kare özeti (görsel kontrol için)
+        if: always()
+        run: |
+          if [ -f cikti/video.mp4 ]; then
+            ffmpeg -v error -y -i cikti/video.mp4 -vf "fps=1/2.5,scale=240:-1,tile=6x3" \
+              -frames:v 1 cikti/kareler.jpg || true
+          fi
+
       - name: Release olarak yayınla
         id: release
         env:
@@ -162,7 +172,9 @@ jobs:
             echo "## TikTok"; echo '```'; cat cikti/tiktok.txt; echo '```'
             cat cikti/kalite.md
           } > cikti/notlar.md
-          gh release create "$etiket" cikti/video.mp4 cikti/youtube.txt cikti/tiktok.txt \
+          ekler=(cikti/video.mp4 cikti/youtube.txt cikti/tiktok.txt cikti/meta.json)
+          [ -f cikti/kareler.jpg ] && ekler+=(cikti/kareler.jpg)
+          gh release create "$etiket" "${ekler[@]}" \
             --target "$GITHUB_SHA" --title "$baslik" --notes-file cikti/notlar.md "${ek[@]}"
           url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}"
           echo "url=$url" >> "$GITHUB_OUTPUT"
