@@ -1,0 +1,39 @@
+{
+  "tarih": "2026-11-25",
+  "not": "Kullanıcının paylaştığı ekran görüntülerinden elle girildi. Yalnızca konu/kalıp fikri için; başlık ve cümleler kopyalanamaz (senaryo_kontrol.py bunları da denetler).",
+  "kanallar": [
+    {
+      "kanal": "Jungle Supreme (@JungleSupreme)",
+      "abone": "110 B",
+      "bicim": "8-14 dk derleme, yapay zekâ görselli kapak",
+      "tutan": "av-avcı karşılaşması, 'yanlış rakibe bulaşmak', ölümcül savunma listeleri, '100 kat daha tehlikeli' karşılaştırması",
+      "tutmayan": "uydurma 'X ülkesi milyonlarca Y saldı' hikâyeleri (çoğu 1,5-19 B izlenme)"
+    },
+    {
+      "kanal": "Discover Wildlife (@discoverwildlifeen)",
+      "bicim": "1-3 saatlik 4K belgesel, 'WILD <yer> | <avcı/kaçış cümlesi>'",
+      "tutan": "avcılar, ölümden kaçış, yer + avcı başlığı",
+      "tutmayan": "uzun format; Shorts için doğrudan uygun değil"
+    }
+  ],
+  "en_cok": [
+    { "baslik": "Bu köpek vahşi hayvandan 100 kat daha tehlikeli", "izlenme": "6,8 Mn" },
+    { "baslik": "Bu Komodo Ejderi Yanlış Avı Yiyecek", "izlenme": "6,5 Mn" },
+    { "baslik": "War Tactics: 10 Lethal Defense Strategies in the Animal Kingdom", "izlenme": "4,7 Mn" },
+    { "baslik": "Hayvanlara Elektrik Çarpıldığı 10 Şok Edici An", "izlenme": "3,6 Mn" },
+    { "baslik": "Bu köpek yanlış boğaya bulaştı", "izlenme": "2,9 Mn" },
+    { "baslik": "War Tactics: 10 Unbelievable Defense Strategies in the Animal Kingdom", "izlenme": "2,6 Mn" },
+    { "baslik": "Farmers Put Armor on Sheep to Stop Wolves... What Happened", "izlenme": "2,5 Mn" },
+    { "baslik": "Australia Released 3 Million Fire Ants to Kill the World's Deadliest", "izlenme": "19 B" },
+    { "baslik": "No Snake Alive Can Reach This Roadrunner", "izlenme": "8,7 B" },
+    { "baslik": "Something Just Appeared in the Great Lakes... And It's Hunting", "izlenme": "6,6 B" },
+    { "baslik": "Australia Put MILLIONS of Fish in the Desert Instead of", "izlenme": "2 B" },
+    { "baslik": "Florida Released Porcupines to Kill Pythons in the Everglades", "izlenme": "1,5 B" },
+    { "baslik": "WILD PERU | The Great Predators That Dominate the Andes", "izlenme": "44 B" },
+    { "baslik": "WILD PANTANAL | The Deadliest Predator of the Pantanal", "izlenme": "29 B" },
+    { "baslik": "GALAPAGOS ISLANDS | Escaping the Most Dangerous Predators", "izlenme": "18 B" },
+    { "baslik": "WILD ZAMBIA | The Deadly Race Between Predators and Prey", "izlenme": "10 B" },
+    { "baslik": "WILD NEPAL | When Speed Is Not Enough to Escape Death", "izlenme": "6,3 B" },
+    { "baslik": "WILD KATMAI | Win or Die in the Kingdom of Great Predators", "izlenme": "87" }
+  ]
+}

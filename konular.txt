@@ -19,11 +19,21 @@
 - [x] (deniz) Sea otters holding hands -> senaryolar/010-sea-otters-holding-hands.json
 - [x] (kara) Axolotl regeneration -> senaryolar/013-axolotl-regeneration.json
 - [x] (kara) Tardigrades surviving space -> senaryolar/014-tardigrade-space-survival.json
+- [ ] (deniz) Orcas hunting great white sharks (çatışma)
 - [ ] (kara) Wood frog freezes solid
+- [ ] (kara) Bombardier beetle escapes from a toad's stomach (çatışma)
 - [ ] (kara) Hippo "blood sweat"
+- [ ] (deniz) Hagfish slime chokes attacking sharks (çatışma)
 - [ ] (kara) Crows remember human faces
+- [ ] (kara) Japanese honeybees cook a giant hornet alive (çatışma)
 - [ ] (kara) Platypus glows under UV
+- [ ] (deniz) Cone snail venom harpoon (çatışma)
 - [ ] (kara) Owl neck rotation
+- [ ] (kara) Honey badger resists cobra venom (çatışma)
 - [ ] (deniz) Colorblind cuttlefish camouflage
+- [ ] (deniz) Pufferfish tetrodotoxin defense (çatışma)
 - [ ] (deniz) Anglerfish male fuses to female
+- [ ] (kara) Rock python killed by swallowing a porcupine (çatışma)
 - [ ] (deniz) Dolphins call each other by name
+- [ ] (deniz) Sea cucumber ejects its organs at attackers (çatışma)
+- [ ] (deniz) Boxer crab fights with anemone gloves (çatışma)

@@ -30,9 +30,16 @@ BENZERLIK_SINIRI = 0.72       # başlık/cümle bir trend başlığına bu orand
 ORTAK_KELIME_SINIRI = 5       # art arda bu kadar ortak kelime = kopya sayılır
 
 
+RAKIP_KLASORU = TREND_KLASORU.parent / "rakipler"
+
+
 def trend_basliklari(klasor=TREND_KLASORU, son=6):
+    """Son trend dosyalarındaki ve tüm rakip analizlerindeki viral başlıklar."""
     basliklar = []
-    for yol in sorted(Path(klasor).glob("*.json"))[-son:]:
+    yollar = sorted(Path(klasor).glob("*.json"))[-son:]
+    if klasor == TREND_KLASORU:
+        yollar += sorted(RAKIP_KLASORU.glob("*.json"))
+    for yol in yollar:
         try:
             veri = json.loads(yol.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):

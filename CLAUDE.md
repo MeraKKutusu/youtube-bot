@@ -51,6 +51,27 @@ Shorts'larını tarar, en güçlü 5 konuyu `konular.txt`'nin en üstüne ekler 
   hangi kalıbın ilgi gördüğünü anlamak için oku. `senaryo_kontrol.py` başlık ve cümleleri
   viral başlıklarla karşılaştırır, çok benzeyeni hata sayar.
 
+## Kanal yönü (rakip analizi, `yayinlar/rakipler/`)
+
+Benzer kanallarda (Jungle Supreme, Discover Wildlife) milyonları bulan videolar hep
+**çatışma ve hayatta kalma** üzerine: av-avcı karşılaşması, yanlış rakibe bulaşan hayvan,
+ölümcül savunma taktikleri, "X'ten kat kat tehlikeli" karşılaştırmaları. Uydurma "X ülkesi
+milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). Bu yüzden:
+
+- **Her gün en az 1 video çatışma temalı olsun** (av-avcı, savunma, zehir, ölümden kaçış).
+  `konular.txt`'de `(çatışma)` etiketli konular bunun için. Yeni konu eklerken de yarısını
+  çatışma temalı seç.
+- Çatışma videosunda kanca bir **karşılaşma** ile açılsın: iki taraf + gerilim
+  ("Bir yılan, yanlış kuşu seçti." / "Köpekbalığı onu yuttu. Sonra kustu."). Sonuç ikinci
+  ya da üçüncü cümlede, merak bölünerek gelsin.
+- Gövde sırası: karşılaşma → silah/taktik → beklenmedik sonuç. `mood` çoğunlukla `tense`
+  ya da `epic`; saldırı anını anlatan bölüme `"gerilim": true`.
+- Karşılaştırma ve rekor kalıbı ("100 kat", "en hızlı", "tek bir ısırıkta") yalnızca
+  kaynakta açıkça geçen rakamla kullanılır; tartışmalıysa "yaklaşık" de ya da kullanma.
+- **Yasak:** uydurma senaryo, sahnelenmiş/yapay olay, "hükümet X saldı" tarzı yalan hikâye,
+  rakip başlıklarını çevirip kullanmak. Gerçek, kaynaklı bir olay ya da araştırma anlat.
+  `senaryo_kontrol.py` rakip başlıklarını da kopya denetimine katar.
+
 ## Senaryo kuralları (30-40 sn)
 
 - Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: biraz yavaş (-8%),
