@@ -2,6 +2,7 @@
   "seri_no": 15,
   "konu": "Orcas hunting great white sharks",
   "hayvan": "orca",
+  "haric": ["pixabay-v-268569", "pixabay-f-74081"],
   "mood": "tense",
   "kanca_yazisi": { "en": "Orca versus great white", "tr": "Orka, köpekbalığını avladı" },
   "sabit_yorum": { "en": "Who is the real king of the ocean? 👇", "tr": "Sence okyanusun gerçek kralı kim? 👇" },
@@ -25,7 +26,7 @@
   ],
   "bolumler": [
     {
-      "arama": "orca",
+      "arama": "orca killer whale ocean",
       "cumleler": [
         { "tr": "Bir orka, büyük beyaz köpekbalığına saldırdı.", "en": "An orca attacked a great white shark." },
         { "tr": "Tek başına.", "en": "All alone." }
@@ -40,7 +41,7 @@
       ]
     },
     {
-      "arama": "orca hunting",
+      "arama": "orca underwater",
       "gerilim": true,
       "cumleler": [
         { "tr": "2023'te bir araştırmacı bunu izledi.", "en": "In 2023, a researcher watched it happen." },
