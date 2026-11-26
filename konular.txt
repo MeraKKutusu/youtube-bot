@@ -19,8 +19,8 @@
 - [x] (deniz) Sea otters holding hands -> senaryolar/010-sea-otters-holding-hands.json
 - [x] (kara) Axolotl regeneration -> senaryolar/013-axolotl-regeneration.json
 - [x] (kara) Tardigrades surviving space -> senaryolar/014-tardigrade-space-survival.json
-- [ ] (deniz) Orcas hunting great white sharks (çatışma)
-- [ ] (kara) Wood frog freezes solid
+- [x] (deniz) Orcas hunting great white sharks (çatışma) -> senaryolar/015-orca-hunts-great-white.json
+- [x] (kara) Wood frog freezes solid -> senaryolar/016-wood-frog-freezes-solid.json
 - [ ] (kara) Bombardier beetle escapes from a toad's stomach (çatışma)
 - [ ] (kara) Hippo "blood sweat"
 - [ ] (deniz) Hagfish slime chokes attacking sharks (çatışma)

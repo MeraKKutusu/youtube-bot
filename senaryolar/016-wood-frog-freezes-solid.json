@@ -1,0 +1,68 @@
+{
+  "seri_no": 16,
+  "konu": "Wood frog freezes solid",
+  "hayvan": "wood frog",
+  "mood": "mysterious",
+  "kanca_yazisi": { "en": "Its heart stops. It lives.", "tr": "Kalbi durur, ölmez" },
+  "sabit_yorum": { "en": "Could you freeze and wake up again? 👇", "tr": "Sen donup yeniden uyanabilir miydin? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "This Frog Freezes Solid All Winter and Wakes Up in Spring",
+      "aciklama": "Alaska's wood frogs let much of their body turn to ice. In a University of Alaska Fairbanks study, all survived about seven months frozen at -18 °C.",
+      "hashtagler": ["#shorts", "#woodfrog", "#animalfacts", "#nature"]
+    },
+    "tr": {
+      "baslik": "Orman kurbağası donup nasıl yeniden canlanır?",
+      "aciklama": "Alaska'daki orman kurbağaları kışı vücutlarının büyük kısmı buz tutmuş halde geçirir. Alaska Fairbanks Üniversitesi'nin deneyinde eksi 18 derecede yaklaşık yedi ay donan kurbağaların hepsi hayatta kaldı.",
+      "hashtagler": ["#shorts", "#ormankurbağası", "#hayvanlar", "#doğa", "#woodfrog"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.nps.gov/gaar/learn/nature/wood-frog-page-2.htm",
+    "https://uaf.edu/news/archives/news-archives-2010-2021/alaska-frogs.php",
+    "https://www.sciencedaily.com/releases/2014/01/140106094159.htm",
+    "https://pubmed.ncbi.nlm.nih.gov/24737762/"
+  ],
+  "bolumler": [
+    {
+      "arama": "wood frog",
+      "cumleler": [
+        { "tr": "Bu kurbağanın kalbi durur.", "en": "This frog's heart stops." },
+        { "tr": "Ama ölmez.", "en": "But it doesn't die." }
+      ]
+    },
+    {
+      "arama": "wood frog forest",
+      "cumleler": [
+        { "tr": "Bu bir orman kurbağası.", "en": "This is a wood frog." },
+        { "tr": "Alaska'da kışı donarak geçirir.", "en": "In Alaska, it spends winter frozen." },
+        { "tr": "Vücudunun büyük kısmı buz tutar.", "en": "Most of its body turns to ice." }
+      ]
+    },
+    {
+      "arama": "frog winter",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Peki nasıl hayatta kalıyor?", "en": "So how does it survive?" },
+        { "tr": "Karaciğeri kana şeker pompalar.", "en": "Its liver floods the blood with sugar." },
+        { "tr": "Şeker hücreleri buzdan korur.", "en": "The sugar shields its cells from ice." }
+      ]
+    },
+    {
+      "arama": "wood frog leaf",
+      "cumleler": [
+        { "tr": "Alaska Fairbanks Üniversitesi bunu test etti.", "en": "The University of Alaska Fairbanks tested it." },
+        { "tr": "Kurbağalar eksi on sekiz derecede donduruldu.", "en": "Frogs were frozen at minus 18 degrees." },
+        { "tr": "Yaklaşık yedi ay sonra...", "en": "About seven months later..." },
+        { "tr": "Hepsi yeniden uyandı.", "en": "Every one woke up." }
+      ]
+    },
+    {
+      "arama": "frog green",
+      "cumleler": [
+        { "tr": "Sen donup uyanabilir miydin?", "en": "Could you freeze and wake up?" },
+        { "tr": "Takip et, yarın yeni bir sır var.", "en": "Follow, a new mystery tomorrow." }
+      ]
+    }
+  ]
+}

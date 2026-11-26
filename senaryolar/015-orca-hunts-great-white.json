@@ -1,0 +1,70 @@
+{
+  "seri_no": 15,
+  "konu": "Orcas hunting great white sharks",
+  "hayvan": "orca",
+  "mood": "tense",
+  "kanca_yazisi": { "en": "Orca versus great white", "tr": "Orka, köpekbalığını avladı" },
+  "sabit_yorum": { "en": "Who is the real king of the ocean? 👇", "tr": "Sence okyanusun gerçek kralı kim? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "Lone Orca Kills a Great White Shark in Under 2 Minutes",
+      "aciklama": "In 2023, off South Africa, the orca Starboard killed a young great white alone and ate only its liver. Sharks then left the area for months.",
+      "hashtagler": ["#shorts", "#orca", "#greatwhite", "#animalfacts"]
+    },
+    "tr": {
+      "baslik": "Orka büyük beyaz köpekbalığını 2 dakikada avladı",
+      "aciklama": "2023'te Güney Afrika açıklarında Starboard adlı orka genç bir büyük beyaz köpekbalığını tek başına öldürdü ve yalnızca karaciğerini yedi. Ardından köpekbalıkları bölgeyi aylarca terk etti.",
+      "hashtagler": ["#shorts", "#orka", "#köpekbalığı", "#deniz", "#belgesel"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.smithsonianmag.com/smart-news/single-orca-spotted-killing-a-great-white-shark-for-the-first-time-ever-180983887/",
+    "https://www.nhm.ac.uk/discover/news/2022/july/killer-whales-attack-great-white-sharks-changing-marine-ecosystem.html",
+    "https://www.livescience.com/killer-whale-great-white-shark-killing-spree",
+    "https://www.nationalgeographic.com/animals/article/orcas-great-whites-sharks-livers-south-africa"
+  ],
+  "bolumler": [
+    {
+      "arama": "orca",
+      "cumleler": [
+        { "tr": "Bir orka, büyük beyaz köpekbalığına saldırdı.", "en": "An orca attacked a great white shark." },
+        { "tr": "Tek başına.", "en": "All alone." }
+      ]
+    },
+    {
+      "arama": "orca killer whale",
+      "cumleler": [
+        { "tr": "Bu orkanın adı Starboard.", "en": "This orca is called Starboard." },
+        { "tr": "Güney Afrika'da yaşıyor.", "en": "He lives off South Africa." },
+        { "tr": "Ortağı Port'la köpekbalığı avlar.", "en": "He hunts sharks with his partner, Port." }
+      ]
+    },
+    {
+      "arama": "orca hunting",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "2023'te bir araştırmacı bunu izledi.", "en": "In 2023, a researcher watched it happen." },
+        { "tr": "Starboard önce yüzgeci kopardı.", "en": "Starboard tore off a fin first." },
+        { "tr": "İki dakikadan kısa sürede...", "en": "In under two minutes..." },
+        { "tr": "Köpekbalığı ölmüştü.", "en": "The shark was dead." }
+      ]
+    },
+    {
+      "arama": "orca ocean",
+      "cumleler": [
+        { "tr": "Peki neyini yedi?", "en": "So what did he eat?" },
+        { "tr": "Yalnızca karaciğerini.", "en": "Only the liver." },
+        { "tr": "Yağ dolu, enerji deposu bir organ.", "en": "An organ packed with fat and energy." },
+        { "tr": "Ardından bölgedeki köpekbalıkları kaçtı.", "en": "Then the sharks fled the area." },
+        { "tr": "Aylarca geri dönmediler.", "en": "They stayed away for months." }
+      ]
+    },
+    {
+      "arama": "orca fin",
+      "cumleler": [
+        { "tr": "Sence okyanusun gerçek kralı kim?", "en": "Who rules the ocean, really?" },
+        { "tr": "Takip et, vahşi gerçekler bitmiyor.", "en": "Follow, the wild truths never end." }
+      ]
+    }
+  ]
+}
