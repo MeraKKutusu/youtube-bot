@@ -173,12 +173,16 @@ jobs:
             cat cikti/kalite.md
           } > cikti/notlar.md
           ekler=(cikti/video.mp4 cikti/youtube.txt cikti/tiktok.txt cikti/meta.json)
+          [ -f cikti/video_tiktok.mp4 ] && ekler+=(cikti/video_tiktok.mp4)
           [ -f cikti/kareler.jpg ] && ekler+=(cikti/kareler.jpg)
           gh release create "$etiket" "${ekler[@]}" \
             --target "$GITHUB_SHA" --title "$baslik" --notes-file cikti/notlar.md "${ek[@]}"
           url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "video=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video.mp4" >> "$GITHUB_OUTPUT"
+          if [ -f cikti/video_tiktok.mp4 ]; then
+            echo "video_tiktok=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video_tiktok.mp4" >> "$GITHUB_OUTPUT"
+          fi
           echo "baslik=$baslik" >> "$GITHUB_OUTPUT"
           echo "### 🎬 [$baslik]($url)" >> "$GITHUB_STEP_SUMMARY"
 
@@ -212,6 +216,7 @@ jobs:
           BUFFER_TIKTOK_KANAL: ${{ vars.BUFFER_TIKTOK_KANAL }}
           AI_ETIKETI: ${{ vars.AI_ETIKETI }}
           VIDEO_URL: ${{ steps.release.outputs.video }}
+          TIKTOK_VIDEO_URL: ${{ steps.release.outputs.video_tiktok }}
           RELEASE_URL: ${{ steps.release.outputs.url }}
           BASLIK: ${{ steps.release.outputs.baslik }}
         run: |
@@ -232,6 +237,7 @@ jobs:
 
           kod=0
           python scripts/buffer.py sirala --meta cikti/meta.json --video-url "$VIDEO_URL" \
+            --tiktok-video-url "$TIKTOK_VIDEO_URL" \
             --release-url "$RELEASE_URL" --kayit yayinlar/kayit.jsonl --rapor cikti/buffer.md || kod=$?
           cat cikti/buffer.md >> "$GITHUB_STEP_SUMMARY"
 

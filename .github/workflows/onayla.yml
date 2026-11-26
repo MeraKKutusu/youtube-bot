@@ -68,8 +68,13 @@ jobs:
             git pull --rebase --quiet origin main
             url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video.mp4"
             rurl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${etiket}"
+            tturl=""
+            if gh release view "$etiket" --json assets -q '.assets[].name' | grep -qx video_tiktok.mp4; then
+              tturl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${etiket}/video_tiktok.mp4"
+            fi
             kod=0
             python scripts/buffer.py sirala --meta indir/meta.json --video-url "$url" \
+              --tiktok-video-url "$tturl" \
               --release-url "$rurl" --kayit yayinlar/kayit.jsonl --rapor indir/buffer.md || kod=$?
             cat indir/buffer.md >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
             if [ -n "$(git status --porcelain yayinlar/)" ]; then

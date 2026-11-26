@@ -120,6 +120,11 @@ aramada konuşmayı (transkript), ekrandaki yazıyı ve açıklamayı okur. Bu y
   (soru / karşılaşma / rekor / gizli bilgi) her videoda değiştir.
 - **Özgün değer:** her senaryoda kaynakta geçen en az bir somut ayrıntı (yer, yıl,
   araştırmacı, ölçüm) olsun; genel geçer "ilginç bilgi" tekrarı değil.
+- **TikTok sürümü:** TikTok verisinde (Kasım 2026) izleyicilerin çoğu 0:02'de kaydırıyordu; ortalama
+  izlenme %27. Bu yüzden her videonun ayrıca %12 hızlı `video_tiktok.mp4` sürümü üretilir ve TikTok'a o
+  gider. Kancadan sonra uzun duraklama yok, ilk cümle bitince görüntüde ani yakınlaştırma (jump cut) var,
+  kanca yazısı ilk iki cümle boyunca ekranda. Kanca yazısı cevabı vermesin, merak bıraksın.
+  TikTok açıklamasında seri numarası hashtag'siz yazılır (`Bölüm 16`).
 - AI etiketi açık kalır (`AI_ETIKETI=true`); YouTube açıklamasına göre etiket tek başına
   erişimi düşürmez.
 

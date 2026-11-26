@@ -247,6 +247,8 @@ def sirala(args):
     print(f"Slot: {yerel:%Y-%m-%d %H:%M} (İstanbul) = {due_at}")
 
     url_kontrol(args.video_url)
+    if args.tiktok_video_url:
+        url_kontrol(args.tiktok_video_url)
     org = organizasyon_id()
     kanallar = kanallari_getir(org)
 
@@ -261,6 +263,8 @@ def sirala(args):
                 "isAiGenerated": ai}}}),
         "tiktok": (os.environ.get("BUFFER_TIKTOK_KANAL", ""), {
             "text": meta["tiktok_metin"],
+            # TikTok'a daha hızlı tempolu sürüm gider (varsa)
+            "assets": [{"video": {"url": args.tiktok_video_url or args.video_url}}],
             "metadata": {"tiktok": {"isAiGenerated": ai}}}),
     }
 
@@ -286,7 +290,7 @@ def sirala(args):
     kayit_ekle(args.kayit, {
         "zaman": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "senaryo": meta["senaryo"], "seri_no": meta.get("seri_no"), "konu": meta.get("konu"),
-        "release": args.release_url, "video_url": args.video_url,
+        "release": args.release_url, "video_url": args.video_url, "tiktok_video_url": args.tiktok_video_url or None,
         "due_at": due_at if durum != "hata" else None, "saat_ist": f"{yerel:%Y-%m-%d %H:%M}",
         "durum": durum, **sonuc,
     })
@@ -340,6 +344,8 @@ def main():
     s = alt.add_parser("sirala")
     s.add_argument("--meta", default="cikti/meta.json")
     s.add_argument("--video-url", required=True)
+    s.add_argument("--tiktok-video-url", default="",
+                   help="TikTok'a gidecek (hızlı) sürüm; boşsa --video-url kullanılır")
     s.add_argument("--release-url", default="")
     s.add_argument("--kayit", default="yayinlar/kayit.jsonl")
     s.add_argument("--rapor", default="cikti/buffer.md")

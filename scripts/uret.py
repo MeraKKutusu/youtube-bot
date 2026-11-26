@@ -48,15 +48,21 @@ GORUNTU_SATIRI = {"en": "Footage", "tr": "Görüntüler"}
 # Kanca yazısı (ekranın üstü): Shorts/TikTok'un üstteki arama/kamera ikonlarının altında
 KANCA_FONT_BOYUTU = 104
 KANCA_UST_BOSLUK = 300
-KANCA_EN_AZ, KANCA_EN_COK = 2.2, 4.5   # ekranda kalma süresi (sn)
+KANCA_EN_AZ, KANCA_EN_COK = 2.5, 5.5   # ekranda kalma süresi (sn): ilk 2 cümle boyunca
 GIRIS_ZOOM = 0.08                       # ilk sahnede %8 yakınlaşma
+# İlk cümle bitince aynı sahnede ani yakınlaştırma (jump cut): TikTok verisinde izleyicilerin
+# çoğu 0:02'de, görüntü ve ses durağanken kaydırıyordu.
+GIRIS_KESME_ZOOM = 0.22
+# TikTok sürümü: aynı video %12 hızlı (ses perdesi korunur). TikTok ilk testte izlenme
+# oranına bakıyor; belgesel temposu YouTube'da iyi, TikTok'ta yavaş kalıyor.
+TIKTOK_HIZ = 1.12
 # Türkçe seslendirenler: Ahmet (erkek, varsayılan) ve Emel (kadın)
 SESLER = {"Ahmet": "tr-TR-AhmetNeural", "Emel": "tr-TR-EmelNeural"}
 VARSAYILAN_SES = "Ahmet"
 # Belgesel anlatıcısı: biraz yavaş ve daha pes; cümle aralarında duraklama
 ANLATICI_HIZ = "-3%"
 ANLATICI_TON = "-6Hz"
-DURAKLAMA = {"kanca": 0.7, "soru": 0.6, "sahne": 0.45, "cumle": 0.3}   # saniye
+DURAKLAMA = {"kanca": 0.2, "soru": 0.6, "sahne": 0.45, "cumle": 0.3}   # saniye
 TTS_ORNEKLEME = 24000
 
 # Altyazı ayarları
@@ -546,7 +552,8 @@ def ceviri_altyazi_yaz(kelimeler, cumleler, ses_suresi, ass_yolu, kanca=""):
             satirlar.append(_dialog(pb, pson, p))
     altyazi_sayisi = len(satirlar)
     if kanca:
-        ilk_bit = gecerli[0]["kelimeler"][-1][1] + 0.3
+        # Kanca yazısı ilk iki cümle (kanca + cevap) boyunca ekranda kalır
+        ilk_bit = gecerli[min(1, len(gecerli) - 1)]["kelimeler"][-1][1] + 0.3
         satirlar.insert(0, kanca_satiri(kanca, min(KANCA_EN_COK, max(KANCA_EN_AZ, ilk_bit))))
     Path(ass_yolu).write_text(_ass_basligi() + "\n".join(satirlar) + "\n", encoding="utf-8")
     return altyazi_sayisi
@@ -882,7 +889,7 @@ def arka_plan_olustur(sira, sure, hedef):
                "format=yuv420p,hue=h=t*25:s=1.4,setsar=1", sure, hedef)
 
 
-def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False, baslangic=0.0):
+def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False, baslangic=0.0, kesme=None):
     if tur == "arka_plan":
         arka_plan_olustur(sira, sure, hedef)
     else:
@@ -900,21 +907,30 @@ def parca_olustur(tur, kaynak, sure, hedef, sira, giris_zoom=False, baslangic=0.
         else:
             # Fotoğrafta hafif yakınlaşma efekti (ilk sahnede zaten zoom var)
             kare = max(1, round(sure * FPS))
+            z = f"1+0.10*on/{kare}"
+            if kesme and 0.5 < kesme < sure - 0.5:   # ilk sahnede jump cut (bkz. zoom_uygula)
+                z = f"if(lt(on,{round(kesme * FPS)}),{z},{z}+{GIRIS_KESME_ZOOM})"
             filtre = (f"scale={GENISLIK * 2}:{YUKSEKLIK * 2}:force_original_aspect_ratio=increase,"
                       f"crop={GENISLIK * 2}:{YUKSEKLIK * 2},"
-                      f"zoompan=z='1+0.10*on/{kare}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
+                      f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
                       f":d=1:s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
             _kodla(["-loop", "1", "-i", str(kaynak)], filtre, sure, hedef)
             return
     if giris_zoom:
-        zoom_uygula(hedef, sure)
+        zoom_uygula(hedef, sure, kesme)
 
 
-def zoom_uygula(yol, sure):
-    """Sahneye yavaşlayarak biten hafif bir yakınlaşma ekler (girişte)."""
+def zoom_uygula(yol, sure, kesme=None):
+    """Sahneye yavaşlayarak biten hafif bir yakınlaşma ekler (girişte). kesme (sn)
+    verilirse o anda ani bir yakınlaştırma (jump cut) yapar; ilk saniyelerde görüntü
+    durağan kalmaz."""
     kare = max(1, round(sure * FPS))
     gecici = Path(yol).with_name(Path(yol).stem + "_zoom.mp4")
-    filtre = (f"zoompan=z='1+{GIRIS_ZOOM}*(1-pow(1-min(on/{kare},1),2))'"
+    z = f"1+{GIRIS_ZOOM}*(1-pow(1-min(on/{kare},1),2))"
+    if kesme and 0.5 < kesme < sure - 0.5:
+        k = round(kesme * FPS)
+        z = f"if(lt(on,{k}),{z},{z}+{GIRIS_KESME_ZOOM})"
+    filtre = (f"zoompan=z='{z}'"
               f":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1"
               f":s={GENISLIK}x{YUKSEKLIK}:fps={FPS},setsar=1")
     _kodla(["-i", str(yol)], filtre, sure, gecici)
@@ -950,7 +966,11 @@ def yayin_dosyalari_yaz(veri, dil, kaynak_adlari, cikti):
 
     tt_hashtag = [h for h in y["hashtagler"] if h.lower() != "#shorts"]
     tt_hashtag = list(dict.fromkeys(tt_hashtag + ["#merakkutusu"]))[:TIKTOK_EN_FAZLA_HASHTAG]
-    tiktok = f"{y['baslik']}\n{seri}\n\n{_hashtag_satiri(tt_hashtag)}"
+    # TikTok'ta "#16" gibi sayı da hashtag sayılır ve videoyu anlamsız bir etikete bağlar;
+    # seri numarası hashtag'siz yazılır.
+    tt_seri = (f"{SERI_ADI} · {'Bölüm' if dil == 'tr' else 'Part'} {no}"
+               if isinstance(no, int) and no > 0 else SERI_ADI)
+    tiktok = f"{y['baslik']}\n{tt_seri}\n\n{_hashtag_satiri(tt_hashtag)}"
 
     etiket_basligi = {"en": ("TITLE", "DESCRIPTION", "TAGS", "PINNED COMMENT"),
                       "tr": ("BAŞLIK", "AÇIKLAMA", "ETİKETLER", "SABİT YORUM")}[dil]
@@ -1019,6 +1039,8 @@ def uret(args):
 
     # 3. Sahne sınırları (cümle sonlarında)
     sinir = sahne_sinirlari(len(veri["bolumler"]), cumleler, toplam_sure)
+    ilk_kelimeler = next((c["kelimeler"] for c in cumleler if c.get("kelimeler")), None)
+    ilk_cumle_sonu = ilk_kelimeler[-1][1] + 0.05 if ilk_kelimeler else None
 
     # 4. Görseller ve parçalar
     kullanilan = set()
@@ -1061,7 +1083,8 @@ def uret(args):
                   f"aynı hayvanın başka bir görüntüsü kullanılıyor")
         parca = calisma / f"parca_{i:02d}.mp4"
         try:
-            parca_olustur(tur, kaynak, sure, parca, i, giris_zoom=(i == 0), baslangic=baslangic)
+            parca_olustur(tur, kaynak, sure, parca, i, giris_zoom=(i == 0), baslangic=baslangic,
+                          kesme=ilk_cumle_sonu if i == 0 else None)
         except KomutHatasi:
             uyari(f"{i + 1}. bölümün görüntüsü işlenemedi; hareketli arka plan kullanılıyor")
             tur, kaynak_adi = "arka_plan", None
@@ -1096,6 +1119,16 @@ def uret(args):
               "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
               "-t", f"{toplam_sure:.3f}", "-movflags", "+faststart", str(video)])
 
+    # 6b. TikTok sürümü: aynı video, daha hızlı tempo
+    video_tt = cikti / "video_tiktok.mp4"
+    print(f"TikTok sürümü ({TIKTOK_HIZ}x)...")
+    calistir(["ffmpeg", "-y", "-loglevel", "error", "-i", str(video),
+              "-filter_complex", f"[0:v]setpts=PTS/{TIKTOK_HIZ}[v];[0:a]atempo={TIKTOK_HIZ}[a]",
+              "-map", "[v]", "-map", "[a]",
+              "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
+              "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+              "-movflags", "+faststart", str(video_tt)])
+
     # 7. Yayın dosyaları ve meta
     yayin = yayin_dosyalari_yaz(veri, dil, kullanilan_kaynaklar, cikti)
     Path(ass).replace(cikti / "altyazi.ass")
@@ -1111,6 +1144,7 @@ def uret(args):
         "gercek_goruntu": len(iyi), "bolum_sayisi": len(veri["bolumler"]),
         "yapay_goruntu": yapay_kullanildi, "secilen_gorseller": SECILENLER,
         "goruntu_kaynagi_var": bool(kaynaklar),
+        "tiktok_video": video_tt.name, "tiktok_video_suresi": round(sure_olc(video_tt), 2),
         "release_adi": release_adi, **yayin,
     }
     Path(cikti, "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
