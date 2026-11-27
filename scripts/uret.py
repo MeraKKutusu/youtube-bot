@@ -49,6 +49,11 @@ GORUNTU_SATIRI = {"en": "Footage", "tr": "Görüntüler"}
 KANCA_FONT_BOYUTU = 104
 KANCA_UST_BOSLUK = 300
 KANCA_EN_AZ, KANCA_EN_COK = 2.5, 5.5   # ekranda kalma süresi (sn): ilk 2 cümle boyunca
+# Kanal logosu (assets/logo.png): sol üstte küçük, yarı saydam filigran. Kanca yazısının
+# (y=300) üstünde, TikTok/Shorts'un en üstteki ikon satırının altında kalır. Videolar başka
+# hesaplarda paylaşıldığında da kanal tanınır.
+LOGO_DOSYASI = Path(__file__).resolve().parent.parent / "assets" / "logo.png"
+LOGO_BOYUT, LOGO_X, LOGO_Y, LOGO_SAYDAMLIK = 100, 40, 185, 0.85
 GIRIS_ZOOM = 0.08                       # ilk sahnede %8 yakınlaşma
 # İlk cümle bitince aynı sahnede ani yakınlaştırma (jump cut): TikTok verisinde izleyicilerin
 # çoğu 0:02'de, görüntü ve ses durağanken kaydırıyordu.
@@ -1110,11 +1115,19 @@ def uret(args):
     # 6. Birleştir, sesi ekle, altyazıyı yak
     video = cikti / "video.mp4"
     print("Video birleştiriliyor...")
+    if LOGO_DOSYASI.exists():
+        # Logo altyazıdan önce yerleşir; yazılar her zaman üstte kalır
+        girdiler = ["-i", str(LOGO_DOSYASI)]
+        filtre = ["-filter_complex",
+                  f"[2:v]scale={LOGO_BOYUT}:-1,format=rgba,colorchannelmixer=aa={LOGO_SAYDAMLIK}[l];"
+                  f"[0:v][l]overlay={LOGO_X}:{LOGO_Y}[lv];"
+                  f"[lv]ass={ass}:fontsdir={FONT_DIZINI}[v]",
+                  "-map", "[v]", "-map", "1:a"]
+    else:
+        girdiler, filtre = [], ["-vf", f"ass={ass}:fontsdir={FONT_DIZINI}", "-map", "0:v", "-map", "1:a"]
     calistir(["ffmpeg", "-y", "-loglevel", "error",
               "-f", "concat", "-safe", "0", "-i", str(calisma / "liste.txt"),
-              "-i", str(karisim),
-              "-vf", f"ass={ass}:fontsdir={FONT_DIZINI}",
-              "-map", "0:v", "-map", "1:a",
+              "-i", str(karisim), *girdiler, *filtre,
               "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
               "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
               "-t", f"{toplam_sure:.3f}", "-movflags", "+faststart", str(video)])
