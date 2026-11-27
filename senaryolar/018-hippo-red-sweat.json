@@ -1,0 +1,66 @@
+{
+  "seri_no": 18,
+  "konu": "Hippo \"blood sweat\"",
+  "hayvan": "hippo",
+  "mood": "mysterious",
+  "kanca_yazisi": { "en": "Not blood. Not sweat.", "tr": "Ne kan ne de ter" },
+  "sabit_yorum": { "en": "Would you try a natural sunscreen like this? 👇", "tr": "Böyle doğal bir güneş kremi dener miydin? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "Why Hippos Ooze Red: Their Own Sunscreen and Antibiotic",
+      "aciklama": "Hippo skin secretes a fluid that turns red within minutes. A 2004 Nature study found its pigments absorb UV light and the red one slows bacteria.",
+      "hashtagler": ["#shorts", "#hippo", "#animalfacts", "#nature"]
+    },
+    "tr": {
+      "baslik": "Su aygırı neden kırmızı terler?",
+      "aciklama": "Su aygırının derisinden sızan sıvı dakikalar içinde kırmızıya döner. 2004'te Nature'da yayımlanan araştırmaya göre bu pigmentler morötesi ışığı emer, kırmızı olanı bakterileri yavaşlatır.",
+      "hashtagler": ["#shorts", "#suaygırı", "#hayvanlar", "#belgesel", "#doğa"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.nature.com/articles/429363a",
+    "https://www.nature.com/news/2004/040524/full/news040524-7.html",
+    "https://www.sciencenews.org/article/red-sweat-hippo-skin-oozes-antibiotic-sunscreen"
+  ],
+  "bolumler": [
+    {
+      "arama": "hippo",
+      "cumleler": [
+        { "tr": "Su aygırı neden kırmızı terler?", "en": "Why does a hippo sweat red?" },
+        { "tr": "Çünkü bu ne kan, ne de ter.", "en": "Because it's neither blood nor sweat." }
+      ]
+    },
+    {
+      "arama": "hippo water",
+      "cumleler": [
+        { "tr": "Derisinden renksiz bir sıvı sızar.", "en": "A clear fluid oozes from its skin." },
+        { "tr": "Dakikalar içinde...", "en": "Within minutes..." },
+        { "tr": "Kırmızıya döner.", "en": "It turns red." },
+        { "tr": "Sonra yavaşça kahverengileşir.", "en": "Then it slowly turns brown." }
+      ]
+    },
+    {
+      "arama": "hippo river",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Bu rengin bir görevi var.", "en": "That color has a job." },
+        { "tr": "Morötesi ışığı emer.", "en": "It absorbs ultraviolet light." },
+        { "tr": "Yani doğal bir güneş kremi.", "en": "A natural sunscreen." },
+        { "tr": "Kırmızı pigment mikropları da yavaşlatır.", "en": "The red pigment also slows germs." }
+      ]
+    },
+    {
+      "arama": "hippopotamus",
+      "cumleler": [
+        { "tr": "Bu sırrı 2004'te Kyoto'daki bilim insanları çözdü.", "en": "Scientists in Kyoto cracked it in 2004." }
+      ]
+    },
+    {
+      "arama": "hippo mouth",
+      "cumleler": [
+        { "tr": "Sen böyle bir güneş kremi dener miydin?", "en": "Would you try a sunscreen like this?" },
+        { "tr": "Takip et, sıradaki daha da şaşırtıcı.", "en": "Follow, the next one is even wilder." }
+      ]
+    }
+  ]
+}

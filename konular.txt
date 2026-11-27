@@ -21,8 +21,8 @@
 - [x] (kara) Tardigrades surviving space -> senaryolar/014-tardigrade-space-survival.json
 - [x] (deniz) Orcas hunting great white sharks (çatışma) -> senaryolar/015-orca-hunts-great-white.json
 - [x] (kara) Wood frog freezes solid -> senaryolar/016-wood-frog-freezes-solid.json
-- [ ] (kara) Bombardier beetle escapes from a toad's stomach (çatışma)
-- [ ] (kara) Hippo "blood sweat"
+- [x] (kara) Bombardier beetle escapes from a toad's stomach (çatışma) -> senaryolar/017-bombardier-beetle-toad-escape.json
+- [x] (kara) Hippo "blood sweat" -> senaryolar/018-hippo-red-sweat.json
 - [ ] (deniz) Hagfish slime chokes attacking sharks (çatışma)
 - [ ] (kara) Crows remember human faces
 - [ ] (kara) Japanese honeybees cook a giant hornet alive (çatışma)

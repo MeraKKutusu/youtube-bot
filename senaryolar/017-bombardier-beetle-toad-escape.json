@@ -1,0 +1,66 @@
+{
+  "seri_no": 17,
+  "konu": "Bombardier beetle escapes from a toad's stomach",
+  "hayvan": "bombardier beetle",
+  "mood": "tense",
+  "kanca_yazisi": { "en": "Swallowed alive. Then this.", "tr": "Canlı yutuldu, sonra bu oldu" },
+  "sabit_yorum": { "en": "Would you believe this escape? 👇", "tr": "Bu kaçışa inanır mıydın? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "Bombardier Beetle Gets Swallowed by a Toad and Makes It Throw Up",
+      "aciklama": "In a 2018 Kobe University study, about 43% of swallowed bombardier beetles were vomited up alive, some after 107 minutes inside a toad.",
+      "hashtagler": ["#shorts", "#bombardierbeetle", "#animalfacts", "#nature"]
+    },
+    "tr": {
+      "baslik": "Bombardıman böceği kurbağanın midesinden nasıl kaçar?",
+      "aciklama": "Kobe Üniversitesi'nin 2018 araştırmasında yutulan bombardıman böceklerinin yaklaşık yüzde 43'ü kurbağa tarafından canlı olarak geri kusuldu. Bazıları midede 107 dakika kaldı.",
+      "hashtagler": ["#shorts", "#bombardımanböceği", "#hayvanlar", "#belgesel", "#doğa"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.nationalgeographic.com/animals/article/beetle-survives-toad-vomit-animals",
+    "https://www.smithsonianmag.com/smart-news/how-exploding-beetles-cause-japanese-toads-vomit-180968095/",
+    "https://www.aip.org/inside-science/brief-the-bug-that-can-survive-a-toads-stomach"
+  ],
+  "bolumler": [
+    {
+      "arama": "beetle insect",
+      "cumleler": [
+        { "tr": "Bir kurbağa, bombardıman böceğini yuttu.", "en": "A toad swallowed a bombardier beetle." },
+        { "tr": "Büyük bir hataydı.", "en": "Big mistake." }
+      ]
+    },
+    {
+      "arama": "beetle ground",
+      "cumleler": [
+        { "tr": "Bu böceğin saklı bir silahı var.", "en": "This beetle carries a hidden weapon." },
+        { "tr": "Arkasından kaynar kimyasal püskürtür.", "en": "It sprays boiling chemicals from its rear." }
+      ]
+    },
+    {
+      "arama": "beetle close up",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Üstelik bunu midenin içinde de yapar.", "en": "And it can do it inside a stomach." },
+        { "tr": "Kurbağa dayanamaz.", "en": "The toad can't take it." },
+        { "tr": "Böceği geri kusar.", "en": "It throws the beetle back up." }
+      ]
+    },
+    {
+      "arama": "beetle macro",
+      "cumleler": [
+        { "tr": "Kobe Üniversitesi bunu 2018'de test etti.", "en": "Kobe University tested this in 2018." },
+        { "tr": "Böceklerin yaklaşık yüzde 43'ü kusuldu.", "en": "About 43 percent were vomited up." },
+        { "tr": "Biri tam 107 dakika midede kaldı.", "en": "One spent 107 minutes inside." },
+        { "tr": "Ve canlı çıktı.", "en": "And came out alive." }
+      ]
+    },
+    {
+      "arama": "beetle leaf",
+      "cumleler": [
+        { "tr": "Sen bu kaçışa inanır mıydın?", "en": "Would you believe this escape?" },
+        { "tr": "Takip et, yarın daha şaşırtıcısı var.", "en": "Follow, something wilder tomorrow." }
+      ]
+    }
+  ]
+}
