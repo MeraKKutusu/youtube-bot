@@ -101,6 +101,25 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
   rakip başlıklarını çevirip kullanmak. Gerçek, kaynaklı bir olay ya da araştırma anlat.
   `senaryo_kontrol.py` rakip başlıklarını da kopya denetimine katar.
 
+### Kendi kanal verimiz (TikTok, 20-26 Kasım 2026)
+
+- En çok izlenenler **tuhaf/ürkütücü yaşam biçimleri**: inci balığı (640), çöl bukalemunu
+  (526), balığın dilini yiyen parazit (420), zombi karınca (415). Bilinen "tatlı" konular
+  tutmadı: el ele uyuyan su samurları (16), orman kurbağası (74).
+- İzleyicinin %74'ü erkek; çatışma/gerilim yönü doğru.
+- Trafiğin ~%8'i aramadan geliyor. Aranan ifadeler konu fikridir: "kan fışkırtan kertenkele",
+  "pabuç gagalı", "yaban sineği zümrüt", "dünyanın en büyük ahtapotu".
+- Bu yüzden: yeni konu eklerken yaklaşık üçte birini **parazit, zombileştiren canlı, tuhaf
+  yaşam** konularından seç; insanların arayacağı Türkçe ifadeyi (`kan fışkırtan kertenkele`)
+  başlığa, ilk cümleye ve hashtag'e koy. Kanca yazısı tuhaf şeyin adını açıkça söylesin
+  ("Balığın dilini yiyor!") ama sonucu vermesin.
+- **Görüntüsü olmayan hayvanı konu seçme:** konu eklerken hayvanın (ya da çok yakın
+  akrabasının) stokta bulunabilir olmasına dikkat et. #17 bombardıman böceğinde iki
+  denemede de gerçek böcek gelmedi. Etiketinde `insect` geçen görseller sistemce
+  reddedilir; `arama`ya `insect` yazma.
+- Paylaşım saatlerini (`scripts/buffer.py` → `GUN_SLOTLARI`) 2-3 haftalık veri birikmeden
+  değiştirme; ilk veri gece 00-01 aktifliği gösteriyor ama örnek çok küçük.
+
 ## Erişim kuralları (izlenme için)
 
 YouTube Shorts ve TikTok yeni videoyu önce küçük bir izleyici grubuna gösterir; ilk

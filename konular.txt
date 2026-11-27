@@ -5,6 +5,12 @@
 # Günlük görev yukarıdan aşağı sıradaki 2 işaretsiz konuyu alır.
 # İşaretsiz konu 5'in altına inince 10 yeni konu eklenir (~6 deniz, ~4 kara).
 
+- [ ] (kara) Horned lizard squirts blood from its eyes at coyotes (çatışma; arama ifadesi: "kan fışkırtan kertenkele")
+- [ ] (deniz) Sacculina barnacle turns crabs into zombie caretakers (parazit; hayvan: crab)
+- [ ] (kara) Emerald jewel wasp turns a cockroach into a zombie (çatışma; arama ifadesi: "zümrüt yaban arısı")
+- [ ] (deniz) Giant Pacific octopus: world's largest octopus, mother starves guarding eggs (arama ifadesi: "dünyanın en büyük ahtapotu")
+- [ ] (kara) Shoebill: older chick kills its sibling (çatışma; arama ifadesi: "pabuç gagalı leylek")
+- [ ] (kara) Toxoplasma makes rats lose their fear of cats (parazit; hayvan: rat)
 - [x] (kara) Rhino (trend 2026-11-23; özgün bir şaşırtıcı bilgi seç) -> senaryolar/011-rhino-oxpecker-guard.json
 - [x] (deniz) Male seahorse pregnancy -> senaryolar/012-seahorse-male-pregnancy.json
 - [x] (deniz) Sperm whales sleep vertically -> senaryolar/001-sperm-whale-vertical-sleep.json
