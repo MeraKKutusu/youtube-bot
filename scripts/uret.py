@@ -41,7 +41,7 @@ GENISLIK, YUKSEKLIK, FPS = 1080, 1920, 30
 SERI_ADI = "Merak Kutusu: Vahşi Gerçekler"
 SERI_KISA = "Vahşi Gerçekler"
 ALTYAZI_DILLERI = ("en", "tr")
-SURE_HEDEF = (30.0, 40.0)   # seslendirme hedefi (kalite kontrolü 30-45 sn video ister)
+SURE_HEDEF = (24.0, 34.0)   # seslendirme hedefi (kalite kontrolü 24-45 sn video ister)
 TIKTOK_EN_FAZLA_HASHTAG = 5
 GORUNTU_SATIRI = {"en": "Footage", "tr": "Görüntüler"}
 

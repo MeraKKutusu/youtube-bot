@@ -101,6 +101,23 @@ milyonlarca Y saldı" hikâyeleri ise çoğunlukla tutmamış (1-20 B izlenme). 
   rakip başlıklarını çevirip kullanmak. Gerçek, kaynaklı bir olay ya da araştırma anlat.
   `senaryo_kontrol.py` rakip başlıklarını da kopya denetimine katar.
 
+### Başarılı kanallardan öğrenilenler (araştırma, 27 Kasım 2026)
+
+- **Zack D. Films** (~28-30 Mn abone, ~84 Mr izlenme): ilk saniye bir "sözleşme" (soru ya da
+  iddia), video cevap verildiği an biter; ~30 sn; tek soru, tek video; başlık etiket değil
+  kanca, en fazla 1 emoji; açıklama neredeyse boş.
+- **Jake Fellman** (YouTube'un en hızlı büyüyenlerinden): çoğu video 20 sn altı, "izleyici
+  sonun geldiğini görmeden" biter; Shorts'lar bir yıl boyunca izlenmeye devam eder, ilk
+  milyon çoğu zaman bir ay sürer (sabır); 6-8 ayda bir biçimi tazele.
+- Hayvan bilgisi kanallarında en çok tutanlar: karşılaştırma, "en ölümcül", "süper güçlü
+  hayvanlar", gerçek av-avcı karşılaşmaları; en az **günde 1-2 video** düzenli.
+- **Bizim eksiklerimiz ve kararlar:** (1) videolar uzundu (~35 sn) → 25-30 sn; (2) sonda
+  "Takip et" çağrısı vardı → döngü kapanışı; (3) stok görüntü konuyla tam eşleşmiyordu →
+  yalnızca görüntüsü bulunabilen hayvanlar; (4) tek platform eksikti → Buffer'a Instagram
+  bağlanırsa aynı video Reels olarak da gider (`BUFFER_INSTAGRAM_KANAL`, isteğe bağlı).
+- Elle yapılabilecekler (otomasyon yapamıyor): TikTok'ta videoya popüler bir ses düşük
+  seviyede eklemek, yorumlara videolu cevap, profil açıklaması + sabit 3 en iyi video.
+
 ### Kendi kanal verimiz (TikTok, 20-26 Kasım 2026)
 
 - En çok izlenenler **tuhaf/ürkütücü yaşam biçimleri**: inci balığı (640), çöl bukalemunu
@@ -147,12 +164,12 @@ aramada konuşmayı (transkript), ekrandaki yazıyı ve açıklamayı okur. Bu y
 - AI etiketi açık kalır (`AI_ETIKETI=true`); YouTube açıklamasına göre etiket tek başına
   erişimi düşürmez.
 
-## Senaryo kuralları (30-40 sn)
+## Senaryo kuralları (25-30 sn)
 
 - Seslendirme Türkçe (edge-tts, Ahmet), **belgesel anlatıcısı** tonunda: hafif yavaş (-3%),
   pes (-6Hz); cümle aralarında, kancadan ve sorulardan sonra kısa duraklamalar sistem
-  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **52-62 Türkçe kelime** (hız -3%; hedef ~35 sn, kalite kontrolü 30 sn altını reddeder;
-  kısa Shorts'ta izlenme oranı yükselir).
+  tarafından eklenir. Bu yüzden metin kısa tutulur: toplam **44-52 Türkçe kelime** (hız -3%; hedef ~25-30 sn, kalite kontrolü 24 sn altını
+  reddeder). Kısa video sonuna kadar izlenir ve tekrar oynar; bu, erişimi en çok artıran sinyal.
 - **Anlatıcı üslubu:** kısa, vurucu cümleler (çoğunlukla 3-8 kelime); her cümle tek bir bilgi.
   Merak uyandıran duraklama için bilgiyi ikiye böl: önce merak ettiren yarım cümle, sonra
   cevap ("Ama bir sorun var." → "Yüzerken kalbi durur."). Gerilimi artıran kelimeler
@@ -161,10 +178,11 @@ aramada konuşmayı (transkript), ekrandaki yazıyı ve açıklamayı okur. Bu y
 - **0-2 sn kanca:** ilk cümle tek başına şok edici bir iddia ya da soru olsun, kısa olsun.
   `kanca_yazisi`: ekranın üstünde görünen **3-5 kelimelik** yazı (en ve tr).
 - **Gövde:** 2-3 şaşırtıcı detay. Her bölüm bir sahne; sahne cümle sonunda değişir.
-- **Kapanış:** sondan bir önceki cümle izleyiciye soru, son cümle şunlardan **biri**
-  (bir önceki senaryodakinden farklı olanı seç):
-  `Takip et, yarın daha şaşırtıcısı var.` / `Takip et, sıradaki daha da şaşırtıcı.` /
-  `Takip et, vahşi gerçekler bitmiyor.` / `Takip et, yarın yeni bir sır var.`
+- **Kapanış = döngü (loop):** video **en çarpıcı son bilgiyle** biter; "Takip et" çağrısı ve
+  kapanış sorusu yok (izleyici o anda kaydırıyor). Son cümle mümkünse ilk cümleye bağlansın,
+  video başa dönünce kesintisiz devam ediyormuş gibi dursun
+  (ilk: "Bu kurbağanın kalbi durur." … son: "Ve bahar gelince, yine…" → başa döner).
+  En şaşırtıcı bilgiyi sona sakla. İzleyiciye soru yalnızca `sabit_yorum`'da.
 - Her cümlenin `tr` (seslendirilen) ve `en` (altyazı) hali olsun. İngilizce çeviri kısa ve
   doğal olsun, Türkçe cümleden çok uzun olmasın.
 - `mood`: `tense` | `mysterious` | `fun` | `epic`. Gerilimli bölümlere `"gerilim": true`

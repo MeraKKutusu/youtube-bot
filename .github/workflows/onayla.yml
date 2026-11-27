@@ -29,6 +29,7 @@ jobs:
       BUFFER_ORG_ID: ${{ vars.BUFFER_ORG_ID }}
       BUFFER_YOUTUBE_KANAL: ${{ vars.BUFFER_YOUTUBE_KANAL }}
       BUFFER_TIKTOK_KANAL: ${{ vars.BUFFER_TIKTOK_KANAL }}
+      BUFFER_INSTAGRAM_KANAL: ${{ vars.BUFFER_INSTAGRAM_KANAL }}
       AI_ETIKETI: ${{ vars.AI_ETIKETI }}
     steps:
       - uses: actions/checkout@v4

@@ -11,6 +11,7 @@ Ortam değişkenleri:
   BUFFER_ORG_ID           (isteğe bağlı; yoksa hesaptaki ilk organizasyon)
   BUFFER_YOUTUBE_KANAL    (isteğe bağlı; birden çok YouTube kanalı varsa adı)
   BUFFER_TIKTOK_KANAL     (isteğe bağlı; birden çok TikTok kanalı varsa adı)
+  BUFFER_INSTAGRAM_KANAL  (isteğe bağlı; Instagram bağlıysa Reels olarak da paylaşılır)
   AI_ETIKETI              ("true" varsayılan; YouTube ve TikTok'ta "AI ile üretildi" işareti)
   YOUTUBE_KATEGORI        ("15" varsayılan = Pets & Animals)
 
@@ -267,6 +268,18 @@ def sirala(args):
             "assets": [{"video": {"url": args.tiktok_video_url or args.video_url}}],
             "metadata": {"tiktok": {"isAiGenerated": ai}}}),
     }
+    # Instagram Reels: Buffer'a bir Instagram hesabı bağlıysa aynı (hızlı) video Reel olarak da
+    # gider. Bağlı değilse sessizce atlanır, hata sayılmaz.
+    ig_ad = os.environ.get("BUFFER_INSTAGRAM_KANAL", "")
+    try:
+        kanal_sec(kanallar, "instagram", ig_ad)
+        hedefler["instagram"] = (ig_ad, {
+            "text": meta["tiktok_metin"],
+            "assets": [{"video": {"url": args.tiktok_video_url or args.video_url}}],
+            "metadata": {"instagram": {"type": "reel", "shouldShareToFeed": True,
+                                       "isAiGenerated": ai}}})
+    except BufferHatasi:
+        print("Instagram kanalı bağlı değil; yalnızca YouTube ve TikTok")
 
     sonuc, hatalar = {}, []
     if onceki:

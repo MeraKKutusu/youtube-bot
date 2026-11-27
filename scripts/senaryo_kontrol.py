@@ -22,8 +22,8 @@ KAPANISLAR_TR = (
 )
 KAPANIS_TR = KAPANISLAR_TR[0]
 EN_FAZLA_BASLIK = 70
-KELIME_ARALIGI = (45, 72)      # dışı hata
-HEDEF_KELIME = (52, 62)        # dışı uyarı (hız -3%: ~52 kelime ≈ 32 sn, ~62 kelime ≈ 38 sn)
+KELIME_ARALIGI = (38, 62)      # dışı hata
+HEDEF_KELIME = (44, 52)        # dışı uyarı (hız -3%: ~44 kelime ≈ 25 sn, ~52 kelime ≈ 30 sn)
 
 
 def _sade(yazi):
@@ -168,17 +168,20 @@ def kontrol(veri, dosya_adi=""):
     if not veri.get("kaynaklar"):
         uyarilar.append("'kaynaklar' boş: bilgileri doğrulayan kaynak linkleri ekleyin")
 
-    # Kapanış: izleyiciye soru + takip çağrısı
+    # Kapanış: döngü (loop). Video son bilgiyle biter; "Takip et" çağrısı ve kapanış sorusu
+    # izleyiciyi kaydırtıyor (TikTok: çoğu 0:02'de gidiyor, ortalama %27 izlenme). Soru
+    # sabit_yorum'a, takip çağrısı açıklamaya taşındı.
     tum = [c for b in bolumler for c in (b.get("cumleler") or [])]
     if tum:
-        if _sade(tum[-1].get("tr", "")) not in {_sade(k) for k in KAPANISLAR_TR}:
-            hatalar.append("son cümle şunlardan biri olmalı: " + " | ".join(KAPANISLAR_TR))
-        if not any("?" in str(c.get("tr", "")) for c in tum[-3:-1]):
-            hatalar.append("kapanışta (son cümleden hemen önce) izleyiciye bir soru olmalı")
+        son = _sade(tum[-1].get("tr", ""))
+        if son.startswith("takip et") or son in {_sade(k) for k in KAPANISLAR_TR}:
+            uyarilar.append("son cümle takip çağrısı; video son bilgiyle (döngü cümlesiyle) bitmeli")
+        if "?" in str(tum[-1].get("tr", "")):
+            uyarilar.append("son cümle soru; soru sabit_yorum'a, video son bilgiyle bitmeli")
 
     sayi = kelime_sayisi(veri)
     if not KELIME_ARALIGI[0] <= sayi <= KELIME_ARALIGI[1]:
-        hatalar.append(f"Türkçe metin {sayi} kelime; 30-40 sn için {HEDEF_KELIME[0]}-{HEDEF_KELIME[1]} kelime olmalı")
+        hatalar.append(f"Türkçe metin {sayi} kelime; 25-30 sn için {HEDEF_KELIME[0]}-{HEDEF_KELIME[1]} kelime olmalı")
     elif not HEDEF_KELIME[0] <= sayi <= HEDEF_KELIME[1]:
         uyarilar.append(f"Türkçe metin {sayi} kelime; hedef {HEDEF_KELIME[0]}-{HEDEF_KELIME[1]}")
 

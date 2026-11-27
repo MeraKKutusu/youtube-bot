@@ -2,7 +2,7 @@
 """Üretilen videonun kalite kontrolü.
 
 Kontroller:
-  1. Süre 30-45 sn
+  1. Süre 24-45 sn
   2. Ses: ses akışı var, ortalama seviye -14 LUFS civarı (-16..-12), tepe ≤ -1 dBTP,
      2 sn'den uzun sessizlik yok
   3. Siyah kare: 0.5 sn'den uzun tamamen siyah bölüm yok
@@ -24,7 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ses import loudnorm_olc  # noqa: E402
 
-SURE = (30.0, 45.0)
+SURE = (24.0, 45.0)
 LUFS = (-16.0, -12.0)
 EN_YUKSEK_TP = -1.0
 EN_UZUN_SESSIZLIK = 2.0

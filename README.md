@@ -11,7 +11,7 @@ Her gün 2 video: deniz ve vahşi doğa hayvanları hakkında az bilinen, şaş�
   ↓    senaryolar/ klasörüne yeni dosya gelir
        GitHub Actions videoyu üretir: Türkçe belgesel anlatıcısı sesi (Ahmet), İngilizce altyazı,
        kanca yazısı, Pixabay görüntüleri, mood'a göre müzik ve efektler, -14 LUFS
-  ↓    Kalite kontrolü: süre 30-45 sn, ses seviyesi, siyah kare, altyazı
+  ↓    Kalite kontrolü: süre 24-45 sn, ses seviyesi, siyah kare, altyazı
   ↓    Geçerse: Release + kare özeti (kareler.jpg); Claude kareleri gözle kontrol eder,
        uygunsa "Videoyu Onayla" ile Buffer'da sıradaki boş saate konur (Pzt-Per 12:30/21:30, Cuma 17:30/21:30,
        Cmt 11:30/21:30, Paz 10:30/21:30)
