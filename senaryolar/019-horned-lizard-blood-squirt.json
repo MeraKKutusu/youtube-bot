@@ -1,0 +1,61 @@
+{
+  "seri_no": 19,
+  "konu": "Horned lizard squirts blood from its eyes at coyotes",
+  "hayvan": "horned lizard",
+  "mood": "tense",
+  "kanca_yazisi": { "en": "Blood from its eyes!", "tr": "Gözlerinden kan fışkırtıyor!" },
+  "sabit_yorum": { "en": "Which defense is creepier: blood eyes or horns? 👇", "tr": "Hangisi daha ürkütücü: kanlı gözler mi, boynuzlar mı? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "The Lizard That Squirts Blood From Its Eyes at Coyotes",
+      "aciklama": "Cornered horned lizards shoot foul-tasting blood from their eyes, and coyotes back off. A 2024 study tied a compound in that blood to the harvester ants they eat.",
+      "hashtagler": ["#shorts", "#hornedlizard", "#animalfacts", "#wildlife"]
+    },
+    "tr": {
+      "baslik": "Kan fışkırtan kertenkele: boynuzlu kertenkele",
+      "aciklama": "Köşeye sıkışan boynuzlu kertenkele gözlerinden tadı berbat bir kan fışkırtır; çakallar geri çekilir. 2024'teki bir çalışma bu kandaki bir maddeyi yediği hasat karıncalarına bağladı.",
+      "hashtagler": ["#shorts", "#boynuzlukertenkele", "#kanfışkırtankertenkele", "#hayvanlar", "#belgesel"]
+    }
+  },
+  "kaynaklar": [
+    "https://www.popsci.com/environment/why-horned-lizards-squirt-blood-from-eyes/",
+    "https://bioone.org/journals/ichthyology-and-herpetology/volume-112/issue-1",
+    "https://bioone.org/journals/copeia/volume-2004/issue-3/CH-03-157R1/Responses-of-Kit-Foxes-Vulpes-macrotis-to-Antipredator-Blood-Squirting/10.1643/CH-03-157R1.full",
+    "https://www.webmd.com/pets/what-to-know-texas-horned-lizards",
+    "https://sariverauthority.org/blog-news/south-texas-natives-texas-horned-lizard"
+  ],
+  "bolumler": [
+    {
+      "arama": "horned lizard",
+      "cumleler": [
+        { "tr": "Bir çakal, yanlış kertenkeleyi seçti.", "en": "A coyote picked the wrong lizard." },
+        { "tr": "Bu, Teksas'ın boynuzlu kertenkelesi.", "en": "This is Texas's horned lizard." }
+      ]
+    },
+    {
+      "arama": "horned lizard desert",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Ama gizli bir silahı var.", "en": "But it has a hidden weapon." },
+        { "tr": "Gözlerinden kan fışkırtır.", "en": "It squirts blood from its eyes." },
+        { "tr": "Çakal geri çekilir.", "en": "The coyote backs off." }
+      ]
+    },
+    {
+      "arama": "horned lizard close up",
+      "cumleler": [
+        { "tr": "Çünkü bu kanın tadı berbattır.", "en": "Because that blood tastes awful." },
+        { "tr": "Peki neden?", "en": "But why?" },
+        { "tr": "2024'te bir çalışma ipucunu buldu.", "en": "A 2024 study found a clue." },
+        { "tr": "Hasat karıncası yiyince kandaki bir madde artıyordu.", "en": "Eating harvester ants raised a compound in its blood." }
+      ]
+    },
+    {
+      "arama": "lizard horns sand",
+      "cumleler": [
+        { "tr": "Ama kuşlar bu tada aldırmaz.", "en": "But birds ignore the taste." },
+        { "tr": "Bu silah en çok çakalları durdurur.", "en": "This weapon works best on coyotes." }
+      ]
+    }
+  ]
+}

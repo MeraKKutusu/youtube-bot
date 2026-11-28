@@ -5,8 +5,8 @@
 # Günlük görev yukarıdan aşağı sıradaki 2 işaretsiz konuyu alır.
 # İşaretsiz konu 5'in altına inince 10 yeni konu eklenir (~6 deniz, ~4 kara).
 
-- [ ] (kara) Horned lizard squirts blood from its eyes at coyotes (çatışma; arama ifadesi: "kan fışkırtan kertenkele")
-- [ ] (deniz) Sacculina barnacle turns crabs into zombie caretakers (parazit; hayvan: crab)
+- [x] (kara) Horned lizard squirts blood from its eyes at coyotes (çatışma; arama ifadesi: "kan fışkırtan kertenkele") -> senaryolar/019-horned-lizard-blood-squirt.json
+- [x] (deniz) Sacculina barnacle turns crabs into zombie caretakers (parazit; hayvan: crab) -> senaryolar/020-sacculina-zombie-crab.json
 - [ ] (kara) Emerald jewel wasp turns a cockroach into a zombie (çatışma; arama ifadesi: "zümrüt yaban arısı")
 - [ ] (deniz) Giant Pacific octopus: world's largest octopus, mother starves guarding eggs (arama ifadesi: "dünyanın en büyük ahtapotu")
 - [ ] (kara) Shoebill: older chick kills its sibling (çatışma; arama ifadesi: "pabuç gagalı leylek")

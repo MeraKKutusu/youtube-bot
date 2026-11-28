@@ -1,0 +1,62 @@
+{
+  "seri_no": 20,
+  "konu": "Sacculina barnacle turns crabs into zombie caretakers",
+  "hayvan": "crab",
+  "mood": "mysterious",
+  "kanca_yazisi": { "en": "This crab is a zombie", "tr": "Bu yengeç artık zombi" },
+  "sabit_yorum": { "en": "Creepiest parasite you know? 👇", "tr": "Bildiğin en ürkütücü parazit hangisi? 👇" },
+  "yayin": {
+    "en": {
+      "baslik": "The Parasite That Turns Crabs Into Zombie Babysitters",
+      "aciklama": "Sacculina spreads root-like tendrils through a crab, sterilizes it and makes it care for the parasite's eggs. Even infected males start acting like females.",
+      "hashtagler": ["#shorts", "#crab", "#parasite", "#ocean"]
+    },
+    "tr": {
+      "baslik": "Zombi yengeç: parazitin yumurtalarına bakıyor",
+      "aciklama": "Sacculina paraziti yengecin içine kök salar, onu kısırlaştırır ve kendi yumurtalarına baktırır. Enfekte erkek yengeçler bile dişi gibi davranmaya başlar.",
+      "hashtagler": ["#shorts", "#yengeç", "#parazit", "#deniz", "#belgesel"]
+    }
+  },
+  "kaynaklar": [
+    "https://ocean.si.edu/ocean-life/7-ocean-parasites-worth-celebrating-world-parasite-day",
+    "https://www.nhm.ac.uk/discover/which-parasite-has-the-weirdest-way-of-life.html",
+    "https://theconversation.com/the-crab-castrating-parasite-that-zombifies-its-prey-27200",
+    "https://animaldiversity.org/accounts/Sacculina_carcini",
+    "https://en.wikipedia.org/wiki/Sacculina_carcini"
+  ],
+  "bolumler": [
+    {
+      "arama": "green crab",
+      "cumleler": [
+        { "tr": "Bu yengeç neden yabancı yumurtalara bakıyor?", "en": "Why is this crab tending strange eggs?" },
+        { "tr": "Çünkü artık o bir zombi.", "en": "Because it's a zombie now." }
+      ]
+    },
+    {
+      "arama": "crab beach",
+      "gerilim": true,
+      "cumleler": [
+        { "tr": "Suçlu, Sacculina adlı bir parazit.", "en": "The culprit is a parasite, Sacculina." },
+        { "tr": "Yengecin içine sızar.", "en": "It slips inside the crab." },
+        { "tr": "Kökleri tüm vücuduna yayılır.", "en": "Its roots spread through the whole body." },
+        { "tr": "Yengeç artık üreyemez.", "en": "The crab can no longer breed." }
+      ]
+    },
+    {
+      "arama": "crab underside",
+      "cumleler": [
+        { "tr": "Sonra karnında bir kese belirir.", "en": "Then a sac appears under its belly." },
+        { "tr": "İçi parazitin yumurtalarıyla dolu.", "en": "It's full of the parasite's eggs." },
+        { "tr": "Yengeç onları kendi yavrusu sanır.", "en": "The crab thinks they're its own." },
+        { "tr": "Temizler ve havalandırır.", "en": "It cleans them and gives them air." }
+      ]
+    },
+    {
+      "arama": "crab rocks sea",
+      "cumleler": [
+        { "tr": "Erkek yengeçler bile...", "en": "Even male crabs..." },
+        { "tr": "Dişi gibi davranıp yabancı yumurtalara bakar.", "en": "Act like females and tend strange eggs." }
+      ]
+    }
+  ]
+}
