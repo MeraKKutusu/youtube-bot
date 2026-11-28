@@ -3,18 +3,35 @@
   "konu": "Horned lizard squirts blood from its eyes at coyotes",
   "hayvan": "horned lizard",
   "mood": "tense",
-  "kanca_yazisi": { "en": "Blood from its eyes!", "tr": "Gözlerinden kan fışkırtıyor!" },
-  "sabit_yorum": { "en": "Which defense is creepier: blood eyes or horns? 👇", "tr": "Hangisi daha ürkütücü: kanlı gözler mi, boynuzlar mı? 👇" },
+  "kanca_yazisi": {
+    "en": "Blood from its eyes!",
+    "tr": "Gözlerinden kan fışkırtıyor!"
+  },
+  "sabit_yorum": {
+    "en": "Which defense is creepier: blood eyes or horns? 👇",
+    "tr": "Hangisi daha ürkütücü: kanlı gözler mi, boynuzlar mı? 👇"
+  },
   "yayin": {
     "en": {
       "baslik": "The Lizard That Squirts Blood From Its Eyes at Coyotes",
       "aciklama": "Cornered horned lizards shoot foul-tasting blood from their eyes, and coyotes back off. A 2024 study tied a compound in that blood to the harvester ants they eat.",
-      "hashtagler": ["#shorts", "#hornedlizard", "#animalfacts", "#wildlife"]
+      "hashtagler": [
+        "#shorts",
+        "#hornedlizard",
+        "#animalfacts",
+        "#wildlife"
+      ]
     },
     "tr": {
       "baslik": "Kan fışkırtan kertenkele: boynuzlu kertenkele",
       "aciklama": "Köşeye sıkışan boynuzlu kertenkele gözlerinden tadı berbat bir kan fışkırtır; çakallar geri çekilir. 2024'teki bir çalışma bu kandaki bir maddeyi yediği hasat karıncalarına bağladı.",
-      "hashtagler": ["#shorts", "#boynuzlukertenkele", "#kanfışkırtankertenkele", "#hayvanlar", "#belgesel"]
+      "hashtagler": [
+        "#shorts",
+        "#boynuzlukertenkele",
+        "#kanfışkırtankertenkele",
+        "#hayvanlar",
+        "#belgesel"
+      ]
     }
   },
   "kaynaklar": [
@@ -26,36 +43,75 @@
   ],
   "bolumler": [
     {
-      "arama": "horned lizard",
+      "arama": "horned lizard desert",
       "cumleler": [
-        { "tr": "Bir çakal, yanlış kertenkeleyi seçti.", "en": "A coyote picked the wrong lizard." },
-        { "tr": "Bu, Teksas'ın boynuzlu kertenkelesi.", "en": "This is Texas's horned lizard." }
+        {
+          "tr": "Bir çakal, yanlış kertenkeleyi seçti.",
+          "en": "A coyote picked the wrong lizard."
+        },
+        {
+          "tr": "Bu, Teksas'ın boynuzlu kertenkelesi.",
+          "en": "This is Texas's horned lizard."
+        }
       ]
     },
     {
-      "arama": "horned lizard desert",
+      "arama": "desert lizard sand",
       "gerilim": true,
       "cumleler": [
-        { "tr": "Ama gizli bir silahı var.", "en": "But it has a hidden weapon." },
-        { "tr": "Gözlerinden kan fışkırtır.", "en": "It squirts blood from its eyes." },
-        { "tr": "Çakal geri çekilir.", "en": "The coyote backs off." }
+        {
+          "tr": "Ama gizli bir silahı var.",
+          "en": "But it has a hidden weapon."
+        },
+        {
+          "tr": "Gözlerinden kan fışkırtır.",
+          "en": "It squirts blood from its eyes."
+        },
+        {
+          "tr": "Çakal geri çekilir.",
+          "en": "The coyote backs off."
+        }
       ]
     },
     {
-      "arama": "horned lizard close up",
+      "arama": "lizard spiky desert",
       "cumleler": [
-        { "tr": "Çünkü bu kanın tadı berbattır.", "en": "Because that blood tastes awful." },
-        { "tr": "Peki neden?", "en": "But why?" },
-        { "tr": "2024'te bir çalışma ipucunu buldu.", "en": "A 2024 study found a clue." },
-        { "tr": "Hasat karıncası yiyince kandaki bir madde artıyordu.", "en": "Eating harvester ants raised a compound in its blood." }
+        {
+          "tr": "Çünkü bu kanın tadı berbattır.",
+          "en": "Because that blood tastes awful."
+        },
+        {
+          "tr": "Peki neden?",
+          "en": "But why?"
+        },
+        {
+          "tr": "2024'te bir çalışma ipucunu buldu.",
+          "en": "A 2024 study found a clue."
+        },
+        {
+          "tr": "Hasat karıncası yiyince kandaki bir madde artıyordu.",
+          "en": "Eating harvester ants raised a compound in its blood."
+        }
       ]
     },
     {
-      "arama": "lizard horns sand",
+      "arama": "desert lizard rocks",
       "cumleler": [
-        { "tr": "Ama kuşlar bu tada aldırmaz.", "en": "But birds ignore the taste." },
-        { "tr": "Bu silah en çok çakalları durdurur.", "en": "This weapon works best on coyotes." }
+        {
+          "tr": "Ama kuşlar bu tada aldırmaz.",
+          "en": "But birds ignore the taste."
+        },
+        {
+          "tr": "Bu silah en çok çakalları durdurur.",
+          "en": "This weapon works best on coyotes."
+        }
       ]
     }
+  ],
+  "haric": [
+    "pixabay-v-265271",
+    "pixabay-v-9472",
+    "pixabay-v-39992",
+    "pixabay-v-25573"
   ]
 }
